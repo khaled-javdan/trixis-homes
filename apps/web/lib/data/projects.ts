@@ -13,20 +13,38 @@ export type DashboardFilters = {
   maxPrice?: number
 }
 
+export type SizeRange = { min: number; max: number }
+
 export type ProjectCard = PlainProject & {
   startingPrice: number | null
   unitTypeCount: number
+  totalUnitCount: number | null
+  buaRange: SizeRange | null
+  plotSizeRange: SizeRange | null
   coverImageUrl: string | null
+}
+
+function sizeRange(values: (number | null)[]): SizeRange | null {
+  const present = values.filter((value): value is number => value != null)
+  return present.length ? { min: Math.min(...present), max: Math.max(...present) } : null
 }
 
 function withCardFields(
   plain: PlainProject & { attachments: PlainProject["attachments"] }
 ): ProjectCard {
   const prices = plain.unitTypes.map((unit) => unit.startingPrice)
+  const unitCounts = plain.unitTypes
+    .map((unit) => unit.unitCount)
+    .filter((count): count is number => count != null)
   return {
     ...plain,
     startingPrice: prices.length ? Math.min(...prices) : null,
     unitTypeCount: plain.unitTypes.length,
+    totalUnitCount: unitCounts.length
+      ? unitCounts.reduce((sum, count) => sum + count, 0)
+      : null,
+    buaRange: sizeRange(plain.unitTypes.map((unit) => unit.bua)),
+    plotSizeRange: sizeRange(plain.unitTypes.map((unit) => unit.plotSize)),
     coverImageUrl: plain.attachments[0]?.url ?? null,
   }
 }

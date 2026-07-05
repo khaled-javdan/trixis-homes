@@ -1,14 +1,30 @@
-import { formatDate } from "@/lib/format"
+import type * as React from "react"
+
+import { formatDate, normalizeUrl } from "@/lib/format"
 import type { PlainProject } from "@/lib/data/serialize"
 
 export function GeneralInfoPanel({ project }: { project: PlainProject }) {
-  const fields: Array<[string, string | null]> = [
+  const linkHref = normalizeUrl(project.link)
+  const fields: Array<[string, React.ReactNode]> = [
     ["Project Name", project.name],
     ["Developer", project.developer],
     ["Community", project.community],
     ["Location", project.location],
     ["Handover Date", formatDate(project.handoverDate)],
     ["Payment Plan", project.paymentPlan],
+    [
+      "Link",
+      linkHref ? (
+        <a
+          href={linkHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary underline underline-offset-2 break-all"
+        >
+          {project.link}
+        </a>
+      ) : null,
+    ],
   ]
 
   return (

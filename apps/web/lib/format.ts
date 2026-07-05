@@ -1,15 +1,10 @@
-import type { ProjectStatus, UnitCategory } from "@workspace/db"
+import type { ProjectStatus, PropertyType } from "@workspace/db"
 
-const unitCategoryLabels: Record<UnitCategory, string> = {
-  STUDIO: "Studio",
-  ONE_BR: "1BR",
-  TWO_BR: "2BR",
-  THREE_BR: "3BR",
-  FOUR_BR: "4BR",
-  FIVE_BR_PLUS: "5+BR",
-  PENTHOUSE: "Penthouse",
+const propertyTypeLabels: Record<PropertyType, string> = {
+  APARTMENT: "Apartment",
   TOWNHOUSE: "Townhouse",
   VILLA: "Villa",
+  PENTHOUSE: "Penthouse",
   DUPLEX: "Duplex",
   OFFICE: "Office",
   RETAIL: "Retail",
@@ -22,8 +17,26 @@ const projectStatusLabels: Record<ProjectStatus, string> = {
   READY: "Ready",
 }
 
-export function formatUnitCategory(category: UnitCategory) {
-  return unitCategoryLabels[category]
+export function formatPropertyType(propertyType: PropertyType) {
+  return propertyTypeLabels[propertyType]
+}
+
+function formatBedrooms(bedrooms: number | null | undefined) {
+  if (bedrooms == null) return null
+  return bedrooms === 0 ? "Studio" : `${bedrooms}BR`
+}
+
+// Combines property type + bedroom count into a natural unit type name, e.g.
+// "2BR" for a 2-bedroom apartment, "2BR Townhouse" for a 2-bedroom townhouse,
+// or just "Villa" when no bedroom count is set.
+export function formatUnitTypeName(
+  propertyType: PropertyType,
+  bedrooms: number | null | undefined
+) {
+  const typeLabel = formatPropertyType(propertyType)
+  const bedroomLabel = formatBedrooms(bedrooms)
+  if (!bedroomLabel) return typeLabel
+  return propertyType === "APARTMENT" ? bedroomLabel : `${bedroomLabel} ${typeLabel}`
 }
 
 export function formatProjectStatus(status: ProjectStatus) {
@@ -71,13 +84,45 @@ export function formatArea(value: number | null | undefined) {
   return `${Math.round(value).toLocaleString("en-US")} sq ft`
 }
 
+export function formatAreaRange(
+  range: { min: number; max: number } | null | undefined
+) {
+  if (!range) return null
+  if (range.min === range.max) return formatArea(range.min)
+  return `${Math.round(range.min).toLocaleString("en-US")}–${Math.round(range.max).toLocaleString("en-US")} sq ft`
+}
+
 export function formatDate(value: string | Date | null | undefined) {
   if (!value) return null
   const date = typeof value === "string" ? new Date(value) : value
-  return new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    year: "numeric",
-  }).format(date)
+  const quarter = Math.floor(date.getMonth() / 3) + 1
+  return `Q${quarter} ${date.getFullYear()}`
+}
+
+export const quarterValues = ["1", "2", "3", "4"] as const
+
+export function dateToQuarter(value: string | Date | null | undefined) {
+  if (!value) return { quarter: "", year: "" }
+  const date = typeof value === "string" ? new Date(value) : value
+  const quarter = Math.floor(date.getMonth() / 3) + 1
+  return { quarter: String(quarter), year: String(date.getFullYear()) }
+}
+
+export function quarterToDate(quarter: string, year: string): Date | null {
+  if (!quarter || !year) return null
+  const quarterNumber = Number(quarter)
+  const yearNumber = Number(year)
+  if (!Number.isInteger(quarterNumber) || !Number.isInteger(yearNumber)) {
+    return null
+  }
+  return new Date(yearNumber, (quarterNumber - 1) * 3, 1)
+}
+
+export function normalizeUrl(value: string | null | undefined) {
+  if (!value) return null
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
 }
 
 export function formatDateShort(value: string | Date | null | undefined) {

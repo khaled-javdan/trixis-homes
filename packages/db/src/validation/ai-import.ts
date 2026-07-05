@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { projectStatusValues } from "./project"
-import { unitCategoryValues } from "./unit-type"
+import { propertyTypeValues } from "./unit-type"
 
 // Lenient mirror of unitTypeSchema/projectSchema for LLM structured extraction.
 // Fields are nullable (not optional) so the model must explicitly emit null
@@ -10,7 +10,7 @@ import { unitCategoryValues } from "./unit-type"
 // them — the review UI prompts the user to fill in whatever is missing.
 
 export const extractedUnitTypeSchema = z.object({
-  category: z.enum(unitCategoryValues),
+  propertyType: z.enum(propertyTypeValues),
   label: z.string().trim().max(120).nullable(),
   unitCount: z.number().int().min(0).nullable(),
   startingPrice: z.number().min(0).nullable(),

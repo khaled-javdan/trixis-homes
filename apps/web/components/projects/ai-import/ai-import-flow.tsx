@@ -27,17 +27,24 @@ import {
   createProjectsFromExtraction,
   extractProjectsFromText,
 } from "@/lib/actions/ai-import"
-import { DIRHAM_SIGN, formatProjectStatus, formatUnitCategory } from "@/lib/format"
+import {
+  DIRHAM_SIGN,
+  dateToQuarter,
+  formatProjectStatus,
+  formatPropertyType,
+  quarterToDate,
+  quarterValues,
+} from "@/lib/format"
 import { projectStatusValues } from "@workspace/db/validation/project"
 import type { ProjectInput } from "@workspace/db/validation/project"
 import {
-  unitCategoryValues,
+  propertyTypeValues,
   type UnitTypeInput,
 } from "@workspace/db/validation/unit-type"
 import type { ExtractedProject } from "@workspace/db/validation/ai-import"
 
 type UnitTypeDraft = {
-  category: (typeof unitCategoryValues)[number]
+  propertyType: (typeof propertyTypeValues)[number]
   label: string
   unitCount: string
   bedrooms: string
@@ -65,7 +72,7 @@ type ProjectDraft = {
 
 function emptyUnitTypeDraft(): UnitTypeDraft {
   return {
-    category: "TWO_BR",
+    propertyType: "APARTMENT",
     label: "",
     unitCount: "",
     bedrooms: "",
@@ -82,7 +89,7 @@ function emptyUnitTypeDraft(): UnitTypeDraft {
 
 function toUnitTypeDraft(unit: ExtractedProject["unitTypes"][number]): UnitTypeDraft {
   return {
-    category: unit.category,
+    propertyType: unit.propertyType,
     label: unit.label ?? "",
     unitCount: unit.unitCount != null ? String(unit.unitCount) : "",
     bedrooms: unit.bedrooms != null ? String(unit.bedrooms) : "",
@@ -140,7 +147,7 @@ function toProjectInput(draft: ProjectDraft): ProjectInput {
 
 function toUnitTypeInputs(draft: ProjectDraft): UnitTypeInput[] {
   return draft.unitTypes.map((unit) => ({
-    category: unit.category,
+    propertyType: unit.propertyType,
     label: unit.label,
     unitCount: unit.unitCount ? Number(unit.unitCount) : null,
     startingPrice: Number(unit.startingPrice),
@@ -388,15 +395,46 @@ export function AiImportFlow() {
                 </Select>
               </FormField>
               <FormField label="Handover Date (optional)">
-                <Input
-                  type="date"
-                  value={draft.handoverDate}
-                  onChange={(event) =>
-                    updateProject(projectIndex, {
-                      handoverDate: event.target.value,
-                    })
-                  }
-                />
+                <div className="flex gap-2">
+                  <Select
+                    value={dateToQuarter(draft.handoverDate).quarter}
+                    onValueChange={(quarter: string | null) => {
+                      const year = dateToQuarter(draft.handoverDate).year
+                      const date = quarterToDate(quarter ?? "", year)
+                      updateProject(projectIndex, {
+                        handoverDate: date
+                          ? date.toISOString().slice(0, 10)
+                          : "",
+                      })
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Quarter" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {quarterValues.map((quarter) => (
+                        <SelectItem key={quarter} value={quarter}>
+                          {`Q${quarter}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="Year"
+                    value={dateToQuarter(draft.handoverDate).year}
+                    onChange={(event) => {
+                      const quarter = dateToQuarter(draft.handoverDate).quarter
+                      const date = quarterToDate(quarter, event.target.value)
+                      updateProject(projectIndex, {
+                        handoverDate: date
+                          ? date.toISOString().slice(0, 10)
+                          : "",
+                      })
+                    }}
+                  />
+                </div>
               </FormField>
               <FormField label="Payment Plan (optional)" className="sm:col-span-2">
                 <Input
@@ -436,12 +474,12 @@ export function AiImportFlow() {
                     key={unitIndex}
                     className="grid items-end gap-3 rounded-lg border border-border p-3 sm:grid-cols-6"
                   >
-                    <FormField label="Type" className="sm:col-span-1">
+                    <FormField label="Property Type" className="sm:col-span-1">
                       <Select
-                        value={unit.category}
+                        value={unit.propertyType}
                         onValueChange={(value) =>
                           updateUnitType(projectIndex, unitIndex, {
-                            category: value as UnitTypeDraft["category"],
+                            propertyType: value as UnitTypeDraft["propertyType"],
                           })
                         }
                       >
@@ -449,9 +487,9 @@ export function AiImportFlow() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {unitCategoryValues.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {formatUnitCategory(category)}
+                          {propertyTypeValues.map((propertyType) => (
+                            <SelectItem key={propertyType} value={propertyType}>
+                              {formatPropertyType(propertyType)}
                             </SelectItem>
                           ))}
                         </SelectContent>

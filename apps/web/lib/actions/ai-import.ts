@@ -26,11 +26,11 @@ Rules:
 - Per-unit-type quantities appear before a price or after a dash/pipe (e.g.
   "122 | 1.85m", "122 units"). Put that number in unitCount. A project-wide total
   (e.g. "354 Units") does not need to exactly equal the sum of unitCount values.
-- Infer the unit category from context: "townhouse" -> TOWNHOUSE, "villa" -> VILLA,
-  "studio" -> STUDIO, "penthouse" -> PENTHOUSE, "duplex" -> DUPLEX, "office" ->
-  OFFICE, "retail" -> RETAIL. Plain "Nbd"/"N bed" apartment listings with no other
-  keyword -> ONE_BR/TWO_BR/THREE_BR/FOUR_BR/FIVE_BR_PLUS based on N. Always also
-  fill the numeric "bedrooms" field regardless of category.
+- Infer the propertyType from context: "townhouse" -> TOWNHOUSE, "villa" -> VILLA,
+  "penthouse" -> PENTHOUSE, "duplex" -> DUPLEX, "office" -> OFFICE, "retail" ->
+  RETAIL. Plain "Nbd"/"N bed" apartment listings with no other keyword ->
+  APARTMENT. Always also fill the numeric "bedrooms" field (0 for a studio)
+  regardless of propertyType.
 - Give each unit type a short human label, e.g. "2BR Mid Townhouse", "4BR
   Standalone Villa", "1BR".
 - Convert relative handover dates to an ISO date (YYYY-MM-DD) using the last day
@@ -93,7 +93,7 @@ export async function createProjectsFromExtraction(
   for (const draft of drafts) {
     const project = await prisma.project.create({
       data: {
-        ...toProjectData(draft.project),
+        ...(await toProjectData(draft.project)),
         unitTypes: { create: draft.unitTypes.map(toUnitTypeData) },
       },
     })

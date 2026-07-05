@@ -1,10 +1,10 @@
 import { z } from "zod"
 
 import { projectStatusValues } from "./project"
-import { unitCategoryValues } from "./unit-type"
+import { propertyTypeValues } from "./unit-type"
 
 const exportUnitTypeSchema = z.object({
-  category: z.enum(unitCategoryValues),
+  propertyType: z.enum(propertyTypeValues),
   label: z.string().nullable().optional(),
   unitCount: z.number().int().min(0).nullable().optional(),
   startingPrice: z.number().positive(),
@@ -32,6 +32,7 @@ const exportProjectSchema = z.object({
   handoverDate: z.coerce.date().nullable().optional(),
   description: z.string().nullable().optional(),
   paymentPlan: z.string().nullable().optional(),
+  link: z.string().nullable().optional(),
   isFavorite: z.boolean().optional(),
   unitTypes: z.array(exportUnitTypeSchema),
   notes: z.array(exportNoteSchema),

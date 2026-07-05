@@ -2,7 +2,7 @@ import type { Attachment, Note, Project, UnitType } from "@workspace/db"
 
 export type PlainUnitType = {
   id: string
-  category: UnitType["category"]
+  propertyType: UnitType["propertyType"]
   label: string | null
   unitCount: number | null
   startingPrice: number
@@ -58,10 +58,13 @@ export type PlainProject = {
   developer: string
   community: string | null
   location: string
+  latitude: number | null
+  longitude: number | null
   status: Project["status"]
   handoverDate: string | null
   description: string | null
   paymentPlan: string | null
+  link: string | null
   isFavorite: boolean
   createdAt: string
   updatedAt: string
@@ -79,7 +82,7 @@ function decimalToNumber(value: Decimalish | null): number | null {
 export function toPlainUnitType(unit: UnitType): PlainUnitType {
   return {
     id: unit.id,
-    category: unit.category,
+    propertyType: unit.propertyType,
     label: unit.label,
     unitCount: unit.unitCount,
     startingPrice: (unit.startingPrice as unknown as Decimalish).toNumber(),
@@ -132,12 +135,15 @@ export function toPlainProject(
     developer: project.developer,
     community: project.community,
     location: project.location,
+    latitude: project.latitude,
+    longitude: project.longitude,
     status: project.status,
     handoverDate: project.handoverDate
       ? project.handoverDate.toISOString()
       : null,
     description: project.description,
     paymentPlan: project.paymentPlan,
+    link: project.link,
     isFavorite: project.isFavorite,
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),

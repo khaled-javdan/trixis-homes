@@ -3,7 +3,7 @@ import {
   formatDate,
   formatPriceWithSymbol,
   formatProjectStatus,
-  formatUnitCategory,
+  formatUnitTypeName,
 } from "@/lib/format"
 import { getCoverImageUrl, type PlainProject } from "@/lib/data/serialize"
 
@@ -29,7 +29,7 @@ type QuestionTemplate = {
 }
 
 function unitLabel(unit: PlainProject["unitTypes"][number]) {
-  return unit.label?.trim() || formatUnitCategory(unit.category)
+  return unit.label?.trim() || formatUnitTypeName(unit.propertyType, unit.bedrooms)
 }
 
 const questionTemplates: QuestionTemplate[] = [

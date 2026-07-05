@@ -16,7 +16,12 @@ import {
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import { FormField } from "@/components/form-field"
-import { formatProjectStatus } from "@/lib/format"
+import {
+  dateToQuarter,
+  formatProjectStatus,
+  quarterToDate,
+  quarterValues,
+} from "@/lib/format"
 import type { ProjectInput } from "@workspace/db/validation/project"
 
 const statusOptions = ["OFF_PLAN", "UNDER_CONSTRUCTION", "READY"] as const
@@ -27,9 +32,11 @@ type ProjectFormValues = {
   community: string
   location: string
   status: (typeof statusOptions)[number]
-  handoverDate: string
+  handoverQuarter: string
+  handoverYear: string
   description: string
   paymentPlan: string
+  link: string
 }
 
 export type ProjectFormDefaults = {
@@ -41,20 +48,22 @@ export type ProjectFormDefaults = {
   handoverDate?: string | Date | null
   description?: string | null
   paymentPlan?: string | null
+  link?: string | null
 }
 
 function toFormValues(defaultValues?: ProjectFormDefaults): ProjectFormValues {
+  const { quarter, year } = dateToQuarter(defaultValues?.handoverDate)
   return {
     name: defaultValues?.name ?? "",
     developer: defaultValues?.developer ?? "",
     community: defaultValues?.community ?? "",
     location: defaultValues?.location ?? "",
     status: defaultValues?.status ?? "OFF_PLAN",
-    handoverDate: defaultValues?.handoverDate
-      ? new Date(defaultValues.handoverDate).toISOString().slice(0, 10)
-      : "",
+    handoverQuarter: quarter,
+    handoverYear: year,
     description: defaultValues?.description ?? "",
     paymentPlan: defaultValues?.paymentPlan ?? "",
+    link: defaultValues?.link ?? "",
   }
 }
 
@@ -81,11 +90,13 @@ export function ProjectForm({
           community: values.community,
           location: values.location,
           status: values.status,
-          handoverDate: values.handoverDate
-            ? new Date(values.handoverDate)
-            : null,
+          handoverDate: quarterToDate(
+            values.handoverQuarter,
+            values.handoverYear
+          ),
           description: values.description,
           paymentPlan: values.paymentPlan,
+          link: values.link,
         }
         await onSubmit(input)
       } catch (error) {
@@ -144,12 +155,33 @@ export function ProjectForm({
             )}
           />
         </FormField>
-        <FormField label="Handover Date (optional)" htmlFor="handoverDate">
-          <Input
-            id="handoverDate"
-            type="date"
-            {...form.register("handoverDate")}
-          />
+        <FormField label="Handover Date (optional)">
+          <div className="flex gap-2">
+            <Controller
+              control={form.control}
+              name="handoverQuarter"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Quarter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {quarterValues.map((quarter) => (
+                      <SelectItem key={quarter} value={quarter}>
+                        {`Q${quarter}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            <Input
+              type="number"
+              inputMode="numeric"
+              placeholder="Year"
+              {...form.register("handoverYear")}
+            />
+          </div>
         </FormField>
         <FormField
           label="Payment Plan (optional)"
@@ -160,6 +192,18 @@ export function ProjectForm({
             id="paymentPlan"
             placeholder="e.g. 60/40"
             {...form.register("paymentPlan")}
+          />
+        </FormField>
+        <FormField
+          label="Link (optional)"
+          htmlFor="link"
+          className="sm:col-span-2"
+        >
+          <Input
+            id="link"
+            type="url"
+            placeholder="https://..."
+            {...form.register("link")}
           />
         </FormField>
         <FormField

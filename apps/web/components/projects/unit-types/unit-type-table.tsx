@@ -10,7 +10,7 @@ import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { DeleteUnitTypeDialog } from "@/components/projects/unit-types/delete-unit-type-dialog"
 import { UnitTypeFormDialog } from "@/components/projects/unit-types/unit-type-form-dialog"
-import { formatArea, formatPrice, formatUnitCategory } from "@/lib/format"
+import { formatArea, formatPrice, formatUnitTypeName } from "@/lib/format"
 import type { PlainUnitType } from "@/lib/data/serialize"
 
 export function UnitTypeTable({
@@ -48,7 +48,8 @@ export function UnitTypeTable({
             <TableBody>
               {unitTypes.map((unit) => {
                 const label =
-                  unit.label?.trim() || formatUnitCategory(unit.category)
+                  unit.label?.trim() ||
+                  formatUnitTypeName(unit.propertyType, unit.bedrooms)
                 return (
                   <TableRow key={unit.id}>
                     <TableCell className="font-medium">{label}</TableCell>

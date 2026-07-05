@@ -1,15 +1,10 @@
 import { z } from "zod"
 
-export const unitCategoryValues = [
-  "STUDIO",
-  "ONE_BR",
-  "TWO_BR",
-  "THREE_BR",
-  "FOUR_BR",
-  "FIVE_BR_PLUS",
-  "PENTHOUSE",
+export const propertyTypeValues = [
+  "APARTMENT",
   "TOWNHOUSE",
   "VILLA",
+  "PENTHOUSE",
   "DUPLEX",
   "OFFICE",
   "RETAIL",
@@ -17,7 +12,7 @@ export const unitCategoryValues = [
 ] as const
 
 export const unitTypeSchema = z.object({
-  category: z.enum(unitCategoryValues),
+  propertyType: z.enum(propertyTypeValues),
   label: z.string().trim().max(120).optional().or(z.literal("")),
   unitCount: z.coerce.number().int().min(0).optional().nullable(),
   startingPrice: z.coerce.number().positive(),

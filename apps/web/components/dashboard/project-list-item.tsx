@@ -7,10 +7,34 @@ import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { StatusBadge } from "@/components/status-badge"
 import type { ProjectCard as ProjectCardData } from "@/lib/data/projects"
-import { formatPrice } from "@/lib/format"
+import type { PlainUnitType } from "@/lib/data/serialize"
+import { formatAreaRange, formatPrice, formatUnitTypeName } from "@/lib/format"
 import { FavoriteButton } from "./favorite-button"
 
+function inventoryBreakdown(unitTypes: PlainUnitType[]) {
+  const totals = new Map<
+    string,
+    { propertyType: PlainUnitType["propertyType"]; bedrooms: number | null; count: number }
+  >()
+  for (const unit of unitTypes) {
+    const key = `${unit.propertyType}:${unit.bedrooms ?? ""}`
+    const existing = totals.get(key)
+    if (existing) {
+      existing.count += unit.unitCount ?? 0
+    } else {
+      totals.set(key, {
+        propertyType: unit.propertyType,
+        bedrooms: unit.bedrooms,
+        count: unit.unitCount ?? 0,
+      })
+    }
+  }
+  return Array.from(totals.values())
+}
+
 export function ProjectListItem({ project }: { project: ProjectCardData }) {
+  const breakdown = inventoryBreakdown(project.unitTypes)
+
   return (
     <Link href={`/projects/${project.id}`} className="block">
       <Card className="flex-col gap-0 overflow-hidden p-0 transition-all hover:shadow-md sm:flex-row sm:items-stretch">
@@ -69,9 +93,48 @@ export function ProjectListItem({ project }: { project: ProjectCardData }) {
           </p>
         </div>
 
-        <div className="hidden w-20 shrink-0 items-center justify-center gap-1 border-l border-border px-4 py-4 text-sm font-medium text-muted-foreground sm:flex">
-          <LayersIcon className="size-3.5" />
-          {project.unitTypeCount}
+        <div className="hidden min-w-0 flex-col items-start justify-start gap-1.5 border-l border-border px-4 py-4 sm:flex sm:w-40 sm:shrink-0">
+          <div>
+            <p className="text-xs text-muted-foreground">BUA</p>
+            <p className="truncate text-sm font-medium">
+              {formatAreaRange(project.buaRange) ?? "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Plot</p>
+            <p className="truncate text-sm font-medium">
+              {formatAreaRange(project.plotSizeRange) ?? "—"}
+            </p>
+          </div>
+        </div>
+
+        <div className="hidden min-w-0 flex-col items-start justify-start gap-1.5 border-l border-border px-4 py-4 sm:flex sm:w-56 sm:shrink-0">
+          <div>
+            <p className="flex items-center gap-1 text-xs text-muted-foreground">
+              <LayersIcon className="size-3" />
+              Inventory
+            </p>
+            <p className="text-base font-semibold sm:text-lg">
+              {project.totalUnitCount != null
+                ? `${project.totalUnitCount} units`
+                : "—"}
+            </p>
+          </div>
+          {breakdown.length > 0 && (
+            <div className="flex w-full flex-col gap-0.5">
+              {breakdown.map(({ propertyType, bedrooms, count }) => (
+                <div
+                  key={`${propertyType}:${bedrooms ?? ""}`}
+                  className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
+                >
+                  <span>{formatUnitTypeName(propertyType, bedrooms)}</span>
+                  <span className="font-medium text-foreground tabular-nums">
+                    {count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </Card>
     </Link>

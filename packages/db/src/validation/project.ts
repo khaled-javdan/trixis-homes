@@ -15,6 +15,7 @@ export const projectSchema = z.object({
   handoverDate: z.coerce.date().optional().nullable(),
   description: z.string().trim().max(4000).optional().or(z.literal("")),
   paymentPlan: z.string().trim().max(500).optional().or(z.literal("")),
+  link: z.string().trim().max(2000).optional().or(z.literal("")),
 })
 
 export type ProjectInput = z.infer<typeof projectSchema>

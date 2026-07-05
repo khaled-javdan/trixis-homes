@@ -26,7 +26,7 @@ async function main() {
       unitTypes: {
         create: [
           {
-            category: "TWO_BR",
+            propertyType: "TOWNHOUSE",
             label: "2BR Townhouse",
             startingPrice: 1950000,
             size: 1450,
@@ -37,7 +37,7 @@ async function main() {
             parking: 2,
           },
           {
-            category: "THREE_BR",
+            propertyType: "TOWNHOUSE",
             label: "3BR Townhouse",
             startingPrice: 2900000,
             size: 2100,
@@ -48,7 +48,7 @@ async function main() {
             parking: 2,
           },
           {
-            category: "FOUR_BR",
+            propertyType: "VILLA",
             label: "4BR Villa",
             startingPrice: 4200000,
             size: 3200,
@@ -87,7 +87,7 @@ async function main() {
       unitTypes: {
         create: [
           {
-            category: "ONE_BR",
+            propertyType: "APARTMENT",
             startingPrice: 1450000,
             size: 850,
             bedrooms: 1,
@@ -95,7 +95,7 @@ async function main() {
             parking: 1,
           },
           {
-            category: "TWO_BR",
+            propertyType: "APARTMENT",
             startingPrice: 2350000,
             size: 1250,
             bedrooms: 2,
@@ -103,7 +103,7 @@ async function main() {
             parking: 1,
           },
           {
-            category: "PENTHOUSE",
+            propertyType: "PENTHOUSE",
             startingPrice: 6800000,
             size: 3400,
             bedrooms: 4,
@@ -138,7 +138,7 @@ async function main() {
       unitTypes: {
         create: [
           {
-            category: "TOWNHOUSE",
+            propertyType: "TOWNHOUSE",
             label: "3BR Townhouse",
             startingPrice: 3100000,
             size: 2250,
@@ -149,7 +149,7 @@ async function main() {
             parking: 2,
           },
           {
-            category: "VILLA",
+            propertyType: "VILLA",
             label: "5BR Villa",
             startingPrice: 7500000,
             size: 5200,
@@ -186,7 +186,7 @@ async function main() {
       unitTypes: {
         create: [
           {
-            category: "STUDIO",
+            propertyType: "APARTMENT",
             startingPrice: 620000,
             size: 450,
             bedrooms: 0,
@@ -194,7 +194,7 @@ async function main() {
             parking: 1,
           },
           {
-            category: "ONE_BR",
+            propertyType: "APARTMENT",
             startingPrice: 890000,
             size: 720,
             bedrooms: 1,

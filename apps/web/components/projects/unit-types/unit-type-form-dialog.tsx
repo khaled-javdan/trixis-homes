@@ -26,15 +26,15 @@ import { Textarea } from "@workspace/ui/components/textarea"
 
 import { FormField } from "@/components/form-field"
 import { createUnitType, updateUnitType } from "@/lib/actions/unit-types"
-import { DIRHAM_SIGN, formatUnitCategory } from "@/lib/format"
+import { DIRHAM_SIGN, formatPropertyType } from "@/lib/format"
 import type { PlainUnitType } from "@/lib/data/serialize"
 import {
-  unitCategoryValues,
+  propertyTypeValues,
   type UnitTypeInput,
 } from "@workspace/db/validation/unit-type"
 
 type FormValues = {
-  category: (typeof unitCategoryValues)[number]
+  propertyType: (typeof propertyTypeValues)[number]
   label: string
   unitCount: string
   startingPrice: string
@@ -50,7 +50,7 @@ type FormValues = {
 
 function toFormValues(unit?: PlainUnitType): FormValues {
   return {
-    category: unit?.category ?? "STUDIO",
+    propertyType: unit?.propertyType ?? "APARTMENT",
     label: unit?.label ?? "",
     unitCount: unit?.unitCount != null ? String(unit.unitCount) : "",
     startingPrice:
@@ -68,7 +68,7 @@ function toFormValues(unit?: PlainUnitType): FormValues {
 
 function toInput(values: FormValues): UnitTypeInput {
   return {
-    category: values.category,
+    propertyType: values.propertyType,
     label: values.label,
     unitCount: values.unitCount ? Number(values.unitCount) : null,
     startingPrice: Number(values.startingPrice),
@@ -158,19 +158,19 @@ export function UnitTypeFormDialog({
           className="flex flex-col gap-4"
         >
           <div className="grid gap-4 sm:grid-cols-3">
-            <FormField label="Unit Type">
+            <FormField label="Property Type">
               <Controller
                 control={form.control}
-                name="category"
+                name="propertyType"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full" ref={firstFieldRef}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {unitCategoryValues.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {formatUnitCategory(category)}
+                      {propertyTypeValues.map((propertyType) => (
+                        <SelectItem key={propertyType} value={propertyType}>
+                          {formatPropertyType(propertyType)}
                         </SelectItem>
                       ))}
                     </SelectContent>

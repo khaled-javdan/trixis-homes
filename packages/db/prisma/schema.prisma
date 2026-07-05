@@ -15,16 +15,11 @@ enum ProjectStatus {
   READY
 }
 
-enum UnitCategory {
-  STUDIO
-  ONE_BR
-  TWO_BR
-  THREE_BR
-  FOUR_BR
-  FIVE_BR_PLUS
-  PENTHOUSE
+enum PropertyType {
+  APARTMENT
   TOWNHOUSE
   VILLA
+  PENTHOUSE
   DUPLEX
   OFFICE
   RETAIL
@@ -45,10 +40,13 @@ model Project {
   developer    String
   community    String?
   location     String
+  latitude     Float?
+  longitude    Float?
   status       ProjectStatus @default(OFF_PLAN)
   handoverDate DateTime?
   description  String?
   paymentPlan  String?
+  link         String?
   isFavorite   Boolean       @default(false)
 
   unitTypes   UnitType[]
@@ -68,7 +66,7 @@ model UnitType {
   id            String       @id @default(cuid())
   projectId     String
   project       Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  category      UnitCategory
+  propertyType  PropertyType @default(APARTMENT)
   label         String?
   unitCount     Int?
   startingPrice Decimal      @db.Decimal(14, 2)

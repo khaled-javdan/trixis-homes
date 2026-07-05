@@ -2,7 +2,7 @@ import {
   formatDate,
   formatPriceWithSymbol,
   formatProjectStatus,
-  formatUnitCategory,
+  formatUnitTypeName,
 } from "@/lib/format"
 import { getCoverImageUrl, type PlainProject } from "@/lib/data/serialize"
 
@@ -40,7 +40,7 @@ export function generateFlashcardForProject(project: PlainProject): Flashcard {
       status: formatProjectStatus(project.status),
       unitTypesSummary: project.unitTypes.map(
         (unit) =>
-          `${unit.label?.trim() || formatUnitCategory(unit.category)} — ${formatPriceWithSymbol(unit.startingPrice)}`
+          `${unit.label?.trim() || formatUnitTypeName(unit.propertyType, unit.bedrooms)} — ${formatPriceWithSymbol(unit.startingPrice)}`
       ),
       startingPrice,
       paymentPlan: project.paymentPlan,

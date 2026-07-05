@@ -48,7 +48,7 @@ export default async function DashboardPage({
     (value) => value !== undefined && value !== ""
   )
 
-  const view: DashboardView = params.view === "list" ? "list" : "grid"
+  const view: DashboardView = params.view === "grid" ? "grid" : "list"
 
   return (
     <div className="flex flex-col gap-6">

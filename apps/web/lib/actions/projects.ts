@@ -11,15 +11,21 @@ import {
 import type { ProjectInput } from "@workspace/db/validation/project"
 
 import { toProjectData } from "@/lib/actions/prisma-mappers"
+import { geocodeLocation } from "@/lib/geocode"
 
 export async function createProject(input: ProjectInput) {
-  const project = await prisma.project.create({ data: toProjectData(input) })
+  const project = await prisma.project.create({
+    data: await toProjectData(input),
+  })
   revalidatePath("/")
   return { id: project.id }
 }
 
 export async function updateProject(id: string, input: ProjectInput) {
-  await prisma.project.update({ where: { id }, data: toProjectData(input) })
+  await prisma.project.update({
+    where: { id },
+    data: await toProjectData(input),
+  })
   revalidatePath("/")
   revalidatePath(`/projects/${id}`)
 }
@@ -52,6 +58,28 @@ export async function toggleFavorite(id: string, isFavorite: boolean) {
   revalidatePath(`/projects/${id}`)
 }
 
+export async function setProjectCoordinates(
+  id: string,
+  latitude: number,
+  longitude: number
+) {
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    longitude < -180 ||
+    longitude > 180
+  ) {
+    throw new Error("Invalid coordinates")
+  }
+  await prisma.project.update({
+    where: { id },
+    data: { latitude, longitude },
+  })
+  revalidatePath(`/projects/${id}`)
+}
+
 export async function duplicateProject(id: string) {
   const project = await prisma.project.findUnique({
     where: { id },
@@ -65,14 +93,17 @@ export async function duplicateProject(id: string) {
       developer: project.developer,
       community: project.community,
       location: project.location,
+      latitude: project.latitude,
+      longitude: project.longitude,
       status: project.status,
       handoverDate: project.handoverDate,
       description: project.description,
       paymentPlan: project.paymentPlan,
+      link: project.link,
       isFavorite: false,
       unitTypes: {
         create: project.unitTypes.map((unit) => ({
-          category: unit.category,
+          propertyType: unit.propertyType,
           label: unit.label,
           unitCount: unit.unitCount,
           startingPrice: unit.startingPrice,
@@ -112,9 +143,10 @@ export async function exportProject(id: string): Promise<ProjectExport> {
       handoverDate: project.handoverDate,
       description: project.description,
       paymentPlan: project.paymentPlan,
+      link: project.link,
       isFavorite: project.isFavorite,
       unitTypes: project.unitTypes.map((unit) => ({
-        category: unit.category,
+        propertyType: unit.propertyType,
         label: unit.label,
         unitCount: unit.unitCount,
         startingPrice: unit.startingPrice.toNumber(),
@@ -138,6 +170,11 @@ export async function exportProject(id: string): Promise<ProjectExport> {
 export async function importProject(data: unknown) {
   const parsed = projectExportSchema.parse(data)
   const { project } = parsed
+  const coordinates = await geocodeLocation(
+    [project.location, project.community, "United Arab Emirates"]
+      .filter(Boolean)
+      .join(", ")
+  )
 
   const created = await prisma.project.create({
     data: {
@@ -145,14 +182,17 @@ export async function importProject(data: unknown) {
       developer: project.developer,
       community: project.community ?? null,
       location: project.location,
+      latitude: coordinates?.latitude ?? null,
+      longitude: coordinates?.longitude ?? null,
       status: project.status,
       handoverDate: project.handoverDate ?? null,
       description: project.description ?? null,
       paymentPlan: project.paymentPlan ?? null,
+      link: project.link ?? null,
       isFavorite: false,
       unitTypes: {
         create: project.unitTypes.map((unit) => ({
-          category: unit.category,
+          propertyType: unit.propertyType,
           label: unit.label ?? null,
           unitCount: unit.unitCount ?? null,
           startingPrice: unit.startingPrice,
