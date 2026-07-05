@@ -109,6 +109,7 @@ model Attachment {
   contentType String
   size        Int
   category    AttachmentCategory @default(OTHER)
+  isCover     Boolean            @default(false)
 
   uploadedAt DateTime @default(now())
 

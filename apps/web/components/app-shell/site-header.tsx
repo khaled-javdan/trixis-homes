@@ -1,5 +1,6 @@
+import Image from "next/image"
 import Link from "next/link"
-import { Building2Icon, PlusIcon, SparklesIcon } from "lucide-react"
+import { PlusIcon, SparklesIcon } from "lucide-react"
 
 import { ButtonLink } from "@/components/button-link"
 import { getProjectPickerOptions } from "@/lib/data/study"
@@ -13,12 +14,16 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Building2Icon className="size-4.5" />
-          </span>
-          <span className="hidden font-semibold tracking-tight sm:inline">
-            Trixis Homes
+        <Link href="/" className="flex shrink-0 items-center">
+          <span className="flex h-10 items-center rounded-md bg-white px-2 py-1.5">
+            <Image
+              src="/logo.svg"
+              alt="Trixis Homes"
+              width={105}
+              height={74}
+              priority
+              className="h-full w-auto"
+            />
           </span>
         </Link>
 

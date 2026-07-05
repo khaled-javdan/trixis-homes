@@ -3,8 +3,9 @@ import type { ProjectStatus } from "@workspace/db"
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters"
 import { EmptyState } from "@/components/dashboard/empty-state"
 import { ProjectCard } from "@/components/dashboard/project-card"
+import { ProjectListItem } from "@/components/dashboard/project-list-item"
 import { StatsBar } from "@/components/dashboard/stats-bar"
-import { ImportProjectDialog } from "@/components/projects/import-project-dialog"
+import { ViewToggle, type DashboardView } from "@/components/dashboard/view-toggle"
 import {
   getDashboardStats,
   getFilterOptions,
@@ -18,6 +19,7 @@ type SearchParams = Promise<{
   status?: string
   minPrice?: string
   maxPrice?: string
+  view?: string
 }>
 
 export default async function DashboardPage({
@@ -46,6 +48,8 @@ export default async function DashboardPage({
     (value) => value !== undefined && value !== ""
   )
 
+  const view: DashboardView = params.view === "list" ? "list" : "grid"
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -63,11 +67,19 @@ export default async function DashboardPage({
             locations={filterOptions.locations}
           />
         </div>
-        <ImportProjectDialog />
+        <div className="flex items-center gap-2">
+          <ViewToggle view={view} />
+        </div>
       </div>
 
       {projects.length === 0 ? (
         <EmptyState hasFilters={hasFilters} />
+      ) : view === "list" ? (
+        <div className="flex flex-col gap-3">
+          {projects.map((project) => (
+            <ProjectListItem key={project.id} project={project} />
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (

@@ -16,6 +16,21 @@ export async function createAttachmentRecord(input: AttachmentInput) {
   return { id: attachment.id }
 }
 
+export async function setCoverAttachment(id: string, projectId: string) {
+  await prisma.$transaction([
+    prisma.attachment.updateMany({
+      where: { projectId, isCover: true },
+      data: { isCover: false },
+    }),
+    prisma.attachment.update({
+      where: { id },
+      data: { isCover: true },
+    }),
+  ])
+  revalidatePath(`/projects/${projectId}`)
+  revalidatePath("/")
+}
+
 export async function deleteAttachment(id: string, projectId: string) {
   const attachment = await prisma.attachment.findUnique({ where: { id } })
   if (!attachment) return

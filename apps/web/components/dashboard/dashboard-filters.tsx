@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { FilterIcon, SearchIcon } from "lucide-react"
+import { FilterIcon, SearchIcon, XIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
@@ -66,6 +66,14 @@ export function DashboardFilters({
     searchParams.get("minPrice") ||
     searchParams.get("maxPrice")
 
+  const hasAnyFilters = hasActiveFilters || q
+
+  function handleReset() {
+    setQ("")
+    setSheetOpen(false)
+    router.replace(pathname, { scroll: false })
+  }
+
   const fields = (
     <>
       <Select
@@ -119,13 +127,14 @@ export function DashboardFilters({
         </SelectContent>
       </Select>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2" key={searchParams.toString()}>
         <Input
           type="number"
           inputMode="numeric"
           placeholder="Min price"
           defaultValue={searchParams.get("minPrice") ?? ""}
           onBlur={(event) => updateParam("minPrice", event.target.value)}
+          className="w-32 sm:w-36"
         />
         <Input
           type="number"
@@ -133,6 +142,7 @@ export function DashboardFilters({
           placeholder="Max price"
           defaultValue={searchParams.get("maxPrice") ?? ""}
           onBlur={(event) => updateParam("maxPrice", event.target.value)}
+          className="w-32 sm:w-36"
         />
       </div>
     </>
@@ -140,7 +150,7 @@ export function DashboardFilters({
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-      <div className="relative flex-1">
+      <div className="relative w-full sm:max-w-xs">
         <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={q}
@@ -154,6 +164,17 @@ export function DashboardFilters({
         {fields}
       </div>
 
+      {hasAnyFilters ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="hidden sm:inline-flex"
+          onClick={handleReset}
+        >
+          <XIcon /> Reset
+        </Button>
+      ) : null}
+
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetTrigger
           render={
@@ -166,7 +187,14 @@ export function DashboardFilters({
           <SheetHeader>
             <SheetTitle>Filters</SheetTitle>
           </SheetHeader>
-          <div className="flex flex-col gap-3 px-4 pb-4">{fields}</div>
+          <div className="flex flex-col gap-3 px-4 pb-4">
+            {fields}
+            {hasAnyFilters ? (
+              <Button variant="ghost" onClick={handleReset}>
+                <XIcon /> Reset filters
+              </Button>
+            ) : null}
+          </div>
         </SheetContent>
       </Sheet>
     </div>

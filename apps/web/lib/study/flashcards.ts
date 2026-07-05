@@ -1,6 +1,6 @@
 import {
   formatDate,
-  formatPrice,
+  formatPriceWithSymbol,
   formatProjectStatus,
   formatUnitCategory,
 } from "@/lib/format"
@@ -24,7 +24,9 @@ export type Flashcard = {
 
 export function generateFlashcardForProject(project: PlainProject): Flashcard {
   const prices = project.unitTypes.map((unit) => unit.startingPrice)
-  const startingPrice = prices.length ? formatPrice(Math.min(...prices)) : null
+  const startingPrice = prices.length
+    ? formatPriceWithSymbol(Math.min(...prices))
+    : null
 
   return {
     id: project.id,
@@ -38,7 +40,7 @@ export function generateFlashcardForProject(project: PlainProject): Flashcard {
       status: formatProjectStatus(project.status),
       unitTypesSummary: project.unitTypes.map(
         (unit) =>
-          `${unit.label?.trim() || formatUnitCategory(unit.category)} — ${formatPrice(unit.startingPrice)}`
+          `${unit.label?.trim() || formatUnitCategory(unit.category)} — ${formatPriceWithSymbol(unit.startingPrice)}`
       ),
       startingPrice,
       paymentPlan: project.paymentPlan,

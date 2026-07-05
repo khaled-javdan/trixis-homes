@@ -26,7 +26,7 @@ import { Textarea } from "@workspace/ui/components/textarea"
 
 import { FormField } from "@/components/form-field"
 import { createUnitType, updateUnitType } from "@/lib/actions/unit-types"
-import { formatUnitCategory } from "@/lib/format"
+import { DIRHAM_SIGN, formatUnitCategory } from "@/lib/format"
 import type { PlainUnitType } from "@/lib/data/serialize"
 import {
   unitCategoryValues,
@@ -190,7 +190,10 @@ export function UnitTypeFormDialog({
               />
             </FormField>
 
-            <FormField label="Starting Price (AED)" htmlFor="startingPrice">
+            <FormField
+              label={`Starting Price (${DIRHAM_SIGN})`}
+              htmlFor="startingPrice"
+            >
               <Input
                 id="startingPrice"
                 type="number"

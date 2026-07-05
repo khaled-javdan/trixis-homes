@@ -26,10 +26,17 @@ export type PlainNote = {
 }
 
 export function getCoverImageUrl(
-  attachments: { category: Attachment["category"]; url: string; uploadedAt: string }[]
+  attachments: {
+    category: Attachment["category"]
+    url: string
+    uploadedAt: string
+    isCover: boolean
+  }[]
 ): string | null {
   const images = attachments.filter((attachment) => attachment.category === "IMAGE")
   if (images.length === 0) return null
+  const explicitCover = images.find((image) => image.isCover)
+  if (explicitCover) return explicitCover.url
   return [...images].sort((a, b) => a.uploadedAt.localeCompare(b.uploadedAt))[0]!.url
 }
 
@@ -41,6 +48,7 @@ export type PlainAttachment = {
   contentType: string
   size: number
   category: Attachment["category"]
+  isCover: boolean
   uploadedAt: string
 }
 
@@ -106,6 +114,7 @@ export function toPlainAttachment(attachment: Attachment): PlainAttachment {
     contentType: attachment.contentType,
     size: attachment.size,
     category: attachment.category,
+    isCover: attachment.isCover,
     uploadedAt: attachment.uploadedAt.toISOString(),
   }
 }

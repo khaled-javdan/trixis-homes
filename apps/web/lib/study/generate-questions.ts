@@ -1,7 +1,7 @@
 import {
   formatArea,
   formatDate,
-  formatPrice,
+  formatPriceWithSymbol,
   formatProjectStatus,
   formatUnitCategory,
 } from "@/lib/format"
@@ -119,7 +119,7 @@ const questionTemplates: QuestionTemplate[] = [
           id: `${project.id}:overall-starting-price`,
           category: "Starting Price",
           prompt: `What is the starting price at ${project.name}?`,
-          answer: `Starting from ${formatPrice(min)}`,
+          answer: `Starting from ${formatPriceWithSymbol(min)}`,
         },
       ]
     },
@@ -132,7 +132,7 @@ const questionTemplates: QuestionTemplate[] = [
         id: `${unit.id}:starting-price`,
         category: "Unit Starting Price",
         prompt: `What is the starting price of the ${unitLabel(unit)} in ${project.name}?`,
-        answer: `Starting from ${formatPrice(unit.startingPrice)}`,
+        answer: `Starting from ${formatPriceWithSymbol(unit.startingPrice)}`,
       })),
   },
   {

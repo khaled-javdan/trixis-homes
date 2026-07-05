@@ -30,14 +30,40 @@ export function formatProjectStatus(status: ProjectStatus) {
   return projectStatusLabels[status]
 }
 
+// The official UAE Dirham symbol (Central Bank of the UAE, March 2025;
+// assigned U+20C3 in Unicode 18). Most fonts don't render the glyph yet, so
+// UI that needs it visually should render <DirhamSymbol /> instead of this
+// character — this is for plain-text-only contexts (quiz answers, etc.).
+export const DIRHAM_SIGN = "⃃"
+
 export function formatPrice(value: number | null | undefined) {
   if (value == null) return null
-  return `AED ${Math.round(value).toLocaleString("en-US")}`
+  return Math.round(value).toLocaleString("en-US")
 }
 
 export function formatPriceCompact(value: number | null | undefined) {
   if (value == null) return null
-  return `AED ${Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value)}`
+  return Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value)
+}
+
+export function formatPriceWithSymbol(value: number | null | undefined) {
+  const formatted = formatPrice(value)
+  return formatted == null ? null : `${DIRHAM_SIGN} ${formatted}`
+}
+
+export function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`
+  const units = ["KB", "MB", "GB"]
+  let value = bytes / 1024
+  let unitIndex = 0
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024
+    unitIndex += 1
+  }
+  return `${value.toFixed(value < 10 ? 1 : 0)} ${units[unitIndex]}`
 }
 
 export function formatArea(value: number | null | undefined) {

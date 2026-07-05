@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Building2Icon, LayersIcon, MapPinIcon } from "lucide-react"
 
 import { Card, CardContent } from "@workspace/ui/components/card"
+import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { StatusBadge } from "@/components/status-badge"
 import type { ProjectCard as ProjectCardData } from "@/lib/data/projects"
@@ -49,7 +50,8 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
           <div className="flex items-end justify-between gap-2 border-t border-border pt-3">
             <div>
               <p className="text-xs text-muted-foreground">Starting Price</p>
-              <p className="text-lg font-semibold text-primary">
+              <p className="flex items-center gap-0.5 text-lg font-semibold text-primary">
+                <DirhamSymbol />
                 {formatPrice(project.startingPrice) ?? "—"}
               </p>
             </div>

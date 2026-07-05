@@ -27,7 +27,7 @@ import {
   createProjectsFromExtraction,
   extractProjectsFromText,
 } from "@/lib/actions/ai-import"
-import { formatProjectStatus, formatUnitCategory } from "@/lib/format"
+import { DIRHAM_SIGN, formatProjectStatus, formatUnitCategory } from "@/lib/format"
 import { projectStatusValues } from "@workspace/db/validation/project"
 import type { ProjectInput } from "@workspace/db/validation/project"
 import {
@@ -489,7 +489,7 @@ export function AiImportFlow() {
                         }
                       />
                     </FormField>
-                    <FormField label="Price (AED)">
+                    <FormField label={`Price (${DIRHAM_SIGN})`}>
                       <Input
                         type="number"
                         required

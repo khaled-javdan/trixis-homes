@@ -54,7 +54,7 @@ export async function getProjectsForDashboard(
       unitTypes: true,
       attachments: {
         where: { category: "IMAGE" },
-        orderBy: { uploadedAt: "asc" },
+        orderBy: [{ isCover: "desc" }, { uploadedAt: "asc" }],
         take: 1,
       },
     },

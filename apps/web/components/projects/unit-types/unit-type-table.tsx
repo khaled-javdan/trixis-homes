@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { DeleteUnitTypeDialog } from "@/components/projects/unit-types/delete-unit-type-dialog"
 import { UnitTypeFormDialog } from "@/components/projects/unit-types/unit-type-form-dialog"
@@ -53,7 +54,10 @@ export function UnitTypeTable({
                     <TableCell className="font-medium">{label}</TableCell>
                     <TableCell>{unit.unitCount ?? "—"}</TableCell>
                     <TableCell className="font-semibold text-primary">
-                      {formatPrice(unit.startingPrice)}
+                      <span className="flex items-center gap-0.5">
+                        <DirhamSymbol />
+                        {formatPrice(unit.startingPrice)}
+                      </span>
                     </TableCell>
                     <TableCell>{formatArea(unit.size) ?? "—"}</TableCell>
                     <TableCell>
