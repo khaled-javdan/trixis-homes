@@ -7,11 +7,17 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "turbo format",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "db:generate": "dotenv -e apps/web/.env.local -- pnpm --filter @workspace/db run db:generate",
+    "db:migrate": "dotenv -e apps/web/.env.local -- pnpm --filter @workspace/db run db:migrate:dev",
+    "db:migrate:deploy": "dotenv -e apps/web/.env.local -- pnpm --filter @workspace/db run db:migrate:deploy",
+    "db:seed": "dotenv -e apps/web/.env.local -- pnpm --filter @workspace/db run db:seed",
+    "db:studio": "dotenv -e apps/web/.env.local -- pnpm --filter @workspace/db run db:studio"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "dotenv-cli": "^11.0.0",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "turbo": "^2.9.18",

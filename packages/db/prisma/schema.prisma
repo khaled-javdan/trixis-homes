@@ -1,0 +1,116 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProjectStatus {
+  OFF_PLAN
+  UNDER_CONSTRUCTION
+  READY
+}
+
+enum UnitCategory {
+  STUDIO
+  ONE_BR
+  TWO_BR
+  THREE_BR
+  FOUR_BR
+  FIVE_BR_PLUS
+  PENTHOUSE
+  TOWNHOUSE
+  VILLA
+  DUPLEX
+  OFFICE
+  RETAIL
+  OTHER
+}
+
+enum AttachmentCategory {
+  BROCHURE
+  FLOOR_PLAN
+  IMAGE
+  PRICE_LIST
+  OTHER
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  name         String
+  developer    String
+  community    String?
+  location     String
+  status       ProjectStatus @default(OFF_PLAN)
+  handoverDate DateTime?
+  description  String?
+  paymentPlan  String?
+  isFavorite   Boolean       @default(false)
+
+  unitTypes   UnitType[]
+  notes       Note[]
+  attachments Attachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isFavorite])
+  @@index([developer])
+  @@index([location])
+  @@index([status])
+}
+
+model UnitType {
+  id            String       @id @default(cuid())
+  projectId     String
+  project       Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category      UnitCategory
+  label         String?
+  unitCount     Int?
+  startingPrice Decimal      @db.Decimal(14, 2)
+  size          Decimal?     @db.Decimal(10, 2)
+  plotSize      Decimal?     @db.Decimal(10, 2)
+  bua           Decimal?     @db.Decimal(10, 2)
+  bedrooms      Int?
+  bathrooms     Int?
+  parking       Int?
+  paymentPlan   String?
+  notes         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  body      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model Attachment {
+  id          String             @id @default(cuid())
+  projectId   String
+  project     Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  filename    String
+  url         String
+  pathname    String
+  contentType String
+  size        Int
+  category    AttachmentCategory @default(OTHER)
+
+  uploadedAt DateTime @default(now())
+
+  @@index([projectId])
+}
