@@ -92,6 +92,27 @@ export function formatAreaRange(
   return `${Math.round(range.min).toLocaleString("en-US")}–${Math.round(range.max).toLocaleString("en-US")} sq ft`
 }
 
+// Areas are stored in sq ft everywhere; this is only for converting values
+// entered/displayed in sq m back and forth in the unit type form.
+export const SQFT_PER_SQM = 10.7639
+
+export function sqftToSqm(value: number) {
+  return value / SQFT_PER_SQM
+}
+
+export function sqmToSqft(value: number) {
+  return value * SQFT_PER_SQM
+}
+
+export function formatAreaInUnit(
+  value: number | null | undefined,
+  unit: "ft" | "m"
+) {
+  if (value == null) return null
+  const converted = unit === "m" ? sqftToSqm(value) : value
+  return `${Math.round(converted).toLocaleString("en-US")} sq ${unit}`
+}
+
 export function formatDate(value: string | Date | null | undefined) {
   if (!value) return null
   const date = typeof value === "string" ? new Date(value) : value

@@ -1,3 +1,7 @@
+"use client"
+
+import * as React from "react"
+
 import {
   Table,
   TableBody,
@@ -6,11 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import { Button } from "@workspace/ui/components/button"
 import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { DeleteUnitTypeDialog } from "@/components/projects/unit-types/delete-unit-type-dialog"
 import { UnitTypeFormDialog } from "@/components/projects/unit-types/unit-type-form-dialog"
-import { formatArea, formatPrice, formatUnitTypeName } from "@/lib/format"
+import {
+  formatAreaInUnit,
+  formatPrice,
+  formatUnitTypeName,
+} from "@/lib/format"
 import type { PlainUnitType } from "@/lib/data/serialize"
 
 export function UnitTypeTable({
@@ -20,9 +29,29 @@ export function UnitTypeTable({
   projectId: string
   unitTypes: PlainUnitType[]
 }) {
+  const [areaUnit, setAreaUnit] = React.useState<"ft" | "m">("ft")
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2">
+        <div className="inline-flex rounded-lg border border-border p-0.5">
+          <Button
+            type="button"
+            size="xs"
+            variant={areaUnit === "ft" ? "secondary" : "ghost"}
+            onClick={() => setAreaUnit("ft")}
+          >
+            sq ft
+          </Button>
+          <Button
+            type="button"
+            size="xs"
+            variant={areaUnit === "m" ? "secondary" : "ghost"}
+            onClick={() => setAreaUnit("m")}
+          >
+            sq m
+          </Button>
+        </div>
         <UnitTypeFormDialog projectId={projectId} />
       </div>
 
@@ -39,6 +68,8 @@ export function UnitTypeTable({
                 <TableHead>Units</TableHead>
                 <TableHead>Starting Price</TableHead>
                 <TableHead>Size</TableHead>
+                <TableHead>BUA</TableHead>
+                <TableHead>Plot</TableHead>
                 <TableHead>Bed / Bath</TableHead>
                 <TableHead>Parking</TableHead>
                 <TableHead>Payment Plan</TableHead>
@@ -60,7 +91,15 @@ export function UnitTypeTable({
                         {formatPrice(unit.startingPrice)}
                       </span>
                     </TableCell>
-                    <TableCell>{formatArea(unit.size) ?? "—"}</TableCell>
+                    <TableCell>
+                      {formatAreaInUnit(unit.size, areaUnit) ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      {formatAreaInUnit(unit.bua, areaUnit) ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      {formatAreaInUnit(unit.plotSize, areaUnit) ?? "—"}
+                    </TableCell>
                     <TableCell>
                       {unit.bedrooms ?? "-"} / {unit.bathrooms ?? "-"}
                     </TableCell>

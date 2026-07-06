@@ -26,12 +26,29 @@ import { Textarea } from "@workspace/ui/components/textarea"
 
 import { FormField } from "@/components/form-field"
 import { createUnitType, updateUnitType } from "@/lib/actions/unit-types"
-import { DIRHAM_SIGN, formatPropertyType } from "@/lib/format"
+import {
+  DIRHAM_SIGN,
+  formatPropertyType,
+  sqftToSqm,
+  sqmToSqft,
+} from "@/lib/format"
 import type { PlainUnitType } from "@/lib/data/serialize"
 import {
   propertyTypeValues,
   type UnitTypeInput,
 } from "@workspace/db/validation/unit-type"
+
+type AreaUnit = "ft" | "m"
+
+const AREA_FIELDS = ["size", "plotSize", "bua"] as const
+
+function convertAreaValue(value: string, from: AreaUnit, to: AreaUnit) {
+  if (!value || from === to) return value
+  const num = Number(value)
+  if (Number.isNaN(num)) return value
+  const converted = from === "ft" ? sqftToSqm(num) : sqmToSqft(num)
+  return String(Math.round(converted * 100) / 100)
+}
 
 type FormValues = {
   propertyType: (typeof propertyTypeValues)[number]
@@ -66,15 +83,21 @@ function toFormValues(unit?: PlainUnitType): FormValues {
   }
 }
 
-function toInput(values: FormValues): UnitTypeInput {
+function toInput(values: FormValues, areaUnit: AreaUnit): UnitTypeInput {
+  const toCanonicalArea = (value: string) => {
+    if (!value) return null
+    const num = Number(value)
+    if (Number.isNaN(num)) return null
+    return areaUnit === "m" ? sqmToSqft(num) : num
+  }
   return {
     propertyType: values.propertyType,
     label: values.label,
     unitCount: values.unitCount ? Number(values.unitCount) : null,
     startingPrice: Number(values.startingPrice),
-    size: values.size ? Number(values.size) : null,
-    plotSize: values.plotSize ? Number(values.plotSize) : null,
-    bua: values.bua ? Number(values.bua) : null,
+    size: toCanonicalArea(values.size),
+    plotSize: toCanonicalArea(values.plotSize),
+    bua: toCanonicalArea(values.bua),
     bedrooms: values.bedrooms ? Number(values.bedrooms) : null,
     bathrooms: values.bathrooms ? Number(values.bathrooms) : null,
     parking: values.parking ? Number(values.parking) : null,
@@ -93,13 +116,25 @@ export function UnitTypeFormDialog({
   const isEdit = Boolean(unit)
   const [open, setOpen] = React.useState(false)
   const [pending, startTransition] = React.useTransition()
+  const [areaUnit, setAreaUnit] = React.useState<AreaUnit>("ft")
   const firstFieldRef = React.useRef<HTMLButtonElement>(null)
   const form = useForm<FormValues>({ defaultValues: toFormValues(unit) })
+
+  function switchAreaUnit(next: AreaUnit) {
+    if (next === areaUnit) return
+    for (const fieldName of AREA_FIELDS) {
+      form.setValue(
+        fieldName,
+        convertAreaValue(form.getValues(fieldName), areaUnit, next)
+      )
+    }
+    setAreaUnit(next)
+  }
 
   function save(values: FormValues, keepOpen: boolean) {
     startTransition(async () => {
       try {
-        const input = toInput(values)
+        const input = toInput(values, areaUnit)
         if (isEdit && unit) {
           await updateUnitType(unit.id, projectId, input)
           toast.success("Unit type updated")
@@ -109,6 +144,7 @@ export function UnitTypeFormDialog({
           toast.success("Unit type added")
           if (keepOpen) {
             form.reset(toFormValues())
+            setAreaUnit("ft")
             firstFieldRef.current?.focus()
           } else {
             setOpen(false)
@@ -127,7 +163,10 @@ export function UnitTypeFormDialog({
       open={open}
       onOpenChange={(next) => {
         setOpen(next)
-        if (next) form.reset(toFormValues(unit))
+        if (next) {
+          form.reset(toFormValues(unit))
+          setAreaUnit("ft")
+        }
       }}
     >
       <DialogTrigger
@@ -201,10 +240,37 @@ export function UnitTypeFormDialog({
                 {...form.register("startingPrice", { required: true })}
               />
             </FormField>
-            <FormField label="Size (sq ft)" htmlFor="size">
+            <div className="flex items-center justify-between sm:col-span-3">
+              <p className="text-sm font-medium text-muted-foreground">
+                Area units
+              </p>
+              <div className="inline-flex rounded-lg border border-border p-0.5">
+                <Button
+                  type="button"
+                  size="xs"
+                  variant={areaUnit === "ft" ? "secondary" : "ghost"}
+                  onClick={() => switchAreaUnit("ft")}
+                >
+                  sq ft
+                </Button>
+                <Button
+                  type="button"
+                  size="xs"
+                  variant={areaUnit === "m" ? "secondary" : "ghost"}
+                  onClick={() => switchAreaUnit("m")}
+                >
+                  sq m
+                </Button>
+              </div>
+            </div>
+
+            <FormField label={`Size (sq ${areaUnit})`} htmlFor="size">
               <Input id="size" type="number" {...form.register("size")} />
             </FormField>
-            <FormField label="Plot Size (sq ft)" htmlFor="plotSize">
+            <FormField
+              label={`Plot Size (sq ${areaUnit})`}
+              htmlFor="plotSize"
+            >
               <Input
                 id="plotSize"
                 type="number"
@@ -212,7 +278,7 @@ export function UnitTypeFormDialog({
               />
             </FormField>
 
-            <FormField label="BUA (sq ft)" htmlFor="bua">
+            <FormField label={`BUA (sq ${areaUnit})`} htmlFor="bua">
               <Input id="bua" type="number" {...form.register("bua")} />
             </FormField>
             <FormField label="Bedrooms" htmlFor="bedrooms">

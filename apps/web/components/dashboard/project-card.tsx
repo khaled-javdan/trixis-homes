@@ -7,7 +7,7 @@ import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { StatusBadge } from "@/components/status-badge"
 import type { ProjectCard as ProjectCardData } from "@/lib/data/projects"
-import { formatAreaRange, formatPrice } from "@/lib/format"
+import { formatPrice } from "@/lib/format"
 import { FavoriteButton } from "./favorite-button"
 
 export function ProjectCard({ project }: { project: ProjectCardData }) {
@@ -70,18 +70,6 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
               <p className="text-xs text-muted-foreground">Payment Plan</p>
               <p className="truncate text-sm font-medium">
                 {project.paymentPlan ?? "—"}
-              </p>
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">BUA</p>
-              <p className="truncate text-sm font-medium">
-                {formatAreaRange(project.buaRange) ?? "—"}
-              </p>
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">Plot</p>
-              <p className="truncate text-sm font-medium">
-                {formatAreaRange(project.plotSizeRange) ?? "—"}
               </p>
             </div>
           </div>

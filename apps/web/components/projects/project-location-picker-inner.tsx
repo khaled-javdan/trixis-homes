@@ -73,7 +73,7 @@ export default function ProjectLocationPickerInner({
         We couldn&apos;t automatically detect coordinates for this location.
         Click on the map to place a pin, then save it.
       </p>
-      <div className="h-[32rem] w-full overflow-hidden rounded-lg border border-border">
+      <div className="relative isolate h-[32rem] w-full overflow-hidden rounded-lg border border-border">
         <MapContainer
           center={UAE_CENTER}
           zoom={7}

@@ -8,7 +8,7 @@ import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 import { StatusBadge } from "@/components/status-badge"
 import type { ProjectCard as ProjectCardData } from "@/lib/data/projects"
 import type { PlainUnitType } from "@/lib/data/serialize"
-import { formatAreaRange, formatPrice, formatUnitTypeName } from "@/lib/format"
+import { formatPrice, formatUnitTypeName } from "@/lib/format"
 import { FavoriteButton } from "./favorite-button"
 
 function inventoryBreakdown(unitTypes: PlainUnitType[]) {
@@ -91,21 +91,6 @@ export function ProjectListItem({ project }: { project: ProjectCardData }) {
           <p className="truncate text-base font-semibold sm:text-lg">
             {project.paymentPlan ?? "—"}
           </p>
-        </div>
-
-        <div className="hidden min-w-0 flex-col items-start justify-start gap-1.5 border-l border-border px-4 py-4 sm:flex sm:w-40 sm:shrink-0">
-          <div>
-            <p className="text-xs text-muted-foreground">BUA</p>
-            <p className="truncate text-sm font-medium">
-              {formatAreaRange(project.buaRange) ?? "—"}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Plot</p>
-            <p className="truncate text-sm font-medium">
-              {formatAreaRange(project.plotSizeRange) ?? "—"}
-            </p>
-          </div>
         </div>
 
         <div className="hidden min-w-0 flex-col items-start justify-start gap-1.5 border-l border-border px-4 py-4 sm:flex sm:w-56 sm:shrink-0">
