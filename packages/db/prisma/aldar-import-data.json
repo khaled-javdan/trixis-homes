@@ -1,0 +1,775 @@
+[
+  {
+    "name": "The Wilds Moringa Mansions",
+    "developer": "Aldar Properties",
+    "city": "Dubai",
+    "community": "The Wilds",
+    "location": "Dubai",
+    "handoverDate": "2029-06-30",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 10,
+    "promoPaymentPlan": "50/50",
+    "promoDownPaymentPercent": null,
+    "promotionNotes": "4% DLD waiver; Broker commission 5%",
+    "serviceCharge": 11,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "VILLA",
+        "bedrooms": 5,
+        "label": "5 Bedroom Mansion",
+        "unitCount": null,
+        "startingPrice": 38600000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "VILLA",
+        "bedrooms": 6,
+        "label": "6 Bedroom Mansion",
+        "unitCount": null,
+        "startingPrice": 50600000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "The Wilds Residences",
+    "developer": "Aldar Properties",
+    "city": "Dubai",
+    "community": "The Wilds",
+    "location": "Dubai",
+    "handoverDate": "2030-06-30",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 5,
+    "promoPaymentPlan": "50/50",
+    "promoDownPaymentPercent": null,
+    "promotionNotes": "4% DLD waiver",
+    "serviceCharge": 21,
+    "availableUnitsCount": 67,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 1,
+        "label": "1 Bedroom",
+        "unitCount": 29,
+        "startingPrice": 1559174.0,
+        "size": 84.65,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": 28,
+        "startingPrice": 2495900.0,
+        "size": 139.35,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom",
+        "unitCount": 8,
+        "startingPrice": 3391976.0,
+        "size": 202.65,
+        "notes": null
+      },
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 3,
+        "label": "3 Bedroom Duplex",
+        "unitCount": 2,
+        "startingPrice": 4137083.0,
+        "size": 292.4,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Athlon",
+    "developer": "Aldar Properties",
+    "city": "Dubai",
+    "community": "Athlon",
+    "location": "Dubai",
+    "handoverDate": "2028-06-30",
+    "paymentPlan": null,
+    "downPaymentPercent": null,
+    "promoPaymentPlan": "40/60",
+    "promoDownPaymentPercent": 10,
+    "promotionNotes": "4% DLD waiver; Broker commission 5%",
+    "serviceCharge": 7,
+    "availableUnitsCount": 30,
+    "unitTypes": [
+      {
+        "propertyType": "VILLA",
+        "bedrooms": 5,
+        "label": "5 Bedroom",
+        "unitCount": 23,
+        "startingPrice": 13582780.0,
+        "size": 575.84,
+        "notes": null
+      },
+      {
+        "propertyType": "VILLA",
+        "bedrooms": 6,
+        "label": "6 Bedroom",
+        "unitCount": 7,
+        "startingPrice": 17839835.0,
+        "size": 826.28,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "RISE by Athlon",
+    "developer": "Aldar Properties",
+    "city": "Dubai",
+    "community": "Athlon",
+    "location": "Dubai",
+    "handoverDate": "2029-12-31",
+    "paymentPlan": "60/40",
+    "downPaymentPercent": 10,
+    "promoPaymentPlan": "40/60",
+    "promoDownPaymentPercent": null,
+    "promotionNotes": "4% DLD waiver; Broker commission 5%",
+    "serviceCharge": 15.67,
+    "availableUnitsCount": 153,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 1,
+        "label": "1 Bedroom",
+        "unitCount": 30,
+        "startingPrice": 1536612.0,
+        "size": 92.97,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": 92,
+        "startingPrice": 2385198.0,
+        "size": 137.75,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Maid",
+        "unitCount": 1,
+        "startingPrice": 2877301.0,
+        "size": 159.08,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom + Maid",
+        "unitCount": 30,
+        "startingPrice": 3077818.0,
+        "size": 200.86,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Verdes by Haven",
+    "developer": "Aldar Properties",
+    "city": "Dubai",
+    "community": "Haven",
+    "location": "Dubai",
+    "handoverDate": "2028-09-30",
+    "paymentPlan": "60/40",
+    "downPaymentPercent": 20,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": null,
+    "serviceCharge": 13.5,
+    "availableUnitsCount": 25,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": 2,
+        "startingPrice": 2040848.0,
+        "size": 136.26,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom",
+        "unitCount": 11,
+        "startingPrice": 2705200.0,
+        "size": 177.59,
+        "notes": null
+      },
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 2,
+        "label": "2 Bedroom Duplex",
+        "unitCount": 12,
+        "startingPrice": 3036161.0,
+        "size": 253.94,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "The Beach House",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Fahid Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2029-12-31",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 15,
+    "promoPaymentPlan": "40/60",
+    "promoDownPaymentPercent": 5,
+    "promotionNotes": "2% ADM waiver; Broker commission 5%",
+    "serviceCharge": 31.84,
+    "availableUnitsCount": 49,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Maid",
+        "unitCount": 26,
+        "startingPrice": 4767803.0,
+        "size": 156.29,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": 1,
+        "startingPrice": 4920508.0,
+        "size": 136.91,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom + Maid",
+        "unitCount": 22,
+        "startingPrice": 5736886.0,
+        "size": 185.11,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Fahid Beach Residences",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Fahid Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2029-12-31",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 15,
+    "promoPaymentPlan": "40/60",
+    "promoDownPaymentPercent": 5,
+    "promotionNotes": "2% ADM waiver; Broker commission 5%",
+    "serviceCharge": null,
+    "availableUnitsCount": 16,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 1,
+        "label": "1 Bedroom",
+        "unitCount": 1,
+        "startingPrice": 5025643.0,
+        "size": 98.29,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Store",
+        "unitCount": 1,
+        "startingPrice": 7672829.0,
+        "size": 191.2,
+        "notes": null
+      },
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Store Duplex",
+        "unitCount": 14,
+        "startingPrice": 6637310.0,
+        "size": 152.74,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Fahid Beach Terraces",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Fahid Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2029-12-31",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 10,
+    "promoPaymentPlan": "40/60",
+    "promoDownPaymentPercent": 5,
+    "promotionNotes": "2% ADM waiver; Broker commission 5%",
+    "serviceCharge": 33.78,
+    "availableUnitsCount": 64,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": 4,
+        "startingPrice": 6960500.0,
+        "size": 178.96,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Maid",
+        "unitCount": 43,
+        "startingPrice": 7559500.0,
+        "size": 201.18,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom",
+        "unitCount": 1,
+        "startingPrice": 9372900.0,
+        "size": 276.75,
+        "notes": null
+      },
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Store Duplex",
+        "unitCount": 11,
+        "startingPrice": 6321300.0,
+        "size": 163.6,
+        "notes": null
+      },
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 2,
+        "label": "2 Bedroom Duplex",
+        "unitCount": 5,
+        "startingPrice": 6583200.0,
+        "size": 154.79,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Nobu Residences",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Saadiyat Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2027-06-30",
+    "paymentPlan": "70/30",
+    "downPaymentPercent": 50,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": null,
+    "serviceCharge": null,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "PENTHOUSE",
+        "bedrooms": null,
+        "label": "Penthouse",
+        "unitCount": null,
+        "startingPrice": 150000000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Mandarin Oriental Residences",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Saadiyat Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2028-09-30",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 20,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": null,
+    "serviceCharge": 72.14,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 1,
+        "label": "1 Bedroom",
+        "unitCount": null,
+        "startingPrice": 6900000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "PENTHOUSE",
+        "bedrooms": 5,
+        "label": "5 Bedroom Penthouse",
+        "unitCount": null,
+        "startingPrice": 164400000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "The Row Saadiyat",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Saadiyat Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2030-03-31",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 5,
+    "promoPaymentPlan": "40/60",
+    "promoDownPaymentPercent": 5,
+    "promotionNotes": "2% ADM waiver; Broker commission 5%",
+    "serviceCharge": 28.28,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 1,
+        "label": "1 Bedroom",
+        "unitCount": 0,
+        "startingPrice": 3670000,
+        "size": null,
+        "notes": "Sold out"
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": null,
+        "startingPrice": 5400000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Maid",
+        "unitCount": null,
+        "startingPrice": 7700000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom + Maid",
+        "unitCount": null,
+        "startingPrice": 10600000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom + Maid Large",
+        "unitCount": 0,
+        "startingPrice": 15000000,
+        "size": null,
+        "notes": "Sold out"
+      }
+    ]
+  },
+  {
+    "name": "Mamsha Gardens",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Saadiyat Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2028-09-30",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 20,
+    "promoPaymentPlan": "40/60",
+    "promoDownPaymentPercent": 5,
+    "promotionNotes": "2% ADM waiver; Broker commission 5%; Service charge AED 30.24/sqft (Bldg 1-6), AED 33.57/sqft (Bldg 7)",
+    "serviceCharge": 30.24,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": null,
+        "startingPrice": 7940000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Mamsha Palm",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Saadiyat Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2028-03-31",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 35,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": "4-bed units only: 2% ADM waiver; Broker commission 5%",
+    "serviceCharge": 35.75,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 4,
+        "label": "4 Bedroom Duplex",
+        "unitCount": null,
+        "startingPrice": 48000000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "The Arthouse",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Saadiyat Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2028-06-30",
+    "paymentPlan": "65/35",
+    "downPaymentPercent": 30,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": null,
+    "serviceCharge": 33,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "VILLA",
+        "bedrooms": 5,
+        "label": "5 Bedroom Sky Villa",
+        "unitCount": null,
+        "startingPrice": 90000000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Yas Park Place",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Yas Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2030-03-31",
+    "paymentPlan": "50/50",
+    "downPaymentPercent": 5,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": "2% ADM waiver (2 & 3 bed units only)",
+    "serviceCharge": 23.45,
+    "availableUnitsCount": 82,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 2,
+        "label": "2 Bedroom",
+        "unitCount": 19,
+        "startingPrice": 3027980.0,
+        "size": 131.86,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom",
+        "unitCount": 59,
+        "startingPrice": 5051414.0,
+        "size": 160.71,
+        "notes": null
+      },
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 2,
+        "label": "2 Bedroom + Maid Duplex",
+        "unitCount": 4,
+        "startingPrice": 7384211.0,
+        "size": 234.08,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Sama Yas",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Yas Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2028-03-31",
+    "paymentPlan": "60/40",
+    "downPaymentPercent": 20,
+    "promoPaymentPlan": "50/50",
+    "promoDownPaymentPercent": 15,
+    "promotionNotes": null,
+    "serviceCharge": 17.53,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 2,
+        "label": "2 Bedroom Duplex",
+        "unitCount": null,
+        "startingPrice": 5900000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom",
+        "unitCount": null,
+        "startingPrice": 6700000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "DUPLEX",
+        "bedrooms": 3,
+        "label": "3 Bedroom Duplex + Maid",
+        "unitCount": null,
+        "startingPrice": 10500000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Waldorf Astoria Residences",
+    "developer": "Aldar Properties",
+    "city": "Abu Dhabi",
+    "community": "Yas Island",
+    "location": "Abu Dhabi",
+    "handoverDate": "2028-12-31",
+    "paymentPlan": "60/40",
+    "downPaymentPercent": 15,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": null,
+    "serviceCharge": 49.68,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "PENTHOUSE",
+        "bedrooms": 4,
+        "label": "4 Bedroom Penthouse",
+        "unitCount": null,
+        "startingPrice": 38500000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Nikki Beach",
+    "developer": "Aldar Properties",
+    "city": "Ras Al Khaimah",
+    "community": "Al Marjan Island",
+    "location": "Ras Al Khaimah",
+    "handoverDate": null,
+    "paymentPlan": "60/40",
+    "downPaymentPercent": 20,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": "4% RAK waiver; Broker commission 5%; B1 & B3 fully furnished, B2 unfurnished",
+    "serviceCharge": null,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom",
+        "unitCount": null,
+        "startingPrice": 5800000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 4,
+        "label": "4 Bedroom",
+        "unitCount": null,
+        "startingPrice": 9400000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 5,
+        "label": "5 Bedroom Sky Terrace",
+        "unitCount": null,
+        "startingPrice": 17200000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  },
+  {
+    "name": "Rosso Bay",
+    "developer": "Aldar Properties",
+    "city": "Ras Al Khaimah",
+    "community": "Al Marjan Island",
+    "location": "Ras Al Khaimah",
+    "handoverDate": "2027-12-31",
+    "paymentPlan": "50/50",
+    "downPaymentPercent": 10,
+    "promoPaymentPlan": null,
+    "promoDownPaymentPercent": null,
+    "promotionNotes": "4% RAK waiver; Broker commission 5%; R1/R2/R3 fully furnished",
+    "serviceCharge": 17.5,
+    "availableUnitsCount": null,
+    "unitTypes": [
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 3,
+        "label": "3 Bedroom",
+        "unitCount": null,
+        "startingPrice": 5100000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "APARTMENT",
+        "bedrooms": 4,
+        "label": "4 Bedroom",
+        "unitCount": null,
+        "startingPrice": 6650000,
+        "size": null,
+        "notes": null
+      },
+      {
+        "propertyType": "PENTHOUSE",
+        "bedrooms": 4,
+        "label": "4 Bedroom Penthouse",
+        "unitCount": null,
+        "startingPrice": 10500000,
+        "size": null,
+        "notes": null
+      }
+    ]
+  }
+]

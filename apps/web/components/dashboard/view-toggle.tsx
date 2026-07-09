@@ -14,7 +14,7 @@ export function ViewToggle({ view }: { view: DashboardView }) {
 
   function setView(next: DashboardView) {
     const params = new URLSearchParams(searchParams.toString())
-    if (next === "grid") {
+    if (next === "list") {
       params.delete("view")
     } else {
       params.set("view", next)

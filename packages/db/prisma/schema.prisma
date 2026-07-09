@@ -34,24 +34,49 @@ enum AttachmentCategory {
   OTHER
 }
 
-model Project {
-  id           String        @id @default(cuid())
-  name         String
-  developer    String
-  community    String?
-  location     String
-  latitude     Float?
-  longitude    Float?
-  status       ProjectStatus @default(OFF_PLAN)
-  handoverDate DateTime?
-  description  String?
-  paymentPlan  String?
-  link         String?
-  isFavorite   Boolean       @default(false)
+enum PaymentMilestoneTiming {
+  ON_BOOKING
+  DURING_CONSTRUCTION
+  ON_HANDOVER
+  AFTER_HANDOVER
+  FIXED_DATE
+}
 
-  unitTypes   UnitType[]
-  notes       Note[]
-  attachments Attachment[]
+model Project {
+  id                      String        @id @default(cuid())
+  name                    String
+  developer               String
+  community               String?
+  city                    String?
+  location                String
+  latitude                Float?
+  longitude               Float?
+  status                  ProjectStatus @default(OFF_PLAN)
+  handoverDate            DateTime?
+  description             String?
+  paymentPlan             String?
+  downPaymentPercent      Decimal?      @db.Decimal(5, 2)
+  promoPaymentPlan        String?
+  promoDownPaymentPercent Decimal?      @db.Decimal(5, 2)
+  promotionNotes          String?
+  serviceCharge           Decimal?      @db.Decimal(10, 2)
+  amenities               String[]      @default([])
+  sellingPoints           String[]      @default([])
+  investmentRating        Int?
+  luxuryRating            Int?
+  familyRating            Int?
+  waterfront              Boolean       @default(false)
+  golf                    Boolean       @default(false)
+  brandedResidence        Boolean       @default(false)
+  brandName               String?
+  availableUnitsCount     Int?
+  link                    String?
+  isFavorite              Boolean       @default(false)
+
+  unitTypes         UnitType[]
+  notes             Note[]
+  attachments       Attachment[]
+  paymentMilestones PaymentMilestone[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -59,7 +84,11 @@ model Project {
   @@index([isFavorite])
   @@index([developer])
   @@index([location])
+  @@index([city])
   @@index([status])
+  @@index([waterfront])
+  @@index([golf])
+  @@index([brandedResidence])
 }
 
 model UnitType {
@@ -77,6 +106,7 @@ model UnitType {
   bathrooms     Int?
   parking       Int?
   paymentPlan   String?
+  serviceCharge Decimal?     @db.Decimal(10, 2)
   notes         String?
 
   createdAt DateTime @default(now())
@@ -85,10 +115,28 @@ model UnitType {
   @@index([projectId])
 }
 
+model PaymentMilestone {
+  id           String                 @id @default(cuid())
+  projectId    String
+  project      Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  label        String
+  percentage   Decimal                @db.Decimal(5, 2)
+  timing       PaymentMilestoneTiming @default(ON_HANDOVER)
+  offsetMonths Int?
+  fixedDate    DateTime?
+  note         String?
+  sortOrder    Int                    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+}
+
 model Note {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   body      String
 
   createdAt DateTime @default(now())

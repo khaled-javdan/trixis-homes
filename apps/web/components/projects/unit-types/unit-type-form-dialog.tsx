@@ -62,6 +62,7 @@ type FormValues = {
   bathrooms: string
   parking: string
   paymentPlan: string
+  serviceCharge: string
   notes: string
 }
 
@@ -79,6 +80,7 @@ function toFormValues(unit?: PlainUnitType): FormValues {
     bathrooms: unit?.bathrooms != null ? String(unit.bathrooms) : "",
     parking: unit?.parking != null ? String(unit.parking) : "",
     paymentPlan: unit?.paymentPlan ?? "",
+    serviceCharge: unit?.serviceCharge != null ? String(unit.serviceCharge) : "",
     notes: unit?.notes ?? "",
   }
 }
@@ -102,6 +104,7 @@ function toInput(values: FormValues, areaUnit: AreaUnit): UnitTypeInput {
     bathrooms: values.bathrooms ? Number(values.bathrooms) : null,
     parking: values.parking ? Number(values.parking) : null,
     paymentPlan: values.paymentPlan,
+    serviceCharge: values.serviceCharge ? Number(values.serviceCharge) : null,
     notes: values.notes,
   }
 }
@@ -315,6 +318,18 @@ export function UnitTypeFormDialog({
                 id="paymentPlan"
                 placeholder="Leave blank to use project default"
                 {...form.register("paymentPlan")}
+              />
+            </FormField>
+            <FormField
+              label="Service Charge Override (AED/sq ft, optional)"
+              htmlFor="serviceCharge"
+            >
+              <Input
+                id="serviceCharge"
+                type="number"
+                step="0.01"
+                placeholder="Leave blank to use project default"
+                {...form.register("serviceCharge")}
               />
             </FormField>
 

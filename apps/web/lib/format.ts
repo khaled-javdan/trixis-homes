@@ -1,4 +1,8 @@
-import type { ProjectStatus, PropertyType } from "@workspace/db"
+import type {
+  PaymentMilestoneTiming,
+  ProjectStatus,
+  PropertyType,
+} from "@workspace/db"
 
 const propertyTypeLabels: Record<PropertyType, string> = {
   APARTMENT: "Apartment",
@@ -43,6 +47,18 @@ export function formatProjectStatus(status: ProjectStatus) {
   return projectStatusLabels[status]
 }
 
+const paymentMilestoneTimingLabels: Record<PaymentMilestoneTiming, string> = {
+  ON_BOOKING: "On Booking",
+  DURING_CONSTRUCTION: "During Construction",
+  ON_HANDOVER: "On Handover",
+  AFTER_HANDOVER: "After Handover",
+  FIXED_DATE: "Fixed Date",
+}
+
+export function formatPaymentMilestoneTiming(timing: PaymentMilestoneTiming) {
+  return paymentMilestoneTimingLabels[timing]
+}
+
 // The official UAE Dirham symbol (Central Bank of the UAE, March 2025;
 // assigned U+20C3 in Unicode 18). Most fonts don't render the glyph yet, so
 // UI that needs it visually should render <DirhamSymbol /> instead of this
@@ -65,6 +81,11 @@ export function formatPriceCompact(value: number | null | undefined) {
 export function formatPriceWithSymbol(value: number | null | undefined) {
   const formatted = formatPrice(value)
   return formatted == null ? null : `${DIRHAM_SIGN} ${formatted}`
+}
+
+export function formatServiceCharge(value: number | null | undefined) {
+  if (value == null) return null
+  return value.toFixed(2)
 }
 
 export function formatFileSize(bytes: number) {
@@ -137,6 +158,20 @@ export function quarterToDate(quarter: string, year: string): Date | null {
     return null
   }
   return new Date(yearNumber, (quarterNumber - 1) * 3, 1)
+}
+
+// Payment plans are often stored with explanatory text, e.g.
+// "60/40 (60% during construction, 40% on handover)" or "100% on handover
+// (ready unit)". That detail is useful on the project detail page but
+// redundant in compact list/card/filter UI, where the ratio alone (e.g.
+// "60/40" or "100%") is self-explanatory.
+export function formatPaymentPlanShort(value: string | null | undefined) {
+  if (!value) return null
+  const withoutParenthetical = value.replace(/\s*\([^)]*\)\s*$/, "").trim()
+  const ratio = withoutParenthetical.match(
+    /^\d+(?:\.\d+)?%?(?:\s*\/\s*\d+(?:\.\d+)?%?)?/
+  )
+  return ratio?.[0] || withoutParenthetical || value.trim()
 }
 
 export function normalizeUrl(value: string | null | undefined) {

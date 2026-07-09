@@ -23,6 +23,7 @@ export const unitTypeSchema = z.object({
   bathrooms: z.coerce.number().int().min(0).optional().nullable(),
   parking: z.coerce.number().int().min(0).optional().nullable(),
   paymentPlan: z.string().trim().max(500).optional().or(z.literal("")),
+  serviceCharge: z.coerce.number().min(0).optional().nullable(),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
 })
 

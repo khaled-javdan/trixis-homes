@@ -1,5 +1,6 @@
-import type { ProjectStatus } from "@workspace/db"
+import { SparklesIcon } from "lucide-react"
 
+import { ButtonLink } from "@/components/button-link"
 import { DashboardFilters } from "@/components/dashboard/dashboard-filters"
 import { EmptyState } from "@/components/dashboard/empty-state"
 import { ProjectCard } from "@/components/dashboard/project-card"
@@ -7,20 +8,13 @@ import { ProjectListItem } from "@/components/dashboard/project-list-item"
 import { StatsBar } from "@/components/dashboard/stats-bar"
 import { ViewToggle, type DashboardView } from "@/components/dashboard/view-toggle"
 import {
-  getDashboardStats,
-  getFilterOptions,
-  getProjectsForDashboard,
-} from "@/lib/data/projects"
+  hasActiveDashboardFilters,
+  parseDashboardFilters,
+  type RawSearchParams,
+} from "@/lib/data/filters"
+import { getFilterOptions, getProjectsForDashboard } from "@/lib/data/projects"
 
-type SearchParams = Promise<{
-  q?: string
-  developer?: string
-  location?: string
-  status?: string
-  minPrice?: string
-  maxPrice?: string
-  view?: string
-}>
+type SearchParams = Promise<RawSearchParams & { view?: string }>
 
 export default async function DashboardPage({
   searchParams,
@@ -28,49 +22,51 @@ export default async function DashboardPage({
   searchParams: SearchParams
 }) {
   const params = await searchParams
+  const filters = parseDashboardFilters(params)
 
-  const filters = {
-    q: params.q,
-    developer: params.developer,
-    location: params.location,
-    status: params.status as ProjectStatus | undefined,
-    minPrice: params.minPrice ? Number(params.minPrice) : undefined,
-    maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
-  }
-
-  const [projects, stats, filterOptions] = await Promise.all([
+  const [projects, filterOptions] = await Promise.all([
     getProjectsForDashboard(filters),
-    getDashboardStats(),
     getFilterOptions(),
   ])
 
-  const hasFilters = Object.values(filters).some(
-    (value) => value !== undefined && value !== ""
-  )
+  const stats = {
+    totalProjects: projects.length,
+    unitsFound: projects.reduce(
+      (sum, project) => sum + project.unitTypeCount,
+      0
+    ),
+  }
+
+  const hasFilters = hasActiveDashboardFilters(filters)
 
   const view: DashboardView = params.view === "grid" ? "grid" : "list"
 
+  const copilotQuery = new URLSearchParams(
+    Object.entries(params).flatMap(([key, value]) =>
+      value == null || key === "view" ? [] : [[key, String(value)]]
+    )
+  ).toString()
+
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Your real estate knowledge base — {stats.totalProjects} project
-          {stats.totalProjects === 1 ? "" : "s"} tracked.
-        </p>
-      </div>
+      <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
+      <DashboardFilters
+        developers={filterOptions.developers}
+        communities={filterOptions.communities}
+        cities={filterOptions.cities}
+        paymentPlans={filterOptions.paymentPlans}
+        actions={
+          <>
+            <ButtonLink
+              href={copilotQuery ? `/copilot?${copilotQuery}` : "/copilot"}
+            >
+              <SparklesIcon /> Ask Copilot
+            </ButtonLink>
+            <ViewToggle view={view} />
+          </>
+        }
+      />
       <StatsBar stats={stats} />
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex-1">
-          <DashboardFilters
-            developers={filterOptions.developers}
-            locations={filterOptions.locations}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <ViewToggle view={view} />
-        </div>
-      </div>
 
       {projects.length === 0 ? (
         <EmptyState hasFilters={hasFilters} />

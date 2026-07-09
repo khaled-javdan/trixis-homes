@@ -2,13 +2,18 @@ import Image from "next/image"
 import Link from "next/link"
 import { Building2Icon, LayersIcon, MapPinIcon } from "lucide-react"
 
+import { Badge } from "@workspace/ui/components/badge"
 import { Card } from "@workspace/ui/components/card"
 import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { StatusBadge } from "@/components/status-badge"
 import type { ProjectCard as ProjectCardData } from "@/lib/data/projects"
 import type { PlainUnitType } from "@/lib/data/serialize"
-import { formatPrice, formatUnitTypeName } from "@/lib/format"
+import {
+  formatPaymentPlanShort,
+  formatPrice,
+  formatUnitTypeName,
+} from "@/lib/format"
 import { FavoriteButton } from "./favorite-button"
 
 function inventoryBreakdown(unitTypes: PlainUnitType[]) {
@@ -89,8 +94,13 @@ export function ProjectListItem({ project }: { project: ProjectCardData }) {
         <div className="hidden min-w-0 flex-col items-start justify-start gap-1 border-l border-border px-4 py-4 sm:flex sm:w-40 sm:shrink-0">
           <p className="text-xs text-muted-foreground">Payment Plan</p>
           <p className="truncate text-base font-semibold sm:text-lg">
-            {project.paymentPlan ?? "—"}
+            {formatPaymentPlanShort(project.paymentPlan) ?? "—"}
           </p>
+          {project.promoPaymentPlan && (
+            <Badge className="h-4.5 border-none bg-accent px-1.5 text-[10px] text-accent-foreground">
+              Promo {formatPaymentPlanShort(project.promoPaymentPlan)}
+            </Badge>
+          )}
         </div>
 
         <div className="hidden min-w-0 flex-col items-start justify-start gap-1.5 border-l border-border px-4 py-4 sm:flex sm:w-56 sm:shrink-0">

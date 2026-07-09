@@ -2,12 +2,22 @@
 
 import "leaflet/dist/leaflet.css"
 
-import { useEffect, useRef, useState } from "react"
-import { Maximize2Icon, Minimize2Icon } from "lucide-react"
+import { useEffect, useRef, useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
+import { MapPinIcon, Maximize2Icon, Minimize2Icon, XIcon } from "lucide-react"
+import { toast } from "sonner"
 import L from "leaflet"
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet"
 
 import { Button } from "@workspace/ui/components/button"
+
+import { setProjectCoordinates } from "@/lib/actions/projects"
 
 const markerIcon = L.icon({
   iconUrl:
@@ -23,21 +33,42 @@ const markerIcon = L.icon({
 })
 
 export type ProjectMapProps = {
+  projectId: string
   name: string
   location: string
   latitude: number
   longitude: number
 }
 
+function ClickToPick({
+  onPick,
+}: {
+  onPick: (position: [number, number]) => void
+}) {
+  useMapEvents({
+    click(event) {
+      onPick([event.latlng.lat, event.latlng.lng])
+    },
+  })
+  return null
+}
+
 export default function ProjectMapInner({
+  projectId,
   name,
   location,
   latitude,
   longitude,
 }: ProjectMapProps) {
+  const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [pendingPosition, setPendingPosition] = useState<
+    [number, number] | null
+  >(null)
+  const [saving, startTransition] = useTransition()
 
   useEffect(() => {
     const handleChange = () => {
@@ -59,42 +90,122 @@ export default function ProjectMapInner({
     }
   }
 
+  const startEditing = () => {
+    setPendingPosition([latitude, longitude])
+    setIsEditing(true)
+  }
+
+  const cancelEditing = () => {
+    setIsEditing(false)
+    setPendingPosition(null)
+  }
+
+  const saveLocation = () => {
+    if (!pendingPosition) return
+    startTransition(async () => {
+      try {
+        await setProjectCoordinates(
+          projectId,
+          pendingPosition[0],
+          pendingPosition[1]
+        )
+        toast.success("Location updated")
+        setIsEditing(false)
+        setPendingPosition(null)
+        router.refresh()
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to save location"
+        )
+      }
+    })
+  }
+
+  const markerPosition: [number, number] = isEditing && pendingPosition
+    ? pendingPosition
+    : [latitude, longitude]
+
   return (
     <div
       ref={containerRef}
       className="relative isolate h-[32rem] w-full overflow-hidden rounded-lg border border-border [&:fullscreen]:h-screen [&:fullscreen]:rounded-none [&:fullscreen]:border-0"
     >
-      <Button
-        type="button"
-        variant="secondary"
-        size="icon"
-        onClick={toggleFullscreen}
-        className="absolute top-2 right-2 z-[1000] shadow-md"
-        aria-label={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
-      >
-        {isFullscreen ? (
-          <Minimize2Icon className="size-4" />
+      <div className="absolute top-2 right-2 z-[1000] flex items-center gap-2">
+        {isEditing ? (
+          <>
+            <span className="rounded-md bg-background/85 px-2 py-1 text-xs text-muted-foreground shadow-md backdrop-blur-sm">
+              Click the map to move the pin
+            </span>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              onClick={cancelEditing}
+              disabled={saving}
+              className="shadow-md"
+              aria-label="Cancel"
+            >
+              <XIcon className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              onClick={saveLocation}
+              disabled={saving}
+              className="shadow-md"
+            >
+              {saving ? "Saving…" : "Save location"}
+            </Button>
+          </>
         ) : (
-          <Maximize2Icon className="size-4" />
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              onClick={startEditing}
+              className="shadow-md"
+              aria-label="Edit location"
+            >
+              <MapPinIcon className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              onClick={toggleFullscreen}
+              className="shadow-md"
+              aria-label={isFullscreen ? "Exit fullscreen" : "View fullscreen"}
+            >
+              {isFullscreen ? (
+                <Minimize2Icon className="size-4" />
+              ) : (
+                <Maximize2Icon className="size-4" />
+              )}
+            </Button>
+          </>
         )}
-      </Button>
+      </div>
       <MapContainer
         ref={mapRef}
         center={[latitude, longitude]}
         zoom={13}
         scrollWheelZoom={false}
-        className="h-full w-full"
+        className={`h-full w-full ${isEditing ? "cursor-crosshair" : ""}`}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker position={[latitude, longitude]} icon={markerIcon}>
-          <Popup>
-            <span className="font-medium">{name}</span>
-            <br />
-            {location}
-          </Popup>
+        {isEditing && <ClickToPick onPick={setPendingPosition} />}
+        <Marker position={markerPosition} icon={markerIcon}>
+          {!isEditing && (
+            <Popup>
+              <span className="font-medium">{name}</span>
+              <br />
+              {location}
+            </Popup>
+          )}
         </Marker>
       </MapContainer>
     </div>

@@ -21,6 +21,7 @@ export const extractedUnitTypeSchema = z.object({
   bathrooms: z.number().int().min(0).nullable(),
   parking: z.number().int().min(0).nullable(),
   paymentPlan: z.string().trim().max(500).nullable(),
+  serviceCharge: z.number().min(0).nullable(),
   notes: z.string().trim().max(2000).nullable(),
 })
 
@@ -28,6 +29,7 @@ export const extractedProjectSchema = z.object({
   name: z.string().trim().max(200).nullable(),
   developer: z.string().trim().max(200).nullable(),
   community: z.string().trim().max(200).nullable(),
+  city: z.string().trim().max(200).nullable(),
   location: z.string().trim().max(200).nullable(),
   status: z.enum(projectStatusValues).nullable(),
   handoverDate: z
@@ -36,6 +38,21 @@ export const extractedProjectSchema = z.object({
     .nullable(),
   description: z.string().trim().max(4000).nullable(),
   paymentPlan: z.string().trim().max(500).nullable(),
+  downPaymentPercent: z.number().min(0).max(100).nullable(),
+  promoPaymentPlan: z.string().trim().max(500).nullable(),
+  promoDownPaymentPercent: z.number().min(0).max(100).nullable(),
+  promotionNotes: z.string().trim().max(1000).nullable(),
+  serviceCharge: z.number().min(0).nullable(),
+  amenities: z.array(z.string().trim().min(1).max(100)),
+  sellingPoints: z.array(z.string().trim().min(1).max(300)),
+  investmentRating: z.number().int().min(1).max(5).nullable(),
+  luxuryRating: z.number().int().min(1).max(5).nullable(),
+  familyRating: z.number().int().min(1).max(5).nullable(),
+  waterfront: z.boolean(),
+  golf: z.boolean(),
+  brandedResidence: z.boolean(),
+  brandName: z.string().trim().max(200).nullable(),
+  availableUnitsCount: z.number().int().min(0).nullable(),
   unitTypes: z.array(extractedUnitTypeSchema),
 })
 

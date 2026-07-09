@@ -2,12 +2,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { Building2Icon, LayersIcon, MapPinIcon } from "lucide-react"
 
+import { Badge } from "@workspace/ui/components/badge"
 import { Card, CardContent } from "@workspace/ui/components/card"
 import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
 import { StatusBadge } from "@/components/status-badge"
 import type { ProjectCard as ProjectCardData } from "@/lib/data/projects"
-import { formatPrice } from "@/lib/format"
+import { formatPaymentPlanShort, formatPrice } from "@/lib/format"
 import { FavoriteButton } from "./favorite-button"
 
 export function ProjectCard({ project }: { project: ProjectCardData }) {
@@ -68,9 +69,16 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">Payment Plan</p>
-              <p className="truncate text-sm font-medium">
-                {project.paymentPlan ?? "—"}
-              </p>
+              <div className="flex flex-wrap items-center gap-1">
+                <p className="truncate text-sm font-medium">
+                  {formatPaymentPlanShort(project.paymentPlan) ?? "—"}
+                </p>
+                {project.promoPaymentPlan && (
+                  <Badge className="h-4.5 shrink-0 border-none bg-accent px-1.5 text-[10px] text-accent-foreground">
+                    Promo {formatPaymentPlanShort(project.promoPaymentPlan)}
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>

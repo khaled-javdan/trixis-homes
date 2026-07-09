@@ -2,14 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BookOpenIcon, LayoutGridIcon, SquareStackIcon } from "lucide-react"
+import { LayoutGridIcon, StarIcon } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
 const links = [
   { href: "/", label: "Dashboard", icon: LayoutGridIcon },
-  { href: "/study", label: "Memory Mode", icon: BookOpenIcon },
-  { href: "/flashcards", label: "Flashcards", icon: SquareStackIcon },
+  { href: "/favorites", label: "Favorites", icon: StarIcon },
 ]
 
 export function MainNav() {

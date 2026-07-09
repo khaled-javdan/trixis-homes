@@ -1,4 +1,10 @@
-import type { Attachment, Note, Project, UnitType } from "@workspace/db"
+import type {
+  Attachment,
+  Note,
+  PaymentMilestone,
+  Project,
+  UnitType,
+} from "@workspace/db"
 
 export type PlainUnitType = {
   id: string
@@ -13,7 +19,21 @@ export type PlainUnitType = {
   bathrooms: number | null
   parking: number | null
   paymentPlan: string | null
+  serviceCharge: number | null
   notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type PlainPaymentMilestone = {
+  id: string
+  label: string
+  percentage: number
+  timing: PaymentMilestone["timing"]
+  offsetMonths: number | null
+  fixedDate: string | null
+  note: string | null
+  sortOrder: number
   createdAt: string
   updatedAt: string
 }
@@ -57,6 +77,7 @@ export type PlainProject = {
   name: string
   developer: string
   community: string | null
+  city: string | null
   location: string
   latitude: number | null
   longitude: number | null
@@ -64,6 +85,21 @@ export type PlainProject = {
   handoverDate: string | null
   description: string | null
   paymentPlan: string | null
+  downPaymentPercent: number | null
+  promoPaymentPlan: string | null
+  promoDownPaymentPercent: number | null
+  promotionNotes: string | null
+  serviceCharge: number | null
+  amenities: string[]
+  sellingPoints: string[]
+  investmentRating: number | null
+  luxuryRating: number | null
+  familyRating: number | null
+  waterfront: boolean
+  golf: boolean
+  brandedResidence: boolean
+  brandName: string | null
+  availableUnitsCount: number | null
   link: string | null
   isFavorite: boolean
   createdAt: string
@@ -71,6 +107,7 @@ export type PlainProject = {
   unitTypes: PlainUnitType[]
   notes: PlainNote[]
   attachments: PlainAttachment[]
+  paymentMilestones: PlainPaymentMilestone[]
 }
 
 type Decimalish = { toNumber(): number }
@@ -93,9 +130,27 @@ export function toPlainUnitType(unit: UnitType): PlainUnitType {
     bathrooms: unit.bathrooms,
     parking: unit.parking,
     paymentPlan: unit.paymentPlan,
+    serviceCharge: decimalToNumber(unit.serviceCharge as unknown as Decimalish | null),
     notes: unit.notes,
     createdAt: unit.createdAt.toISOString(),
     updatedAt: unit.updatedAt.toISOString(),
+  }
+}
+
+export function toPlainPaymentMilestone(
+  milestone: PaymentMilestone
+): PlainPaymentMilestone {
+  return {
+    id: milestone.id,
+    label: milestone.label,
+    percentage: (milestone.percentage as unknown as Decimalish).toNumber(),
+    timing: milestone.timing,
+    offsetMonths: milestone.offsetMonths,
+    fixedDate: milestone.fixedDate ? milestone.fixedDate.toISOString() : null,
+    note: milestone.note,
+    sortOrder: milestone.sortOrder,
+    createdAt: milestone.createdAt.toISOString(),
+    updatedAt: milestone.updatedAt.toISOString(),
   }
 }
 
@@ -127,6 +182,7 @@ export function toPlainProject(
     unitTypes?: UnitType[]
     notes?: Note[]
     attachments?: Attachment[]
+    paymentMilestones?: PaymentMilestone[]
   }
 ): PlainProject {
   return {
@@ -134,6 +190,7 @@ export function toPlainProject(
     name: project.name,
     developer: project.developer,
     community: project.community,
+    city: project.city,
     location: project.location,
     latitude: project.latitude,
     longitude: project.longitude,
@@ -143,6 +200,27 @@ export function toPlainProject(
       : null,
     description: project.description,
     paymentPlan: project.paymentPlan,
+    downPaymentPercent: decimalToNumber(
+      project.downPaymentPercent as unknown as Decimalish | null
+    ),
+    promoPaymentPlan: project.promoPaymentPlan,
+    promoDownPaymentPercent: decimalToNumber(
+      project.promoDownPaymentPercent as unknown as Decimalish | null
+    ),
+    promotionNotes: project.promotionNotes,
+    serviceCharge: decimalToNumber(
+      project.serviceCharge as unknown as Decimalish | null
+    ),
+    amenities: project.amenities,
+    sellingPoints: project.sellingPoints,
+    investmentRating: project.investmentRating,
+    luxuryRating: project.luxuryRating,
+    familyRating: project.familyRating,
+    waterfront: project.waterfront,
+    golf: project.golf,
+    brandedResidence: project.brandedResidence,
+    brandName: project.brandName,
+    availableUnitsCount: project.availableUnitsCount,
     link: project.link,
     isFavorite: project.isFavorite,
     createdAt: project.createdAt.toISOString(),
@@ -150,5 +228,8 @@ export function toPlainProject(
     unitTypes: (project.unitTypes ?? []).map(toPlainUnitType),
     notes: (project.notes ?? []).map(toPlainNote),
     attachments: (project.attachments ?? []).map(toPlainAttachment),
+    paymentMilestones: (project.paymentMilestones ?? []).map(
+      toPlainPaymentMilestone
+    ),
   }
 }

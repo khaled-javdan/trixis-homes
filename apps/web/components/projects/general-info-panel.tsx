@@ -1,6 +1,9 @@
 import type * as React from "react"
 
-import { formatDate, normalizeUrl } from "@/lib/format"
+import { Badge } from "@workspace/ui/components/badge"
+
+import { PaymentPlanBreakdownDialog } from "@/components/projects/payment-milestones/payment-plan-breakdown-dialog"
+import { formatDate, formatServiceCharge, normalizeUrl } from "@/lib/format"
 import type { PlainProject } from "@/lib/data/serialize"
 
 export function GeneralInfoPanel({ project }: { project: PlainProject }) {
@@ -11,7 +14,33 @@ export function GeneralInfoPanel({ project }: { project: PlainProject }) {
     ["Community", project.community],
     ["Location", project.location],
     ["Handover Date", formatDate(project.handoverDate)],
-    ["Payment Plan", project.paymentPlan],
+    [
+      "Payment Plan",
+      <span key="payment-plan" className="flex flex-wrap items-center gap-1.5">
+        <span>{project.paymentPlan ?? "—"}</span>
+        {project.promoPaymentPlan && (
+          <Badge className="h-4.5 border-none bg-accent px-1.5 text-[10px] text-accent-foreground">
+            Promo {project.promoPaymentPlan}
+            {project.promoDownPaymentPercent != null
+              ? ` (${project.promoDownPaymentPercent}% DP)`
+              : ""}
+          </Badge>
+        )}
+        <PaymentPlanBreakdownDialog project={project} />
+      </span>,
+    ],
+    [
+      "Down Payment",
+      project.downPaymentPercent != null
+        ? `${project.downPaymentPercent}%`
+        : null,
+    ],
+    [
+      "Service Charge",
+      project.serviceCharge != null
+        ? `${formatServiceCharge(project.serviceCharge)}/sq.ft`
+        : null,
+    ],
     [
       "Link",
       linkHref ? (
@@ -42,6 +71,20 @@ export function GeneralInfoPanel({ project }: { project: PlainProject }) {
         <div>
           <p className="mb-1 text-xs text-muted-foreground">Description</p>
           <p className="text-sm whitespace-pre-wrap">{project.description}</p>
+        </div>
+      )}
+
+      {project.promotionNotes && (
+        <div>
+          <p className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+            Promotions
+            <Badge className="h-4.5 border-none bg-accent px-1.5 text-[10px] text-accent-foreground">
+              Q3
+            </Badge>
+          </p>
+          <p className="text-sm whitespace-pre-wrap">
+            {project.promotionNotes}
+          </p>
         </div>
       )}
     </div>

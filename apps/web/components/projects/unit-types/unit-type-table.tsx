@@ -18,6 +18,7 @@ import { UnitTypeFormDialog } from "@/components/projects/unit-types/unit-type-f
 import {
   formatAreaInUnit,
   formatPrice,
+  formatServiceCharge,
   formatUnitTypeName,
 } from "@/lib/format"
 import type { PlainUnitType } from "@/lib/data/serialize"
@@ -73,6 +74,7 @@ export function UnitTypeTable({
                 <TableHead>Bed / Bath</TableHead>
                 <TableHead>Parking</TableHead>
                 <TableHead>Payment Plan</TableHead>
+                <TableHead>Service Charge</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -106,6 +108,11 @@ export function UnitTypeTable({
                     <TableCell>{unit.parking ?? "—"}</TableCell>
                     <TableCell className="max-w-48 truncate">
                       {unit.paymentPlan ?? "Project default"}
+                    </TableCell>
+                    <TableCell>
+                      {unit.serviceCharge != null
+                        ? `${formatServiceCharge(unit.serviceCharge)}/sq.ft`
+                        : "Project default"}
                     </TableCell>
                     <TableCell className="flex justify-end gap-1">
                       <UnitTypeFormDialog projectId={projectId} unit={unit} />

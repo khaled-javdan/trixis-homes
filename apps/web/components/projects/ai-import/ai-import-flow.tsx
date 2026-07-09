@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { Switch } from "@workspace/ui/components/switch"
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import { FormField } from "@/components/form-field"
@@ -55,18 +56,37 @@ type UnitTypeDraft = {
   bathrooms: string
   parking: string
   paymentPlan: string
+  serviceCharge: string
   notes: string
 }
+
+const ratingOptions = ["1", "2", "3", "4", "5"] as const
 
 type ProjectDraft = {
   name: string
   developer: string
   community: string
+  city: string
   location: string
   status: (typeof projectStatusValues)[number]
   handoverDate: string
   description: string
   paymentPlan: string
+  downPaymentPercent: string
+  promoPaymentPlan: string
+  promoDownPaymentPercent: string
+  promotionNotes: string
+  serviceCharge: string
+  amenities: string
+  sellingPoints: string
+  investmentRating: string
+  luxuryRating: string
+  familyRating: string
+  waterfront: boolean
+  golf: boolean
+  brandedResidence: boolean
+  brandName: string
+  availableUnitsCount: string
   unitTypes: UnitTypeDraft[]
 }
 
@@ -83,6 +103,7 @@ function emptyUnitTypeDraft(): UnitTypeDraft {
     bathrooms: "",
     parking: "",
     paymentPlan: "",
+    serviceCharge: "",
     notes: "",
   }
 }
@@ -100,8 +121,16 @@ function toUnitTypeDraft(unit: ExtractedProject["unitTypes"][number]): UnitTypeD
     bathrooms: unit.bathrooms != null ? String(unit.bathrooms) : "",
     parking: unit.parking != null ? String(unit.parking) : "",
     paymentPlan: unit.paymentPlan ?? "",
+    serviceCharge: unit.serviceCharge != null ? String(unit.serviceCharge) : "",
     notes: unit.notes ?? "",
   }
+}
+
+function toStringArray(value: string): string[] {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
 }
 
 function toProjectDraft(project: ExtractedProject): ProjectDraft {
@@ -109,11 +138,40 @@ function toProjectDraft(project: ExtractedProject): ProjectDraft {
     name: project.name ?? "",
     developer: project.developer ?? "",
     community: project.community ?? "",
+    city: project.city ?? "",
     location: project.location ?? "",
     status: project.status ?? "OFF_PLAN",
     handoverDate: project.handoverDate ?? "",
     description: project.description ?? "",
     paymentPlan: project.paymentPlan ?? "",
+    downPaymentPercent:
+      project.downPaymentPercent != null
+        ? String(project.downPaymentPercent)
+        : "",
+    promoPaymentPlan: project.promoPaymentPlan ?? "",
+    promoDownPaymentPercent:
+      project.promoDownPaymentPercent != null
+        ? String(project.promoDownPaymentPercent)
+        : "",
+    promotionNotes: project.promotionNotes ?? "",
+    serviceCharge:
+      project.serviceCharge != null ? String(project.serviceCharge) : "",
+    amenities: project.amenities.join("\n"),
+    sellingPoints: project.sellingPoints.join("\n"),
+    investmentRating:
+      project.investmentRating != null ? String(project.investmentRating) : "",
+    luxuryRating:
+      project.luxuryRating != null ? String(project.luxuryRating) : "",
+    familyRating:
+      project.familyRating != null ? String(project.familyRating) : "",
+    waterfront: project.waterfront,
+    golf: project.golf,
+    brandedResidence: project.brandedResidence,
+    brandName: project.brandName ?? "",
+    availableUnitsCount:
+      project.availableUnitsCount != null
+        ? String(project.availableUnitsCount)
+        : "",
     unitTypes: project.unitTypes.map(toUnitTypeDraft),
   }
 }
@@ -123,11 +181,27 @@ function emptyProjectDraft(): ProjectDraft {
     name: "",
     developer: "",
     community: "",
+    city: "",
     location: "",
     status: "OFF_PLAN",
     handoverDate: "",
     description: "",
     paymentPlan: "",
+    downPaymentPercent: "",
+    promoPaymentPlan: "",
+    promoDownPaymentPercent: "",
+    promotionNotes: "",
+    serviceCharge: "",
+    amenities: "",
+    sellingPoints: "",
+    investmentRating: "",
+    luxuryRating: "",
+    familyRating: "",
+    waterfront: false,
+    golf: false,
+    brandedResidence: false,
+    brandName: "",
+    availableUnitsCount: "",
     unitTypes: [emptyUnitTypeDraft()],
   }
 }
@@ -137,11 +211,35 @@ function toProjectInput(draft: ProjectDraft): ProjectInput {
     name: draft.name,
     developer: draft.developer,
     community: draft.community,
+    city: draft.city,
     location: draft.location,
     status: draft.status,
     handoverDate: draft.handoverDate ? new Date(draft.handoverDate) : null,
     description: draft.description,
     paymentPlan: draft.paymentPlan,
+    downPaymentPercent: draft.downPaymentPercent
+      ? Number(draft.downPaymentPercent)
+      : null,
+    promoPaymentPlan: draft.promoPaymentPlan,
+    promoDownPaymentPercent: draft.promoDownPaymentPercent
+      ? Number(draft.promoDownPaymentPercent)
+      : null,
+    promotionNotes: draft.promotionNotes,
+    serviceCharge: draft.serviceCharge ? Number(draft.serviceCharge) : null,
+    amenities: toStringArray(draft.amenities),
+    sellingPoints: toStringArray(draft.sellingPoints),
+    investmentRating: draft.investmentRating
+      ? Number(draft.investmentRating)
+      : null,
+    luxuryRating: draft.luxuryRating ? Number(draft.luxuryRating) : null,
+    familyRating: draft.familyRating ? Number(draft.familyRating) : null,
+    waterfront: draft.waterfront,
+    golf: draft.golf,
+    brandedResidence: draft.brandedResidence,
+    brandName: draft.brandName,
+    availableUnitsCount: draft.availableUnitsCount
+      ? Number(draft.availableUnitsCount)
+      : null,
   }
 }
 
@@ -158,6 +256,7 @@ function toUnitTypeInputs(draft: ProjectDraft): UnitTypeInput[] {
     bathrooms: unit.bathrooms ? Number(unit.bathrooms) : null,
     parking: unit.parking ? Number(unit.parking) : null,
     paymentPlan: unit.paymentPlan,
+    serviceCharge: unit.serviceCharge ? Number(unit.serviceCharge) : null,
     notes: unit.notes,
   }))
 }
@@ -364,6 +463,15 @@ export function AiImportFlow() {
                   }
                 />
               </FormField>
+              <FormField label="City (optional)">
+                <Input
+                  placeholder="e.g. Dubai, Abu Dhabi"
+                  value={draft.city}
+                  onChange={(event) =>
+                    updateProject(projectIndex, { city: event.target.value })
+                  }
+                />
+              </FormField>
               <FormField label="Location">
                 <Input
                   required
@@ -436,12 +544,59 @@ export function AiImportFlow() {
                   />
                 </div>
               </FormField>
-              <FormField label="Payment Plan (optional)" className="sm:col-span-2">
+              <FormField label="Payment Plan (optional)">
                 <Input
                   placeholder="e.g. 55/45"
                   value={draft.paymentPlan}
                   onChange={(event) =>
                     updateProject(projectIndex, { paymentPlan: event.target.value })
+                  }
+                />
+              </FormField>
+              <FormField label="Down Payment % (optional)">
+                <Input
+                  type="number"
+                  placeholder="e.g. 15"
+                  value={draft.downPaymentPercent}
+                  onChange={(event) =>
+                    updateProject(projectIndex, {
+                      downPaymentPercent: event.target.value,
+                    })
+                  }
+                />
+              </FormField>
+              <FormField label="Promo Payment Plan (optional)">
+                <Input
+                  placeholder="e.g. 40/60"
+                  value={draft.promoPaymentPlan}
+                  onChange={(event) =>
+                    updateProject(projectIndex, {
+                      promoPaymentPlan: event.target.value,
+                    })
+                  }
+                />
+              </FormField>
+              <FormField label="Promo Down Payment % (optional)">
+                <Input
+                  type="number"
+                  placeholder="e.g. 5"
+                  value={draft.promoDownPaymentPercent}
+                  onChange={(event) =>
+                    updateProject(projectIndex, {
+                      promoDownPaymentPercent: event.target.value,
+                    })
+                  }
+                />
+              </FormField>
+              <FormField label="Service Charge (AED/sq ft, optional)">
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={draft.serviceCharge}
+                  onChange={(event) =>
+                    updateProject(projectIndex, {
+                      serviceCharge: event.target.value,
+                    })
                   }
                 />
               </FormField>
@@ -451,6 +606,155 @@ export function AiImportFlow() {
                   value={draft.description}
                   onChange={(event) =>
                     updateProject(projectIndex, { description: event.target.value })
+                  }
+                />
+              </FormField>
+              <FormField
+                label="Promotion Notes (optional)"
+                className="sm:col-span-2"
+              >
+                <Textarea
+                  rows={2}
+                  placeholder="e.g. 2% ADM Waiver, 5% Broker Commission"
+                  value={draft.promotionNotes}
+                  onChange={(event) =>
+                    updateProject(projectIndex, {
+                      promotionNotes: event.target.value,
+                    })
+                  }
+                />
+              </FormField>
+              <FormField label="Available Units (optional)">
+                <Input
+                  type="number"
+                  value={draft.availableUnitsCount}
+                  onChange={(event) =>
+                    updateProject(projectIndex, {
+                      availableUnitsCount: event.target.value,
+                    })
+                  }
+                />
+              </FormField>
+              <FormField label="Investment Rating (optional)">
+                <Select
+                  value={draft.investmentRating}
+                  onValueChange={(value) =>
+                    updateProject(projectIndex, { investmentRating: value ?? "" })
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Unrated" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ratingOptions.map((rating) => (
+                      <SelectItem key={rating} value={rating}>
+                        {rating} / 5
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+              <FormField label="Luxury Rating (optional)">
+                <Select
+                  value={draft.luxuryRating}
+                  onValueChange={(value) =>
+                    updateProject(projectIndex, { luxuryRating: value ?? "" })
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Unrated" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ratingOptions.map((rating) => (
+                      <SelectItem key={rating} value={rating}>
+                        {rating} / 5
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+              <FormField label="Family Rating (optional)">
+                <Select
+                  value={draft.familyRating}
+                  onValueChange={(value) =>
+                    updateProject(projectIndex, { familyRating: value ?? "" })
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Unrated" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ratingOptions.map((rating) => (
+                      <SelectItem key={rating} value={rating}>
+                        {rating} / 5
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+              <div className="flex flex-wrap items-center gap-6 sm:col-span-2">
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <Switch
+                    checked={draft.waterfront}
+                    onCheckedChange={(checked) =>
+                      updateProject(projectIndex, { waterfront: checked })
+                    }
+                  />
+                  Waterfront
+                </label>
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <Switch
+                    checked={draft.golf}
+                    onCheckedChange={(checked) =>
+                      updateProject(projectIndex, { golf: checked })
+                    }
+                  />
+                  Golf
+                </label>
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <Switch
+                    checked={draft.brandedResidence}
+                    onCheckedChange={(checked) =>
+                      updateProject(projectIndex, { brandedResidence: checked })
+                    }
+                  />
+                  Branded Residence
+                </label>
+              </div>
+              {draft.brandedResidence ? (
+                <FormField label="Brand Name (optional)" className="sm:col-span-2">
+                  <Input
+                    placeholder="e.g. Armani, Fendi"
+                    value={draft.brandName}
+                    onChange={(event) =>
+                      updateProject(projectIndex, { brandName: event.target.value })
+                    }
+                  />
+                </FormField>
+              ) : null}
+              <FormField
+                label="Amenities (optional, one per line)"
+                className="sm:col-span-2"
+              >
+                <Textarea
+                  rows={3}
+                  value={draft.amenities}
+                  onChange={(event) =>
+                    updateProject(projectIndex, { amenities: event.target.value })
+                  }
+                />
+              </FormField>
+              <FormField
+                label="Selling Points (optional, one per line)"
+                className="sm:col-span-2"
+              >
+                <Textarea
+                  rows={3}
+                  value={draft.sellingPoints}
+                  onChange={(event) =>
+                    updateProject(projectIndex, {
+                      sellingPoints: event.target.value,
+                    })
                   }
                 />
               </FormField>
@@ -535,6 +839,19 @@ export function AiImportFlow() {
                         onChange={(event) =>
                           updateUnitType(projectIndex, unitIndex, {
                             startingPrice: event.target.value,
+                          })
+                        }
+                      />
+                    </FormField>
+                    <FormField label="Service Charge (AED/sq ft)">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Project default"
+                        value={unit.serviceCharge}
+                        onChange={(event) =>
+                          updateUnitType(projectIndex, unitIndex, {
+                            serviceCharge: event.target.value,
                           })
                         }
                       />

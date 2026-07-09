@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { AttachmentsPanel } from "@/components/projects/attachments/attachments-panel"
 import { GeneralInfoPanel } from "@/components/projects/general-info-panel"
 import { NotesPanel } from "@/components/projects/notes/notes-panel"
+import { PaymentMilestonesPanel } from "@/components/projects/payment-milestones/payment-milestones-panel"
 import { ProjectHeader } from "@/components/projects/project-header"
 import { ProjectLocationPicker } from "@/components/projects/project-location-picker"
 import { ProjectMap } from "@/components/projects/project-map"
@@ -31,9 +32,18 @@ export default async function ProjectDetailPage({
       </section>
 
       <section className="flex flex-col gap-4 border-t border-border pt-8">
+        <h2 className="text-lg font-semibold tracking-tight">Payment Plan</h2>
+        <PaymentMilestonesPanel
+          projectId={project.id}
+          milestones={project.paymentMilestones}
+        />
+      </section>
+
+      <section className="flex flex-col gap-4 border-t border-border pt-8">
         <h2 className="text-lg font-semibold tracking-tight">Location</h2>
         {project.latitude != null && project.longitude != null ? (
           <ProjectMap
+            projectId={project.id}
             name={project.name}
             location={project.location}
             latitude={project.latitude}
