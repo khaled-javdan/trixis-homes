@@ -18,6 +18,42 @@ export function formatMilestoneDate(milestone: PlainPaymentMilestone): string {
   return formatMonthYear(milestone.date) ?? "—"
 }
 
+function daysBetween(start: Date, end: Date): number {
+  const MS_PER_DAY = 1000 * 60 * 60 * 24
+  return Math.round((end.getTime() - start.getTime()) / MS_PER_DAY)
+}
+
+function monthsBetween(start: Date, end: Date): number {
+  return (
+    (end.getFullYear() - start.getFullYear()) * 12 +
+    (end.getMonth() - start.getMonth())
+  )
+}
+
+export type MilestoneDuration = { days: number; months: number }
+
+// Days/months elapsed since the plan's first milestone (typically booking),
+// so a breakdown can be quoted the way developers do it — "60 days" /
+// "Month 2" — not just a calendar date. Milestones must already be sorted
+// chronologically (getProjectDetail orders paymentMilestones by date asc).
+export function computeMilestoneDurations(
+  milestones: PlainPaymentMilestone[]
+): MilestoneDuration[] {
+  if (milestones.length === 0) return []
+  const start = new Date(milestones[0]!.date)
+  return milestones.map((milestone) => {
+    const end = new Date(milestone.date)
+    return {
+      days: daysBetween(start, end),
+      months: monthsBetween(start, end),
+    }
+  })
+}
+
+export function formatMilestoneDuration({ days, months }: MilestoneDuration): string {
+  return `${days} day${days === 1 ? "" : "s"} · Month ${months}`
+}
+
 export type YearlyRollupRow = {
   year: number
   percentage: number

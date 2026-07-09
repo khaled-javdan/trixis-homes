@@ -32,7 +32,9 @@ import {
 import { formatPrice, formatUnitTypeName } from "@/lib/format"
 import {
   computeMilestoneAmount,
+  computeMilestoneDurations,
   formatMilestoneDate,
+  formatMilestoneDuration,
   groupMilestonesByYear,
   sumMilestonePercentage,
 } from "@/lib/payment-milestones"
@@ -55,6 +57,7 @@ export function PaymentPlanBreakdownDialog({
 
   const unit = project.unitTypes.find((u) => u.id === unitTypeId)
   const totalPercentage = sumMilestonePercentage(project.paymentMilestones)
+  const durations = computeMilestoneDurations(project.paymentMilestones)
   const yearlyRollup = unit
     ? groupMilestonesByYear(project.paymentMilestones, unit.startingPrice)
     : []
@@ -126,10 +129,11 @@ export function PaymentPlanBreakdownDialog({
                         <TableHead>%</TableHead>
                         <TableHead>Amount</TableHead>
                         <TableHead>Date</TableHead>
+                        <TableHead>Duration</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {project.paymentMilestones.map((milestone) => (
+                      {project.paymentMilestones.map((milestone, index) => (
                         <TableRow key={milestone.id}>
                           <TableCell className="font-medium">
                             {milestone.label}
@@ -154,6 +158,9 @@ export function PaymentPlanBreakdownDialog({
                               </div>
                             )}
                           </TableCell>
+                          <TableCell className="whitespace-nowrap text-muted-foreground">
+                            {formatMilestoneDuration(durations[index]!)}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -174,6 +181,7 @@ export function PaymentPlanBreakdownDialog({
                             )}
                           </span>
                         </TableCell>
+                        <TableCell />
                         <TableCell />
                       </TableRow>
                     </TableFooter>

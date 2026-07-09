@@ -15,7 +15,11 @@ import { DeletePaymentMilestoneButton } from "@/components/projects/payment-mile
 import { PaymentMilestoneAiImportDialog } from "@/components/projects/payment-milestones/payment-milestone-ai-import-dialog"
 import { PaymentMilestoneFormDialog } from "@/components/projects/payment-milestones/payment-milestone-form-dialog"
 import { formatDateShort } from "@/lib/format"
-import { sumMilestonePercentage } from "@/lib/payment-milestones"
+import {
+  computeMilestoneDurations,
+  formatMilestoneDuration,
+  sumMilestonePercentage,
+} from "@/lib/payment-milestones"
 import type { PlainPaymentMilestone } from "@/lib/data/serialize"
 
 export function PaymentMilestonesPanel({
@@ -28,6 +32,7 @@ export function PaymentMilestonesPanel({
   milestones: PlainPaymentMilestone[]
 }) {
   const totalPercentage = sumMilestonePercentage(milestones)
+  const durations = computeMilestoneDurations(milestones)
 
   return (
     <div className="flex flex-col gap-4">
@@ -66,18 +71,22 @@ export function PaymentMilestonesPanel({
                 <TableHead>Label</TableHead>
                 <TableHead>%</TableHead>
                 <TableHead>Date</TableHead>
+                <TableHead>Duration</TableHead>
                 <TableHead>Note</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {milestones.map((milestone) => (
+              {milestones.map((milestone, index) => (
                 <TableRow key={milestone.id}>
                   <TableCell className="font-medium">
                     {milestone.label}
                   </TableCell>
                   <TableCell>{milestone.percentage}%</TableCell>
                   <TableCell>{formatDateShort(milestone.date)}</TableCell>
+                  <TableCell className="whitespace-nowrap text-muted-foreground">
+                    {formatMilestoneDuration(durations[index]!)}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {milestone.note ?? "—"}
                   </TableCell>
