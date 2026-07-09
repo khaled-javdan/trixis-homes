@@ -21,6 +21,7 @@ export type PlainUnitType = {
   paymentPlan: string | null
   serviceCharge: number | null
   notes: string | null
+  listingUrl: string | null
   createdAt: string
   updatedAt: string
 }
@@ -29,11 +30,8 @@ export type PlainPaymentMilestone = {
   id: string
   label: string
   percentage: number
-  timing: PaymentMilestone["timing"]
-  offsetMonths: number | null
-  fixedDate: string | null
+  date: string
   note: string | null
-  sortOrder: number
   createdAt: string
   updatedAt: string
 }
@@ -76,6 +74,7 @@ export type PlainProject = {
   id: string
   name: string
   developer: string
+  masterCommunity: string | null
   community: string | null
   city: string | null
   location: string
@@ -132,6 +131,7 @@ export function toPlainUnitType(unit: UnitType): PlainUnitType {
     paymentPlan: unit.paymentPlan,
     serviceCharge: decimalToNumber(unit.serviceCharge as unknown as Decimalish | null),
     notes: unit.notes,
+    listingUrl: unit.listingUrl,
     createdAt: unit.createdAt.toISOString(),
     updatedAt: unit.updatedAt.toISOString(),
   }
@@ -144,11 +144,8 @@ export function toPlainPaymentMilestone(
     id: milestone.id,
     label: milestone.label,
     percentage: (milestone.percentage as unknown as Decimalish).toNumber(),
-    timing: milestone.timing,
-    offsetMonths: milestone.offsetMonths,
-    fixedDate: milestone.fixedDate ? milestone.fixedDate.toISOString() : null,
+    date: milestone.date.toISOString(),
     note: milestone.note,
-    sortOrder: milestone.sortOrder,
     createdAt: milestone.createdAt.toISOString(),
     updatedAt: milestone.updatedAt.toISOString(),
   }
@@ -189,6 +186,7 @@ export function toPlainProject(
     id: project.id,
     name: project.name,
     developer: project.developer,
+    masterCommunity: project.masterCommunity,
     community: project.community,
     city: project.city,
     location: project.location,

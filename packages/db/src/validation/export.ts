@@ -17,6 +17,7 @@ const exportUnitTypeSchema = z.object({
   paymentPlan: z.string().nullable().optional(),
   serviceCharge: z.number().min(0).nullable().optional(),
   notes: z.string().nullable().optional(),
+  listingUrl: z.string().nullable().optional(),
 })
 
 const exportNoteSchema = z.object({
@@ -24,9 +25,17 @@ const exportNoteSchema = z.object({
   createdAt: z.coerce.date().optional(),
 })
 
+const exportPaymentMilestoneSchema = z.object({
+  label: z.string().min(1),
+  percentage: z.number().positive().max(100),
+  date: z.coerce.date(),
+  note: z.string().nullable().optional(),
+})
+
 const exportProjectSchema = z.object({
   name: z.string().min(1),
   developer: z.string().min(1),
+  masterCommunity: z.string().nullable().optional(),
   community: z.string().nullable().optional(),
   city: z.string().nullable().optional(),
   location: z.string().min(1),
@@ -53,6 +62,7 @@ const exportProjectSchema = z.object({
   isFavorite: z.boolean().optional(),
   unitTypes: z.array(exportUnitTypeSchema),
   notes: z.array(exportNoteSchema),
+  paymentMilestones: z.array(exportPaymentMilestoneSchema).optional(),
 })
 
 export const projectExportSchema = z.object({

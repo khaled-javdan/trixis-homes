@@ -1,11 +1,6 @@
 "use client"
 
-import * as React from "react"
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
-import { toast } from "sonner"
-
 import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
 import {
   Table,
   TableBody,
@@ -19,79 +14,17 @@ import { cn } from "@workspace/ui/lib/utils"
 import { DeletePaymentMilestoneButton } from "@/components/projects/payment-milestones/delete-payment-milestone-button"
 import { PaymentMilestoneAiImportDialog } from "@/components/projects/payment-milestones/payment-milestone-ai-import-dialog"
 import { PaymentMilestoneFormDialog } from "@/components/projects/payment-milestones/payment-milestone-form-dialog"
-import { movePaymentMilestone } from "@/lib/actions/payment-milestones"
-import { formatPaymentMilestoneTiming } from "@/lib/format"
+import { formatDateShort } from "@/lib/format"
 import { sumMilestonePercentage } from "@/lib/payment-milestones"
 import type { PlainPaymentMilestone } from "@/lib/data/serialize"
 
-function MilestoneDetail({ milestone }: { milestone: PlainPaymentMilestone }) {
-  if (milestone.timing === "AFTER_HANDOVER" && milestone.offsetMonths != null) {
-    return <>{milestone.offsetMonths} mo. after handover</>
-  }
-  if (milestone.timing === "FIXED_DATE" && milestone.fixedDate) {
-    return <>{new Date(milestone.fixedDate).toLocaleDateString("en-US")}</>
-  }
-  return milestone.note ? (
-    <span className="text-muted-foreground">{milestone.note}</span>
-  ) : (
-    <>—</>
-  )
-}
-
-function MoveMilestoneButtons({
-  milestoneId,
-  projectId,
-  disableUp,
-  disableDown,
-}: {
-  milestoneId: string
-  projectId: string
-  disableUp: boolean
-  disableDown: boolean
-}) {
-  const [pending, startTransition] = React.useTransition()
-
-  function move(direction: "up" | "down") {
-    startTransition(async () => {
-      try {
-        await movePaymentMilestone(milestoneId, projectId, direction)
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Failed to reorder"
-        )
-      }
-    })
-  }
-
-  return (
-    <>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label="Move up"
-        disabled={pending || disableUp}
-        onClick={() => move("up")}
-      >
-        <ChevronUpIcon />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label="Move down"
-        disabled={pending || disableDown}
-        onClick={() => move("down")}
-      >
-        <ChevronDownIcon />
-      </Button>
-    </>
-  )
-}
-
 export function PaymentMilestonesPanel({
   projectId,
+  handoverDate,
   milestones,
 }: {
   projectId: string
+  handoverDate: string | null
   milestones: PlainPaymentMilestone[]
 }) {
   const totalPercentage = sumMilestonePercentage(milestones)
@@ -112,7 +45,13 @@ export function PaymentMilestonesPanel({
         ) : (
           <span />
         )}
-        <PaymentMilestoneAiImportDialog projectId={projectId} />
+        <div className="flex gap-2">
+          <PaymentMilestoneAiImportDialog
+            projectId={projectId}
+            handoverDate={handoverDate}
+          />
+          <PaymentMilestoneFormDialog projectId={projectId} />
+        </div>
       </div>
 
       {milestones.length === 0 ? (
@@ -126,31 +65,23 @@ export function PaymentMilestonesPanel({
               <TableRow>
                 <TableHead>Label</TableHead>
                 <TableHead>%</TableHead>
-                <TableHead>Timing</TableHead>
-                <TableHead>Detail</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Note</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {milestones.map((milestone, index) => (
+              {milestones.map((milestone) => (
                 <TableRow key={milestone.id}>
                   <TableCell className="font-medium">
                     {milestone.label}
                   </TableCell>
                   <TableCell>{milestone.percentage}%</TableCell>
-                  <TableCell>
-                    {formatPaymentMilestoneTiming(milestone.timing)}
-                  </TableCell>
-                  <TableCell>
-                    <MilestoneDetail milestone={milestone} />
+                  <TableCell>{formatDateShort(milestone.date)}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {milestone.note ?? "—"}
                   </TableCell>
                   <TableCell className="flex justify-end gap-1">
-                    <MoveMilestoneButtons
-                      milestoneId={milestone.id}
-                      projectId={projectId}
-                      disableUp={index === 0}
-                      disableDown={index === milestones.length - 1}
-                    />
                     <PaymentMilestoneFormDialog
                       projectId={projectId}
                       milestone={milestone}

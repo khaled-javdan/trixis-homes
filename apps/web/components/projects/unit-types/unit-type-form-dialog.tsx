@@ -64,6 +64,7 @@ type FormValues = {
   paymentPlan: string
   serviceCharge: string
   notes: string
+  listingUrl: string
 }
 
 function toFormValues(unit?: PlainUnitType): FormValues {
@@ -82,6 +83,7 @@ function toFormValues(unit?: PlainUnitType): FormValues {
     paymentPlan: unit?.paymentPlan ?? "",
     serviceCharge: unit?.serviceCharge != null ? String(unit.serviceCharge) : "",
     notes: unit?.notes ?? "",
+    listingUrl: unit?.listingUrl ?? "",
   }
 }
 
@@ -106,6 +108,7 @@ function toInput(values: FormValues, areaUnit: AreaUnit): UnitTypeInput {
     paymentPlan: values.paymentPlan,
     serviceCharge: values.serviceCharge ? Number(values.serviceCharge) : null,
     notes: values.notes,
+    listingUrl: values.listingUrl,
   }
 }
 
@@ -330,6 +333,18 @@ export function UnitTypeFormDialog({
                 step="0.01"
                 placeholder="Leave blank to use project default"
                 {...form.register("serviceCharge")}
+              />
+            </FormField>
+
+            <FormField
+              label="Listing URL (optional)"
+              htmlFor="listingUrl"
+              className="sm:col-span-3"
+            >
+              <Input
+                id="listingUrl"
+                placeholder="Link to this unit's listing on another site"
+                {...form.register("listingUrl")}
               />
             </FormField>
 

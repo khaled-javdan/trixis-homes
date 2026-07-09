@@ -25,6 +25,7 @@ export const unitTypeSchema = z.object({
   paymentPlan: z.string().trim().max(500).optional().or(z.literal("")),
   serviceCharge: z.coerce.number().min(0).optional().nullable(),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  listingUrl: z.string().trim().max(2000).optional().or(z.literal("")),
 })
 
 export type UnitTypeInput = z.infer<typeof unitTypeSchema>

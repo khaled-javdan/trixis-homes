@@ -11,6 +11,7 @@ const ratingSchema = z.coerce.number().int().min(1).max(5).optional().nullable()
 export const projectSchema = z.object({
   name: z.string().trim().min(1).max(200),
   developer: z.string().trim().min(1).max(200),
+  masterCommunity: z.string().trim().max(200).optional().or(z.literal("")),
   community: z.string().trim().max(200).optional().or(z.literal("")),
   city: z.string().trim().max(200).optional().or(z.literal("")),
   location: z.string().trim().min(1).max(200),

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Controller, useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { PencilIcon, PlusIcon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -14,32 +14,19 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 
 import { FormField } from "@/components/form-field"
 import {
   createPaymentMilestone,
   updatePaymentMilestone,
 } from "@/lib/actions/payment-milestones"
-import { formatPaymentMilestoneTiming } from "@/lib/format"
 import type { PlainPaymentMilestone } from "@/lib/data/serialize"
-import {
-  paymentMilestoneTimingValues,
-  type PaymentMilestoneInput,
-} from "@workspace/db/validation/payment-milestone"
+import type { PaymentMilestoneInput } from "@workspace/db/validation/payment-milestone"
 
 type FormValues = {
   label: string
   percentage: string
-  timing: (typeof paymentMilestoneTimingValues)[number]
-  offsetMonths: string
-  fixedDate: string
+  date: string
   note: string
 }
 
@@ -47,10 +34,7 @@ function toFormValues(milestone?: PlainPaymentMilestone): FormValues {
   return {
     label: milestone?.label ?? "",
     percentage: milestone?.percentage != null ? String(milestone.percentage) : "",
-    timing: milestone?.timing ?? "ON_HANDOVER",
-    offsetMonths:
-      milestone?.offsetMonths != null ? String(milestone.offsetMonths) : "",
-    fixedDate: milestone?.fixedDate ? milestone.fixedDate.slice(0, 10) : "",
+    date: milestone?.date ? milestone.date.slice(0, 10) : "",
     note: milestone?.note ?? "",
   }
 }
@@ -59,9 +43,7 @@ function toInput(values: FormValues): PaymentMilestoneInput {
   return {
     label: values.label,
     percentage: Number(values.percentage),
-    timing: values.timing,
-    offsetMonths: values.offsetMonths ? Number(values.offsetMonths) : null,
-    fixedDate: values.fixedDate ? new Date(values.fixedDate) : null,
+    date: new Date(values.date),
     note: values.note,
   }
 }
@@ -77,7 +59,6 @@ export function PaymentMilestoneFormDialog({
   const [open, setOpen] = React.useState(false)
   const [pending, startTransition] = React.useTransition()
   const form = useForm<FormValues>({ defaultValues: toFormValues(milestone) })
-  const timing = useWatch({ control: form.control, name: "timing" })
 
   function save(values: FormValues) {
     startTransition(async () => {
@@ -158,56 +139,14 @@ export function PaymentMilestoneFormDialog({
               />
             </FormField>
 
-            <FormField label="Timing">
-              <Controller
-                control={form.control}
-                name="timing"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {paymentMilestoneTimingValues.map((value) => (
-                        <SelectItem key={value} value={value}>
-                          {formatPaymentMilestoneTiming(value)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+            <FormField label="Date" htmlFor="date">
+              <Input
+                id="date"
+                type="date"
+                required
+                {...form.register("date", { required: true })}
               />
             </FormField>
-
-            {timing === "AFTER_HANDOVER" && (
-              <FormField
-                label="Months After Handover"
-                htmlFor="offsetMonths"
-                className="sm:col-span-2"
-              >
-                <Input
-                  id="offsetMonths"
-                  type="number"
-                  required
-                  {...form.register("offsetMonths", { required: true })}
-                />
-              </FormField>
-            )}
-
-            {timing === "FIXED_DATE" && (
-              <FormField
-                label="Date"
-                htmlFor="fixedDate"
-                className="sm:col-span-2"
-              >
-                <Input
-                  id="fixedDate"
-                  type="date"
-                  required
-                  {...form.register("fixedDate", { required: true })}
-                />
-              </FormField>
-            )}
 
             <FormField
               label="Note (optional)"

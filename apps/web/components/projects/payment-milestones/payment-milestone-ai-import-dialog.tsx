@@ -28,7 +28,7 @@ import {
   createPaymentMilestonesFromExtraction,
   extractPaymentMilestones,
 } from "@/lib/actions/payment-milestone-import"
-import { formatPaymentMilestoneTiming } from "@/lib/format"
+import { formatDateShort } from "@/lib/format"
 import { sumMilestonePercentage } from "@/lib/payment-milestones"
 import type { ExtractedPaymentMilestone } from "@workspace/db/validation/payment-milestone"
 
@@ -45,8 +45,10 @@ function readFileAsDataUrl(file: File): Promise<string> {
 
 export function PaymentMilestoneAiImportDialog({
   projectId,
+  handoverDate,
 }: {
   projectId: string
+  handoverDate: string | null
 }) {
   const [open, setOpen] = React.useState(false)
   const [mode, setMode] = React.useState<"paste" | "upload">("paste")
@@ -85,6 +87,7 @@ export function PaymentMilestoneAiImportDialog({
         const extracted = await extractPaymentMilestones({
           text: text.trim() || undefined,
           imageDataUrl: imageDataUrl ?? undefined,
+          handoverDate,
         })
         if (extracted.length === 0) {
           toast.error("Couldn't find a payment plan breakdown in that input")
@@ -112,9 +115,7 @@ export function PaymentMilestoneAiImportDialog({
           results.map((milestone) => ({
             label: milestone.label,
             percentage: milestone.percentage,
-            timing: milestone.timing,
-            offsetMonths: milestone.offsetMonths,
-            fixedDate: milestone.fixedDate ? new Date(milestone.fixedDate) : null,
+            date: milestone.date ? new Date(milestone.date) : null,
             note: milestone.note ?? "",
           }))
         )
@@ -224,7 +225,7 @@ export function PaymentMilestoneAiImportDialog({
                   <TableRow>
                     <TableHead>Label</TableHead>
                     <TableHead>%</TableHead>
-                    <TableHead>Timing</TableHead>
+                    <TableHead>Date</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -236,7 +237,13 @@ export function PaymentMilestoneAiImportDialog({
                       </TableCell>
                       <TableCell>{milestone.percentage}%</TableCell>
                       <TableCell>
-                        {formatPaymentMilestoneTiming(milestone.timing)}
+                        {milestone.date ? (
+                          formatDateShort(milestone.date)
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            Not set — will default to handover date
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button

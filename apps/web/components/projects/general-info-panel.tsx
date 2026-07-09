@@ -1,8 +1,8 @@
 import type * as React from "react"
+import Link from "next/link"
 
 import { Badge } from "@workspace/ui/components/badge"
 
-import { PaymentPlanBreakdownDialog } from "@/components/projects/payment-milestones/payment-plan-breakdown-dialog"
 import { formatDate, formatServiceCharge, normalizeUrl } from "@/lib/format"
 import type { PlainProject } from "@/lib/data/serialize"
 
@@ -11,6 +11,17 @@ export function GeneralInfoPanel({ project }: { project: PlainProject }) {
   const fields: Array<[string, React.ReactNode]> = [
     ["Project Name", project.name],
     ["Developer", project.developer],
+    [
+      "Master Community",
+      project.masterCommunity ? (
+        <Link
+          href={`/communities/${encodeURIComponent(project.masterCommunity)}`}
+          className="text-primary underline underline-offset-2"
+        >
+          {project.masterCommunity}
+        </Link>
+      ) : null,
+    ],
     ["Community", project.community],
     ["Location", project.location],
     ["Handover Date", formatDate(project.handoverDate)],
@@ -26,7 +37,6 @@ export function GeneralInfoPanel({ project }: { project: PlainProject }) {
               : ""}
           </Badge>
         )}
-        <PaymentPlanBreakdownDialog project={project} />
       </span>,
     ],
     [

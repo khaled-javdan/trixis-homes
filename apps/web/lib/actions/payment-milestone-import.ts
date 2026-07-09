@@ -12,7 +12,7 @@ import {
 
 import { toPaymentMilestoneData } from "@/lib/actions/prisma-mappers"
 
-const SYSTEM_PROMPT = `You extract a structured payment milestone breakdown from a UAE real
+const BASE_SYSTEM_PROMPT = `You extract a structured payment milestone breakdown from a UAE real
 estate payment plan — a developer's payment schedule table, price list, or broker's
 description of it. The input may be pasted text or an image (a screenshot or photo of a
 payment plan table or brochure page).
@@ -24,19 +24,15 @@ Rules:
   number (e.g. "10%" -> 10).
 - label is a short name for the installment, e.g. "Booking", "1st Installment", "On
   Handover". If the source doesn't name it, use its position, e.g. "Installment 2".
-- timing is one of:
-  - ON_BOOKING: due at reservation/booking/down payment/SPA signing, before construction.
-  - DURING_CONSTRUCTION: due during the construction period, tied to a construction
-    percentage/milestone, or simply labeled "during construction" with no specific date.
-  - ON_HANDOVER: due at handover/completion/transfer of title.
-  - AFTER_HANDOVER: due a number of months after handover (a post-handover plan) — set
-    offsetMonths to that number of months.
-  - FIXED_DATE: the source gives a specific calendar date or quarter for this installment
-    (not phrased relative to booking/handover) — set fixedDate to that date in ISO format
-    (YYYY-MM-DD). For a quarter, use the last day of the quarter (Q1 -> 03-31, Q2 -> 06-30,
-    Q3 -> 09-30, Q4 -> 12-31) with the stated year.
-- offsetMonths is required (non-null) only when timing is AFTER_HANDOVER; null otherwise.
-- fixedDate is required (non-null) only when timing is FIXED_DATE; null otherwise.
+- date is the calendar date this installment is due, in ISO format (YYYY-MM-DD):
+  - If the source gives a specific date, month/year, or quarter, use that (for a quarter,
+    use the last day of the quarter: Q1 -> 03-31, Q2 -> 06-30, Q3 -> 09-30, Q4 -> 12-31).
+  - If the source phrases it relative to handover ("on handover", "N months after
+    handover") and the project's handover date is given below, compute the concrete date
+    from that anchor.
+  - If the source only says something generic with no date and no handover anchor is
+    available (e.g. "during construction" with nothing else to go on), set date to null —
+    do not guess.
 - note is any extra detail worth keeping about that installment (e.g. "on 30% construction
   completion", "subject to developer's discretion") — otherwise null.
 - Extract percentages exactly as shown even if they don't sum to 100 — don't correct or
@@ -69,14 +65,19 @@ function repairDoubleEncodedMilestones(
 export async function extractPaymentMilestones(input: {
   text?: string
   imageDataUrl?: string
+  handoverDate?: string | null
 }): Promise<ExtractedPaymentMilestone[]> {
   const text = input.text?.trim()
   if (!text && !input.imageDataUrl) return []
 
+  const system = input.handoverDate
+    ? `${BASE_SYSTEM_PROMPT}\n\nThis project's handover date is ${input.handoverDate}. Use it as the anchor for any milestone phrased relative to handover.`
+    : BASE_SYSTEM_PROMPT
+
   try {
     const { output } = await generateText({
       model: "anthropic/claude-sonnet-5",
-      system: SYSTEM_PROMPT,
+      system,
       output: Output.object({
         schema: paymentMilestoneExtractionResultSchema,
       }),
@@ -108,16 +109,26 @@ export async function extractPaymentMilestones(input: {
 
 export async function createPaymentMilestonesFromExtraction(
   projectId: string,
-  milestones: PaymentMilestoneInput[]
+  milestones: (Omit<PaymentMilestoneInput, "date"> & { date: Date | null })[]
 ) {
   if (milestones.length === 0) return
 
-  const count = await prisma.paymentMilestone.count({ where: { projectId } })
+  // The extraction schema allows a null date when the source text gives no
+  // resolvable date; the DB column is required, so fall back to the
+  // project's handover date (or today) rather than blocking the save.
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { handoverDate: true },
+  })
+  const fallbackDate = project?.handoverDate ?? new Date()
+
   await prisma.paymentMilestone.createMany({
-    data: milestones.map((milestone, index) => ({
-      ...toPaymentMilestoneData(milestone),
+    data: milestones.map((milestone) => ({
+      ...toPaymentMilestoneData({
+        ...milestone,
+        date: milestone.date ?? fallbackDate,
+      }),
       projectId,
-      sortOrder: count + index,
     })),
   })
   revalidatePath(`/projects/${projectId}`)

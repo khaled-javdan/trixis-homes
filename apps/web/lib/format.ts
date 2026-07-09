@@ -1,8 +1,4 @@
-import type {
-  PaymentMilestoneTiming,
-  ProjectStatus,
-  PropertyType,
-} from "@workspace/db"
+import type { ProjectStatus, PropertyType } from "@workspace/db"
 
 const propertyTypeLabels: Record<PropertyType, string> = {
   APARTMENT: "Apartment",
@@ -45,18 +41,6 @@ export function formatUnitTypeName(
 
 export function formatProjectStatus(status: ProjectStatus) {
   return projectStatusLabels[status]
-}
-
-const paymentMilestoneTimingLabels: Record<PaymentMilestoneTiming, string> = {
-  ON_BOOKING: "On Booking",
-  DURING_CONSTRUCTION: "During Construction",
-  ON_HANDOVER: "On Handover",
-  AFTER_HANDOVER: "After Handover",
-  FIXED_DATE: "Fixed Date",
-}
-
-export function formatPaymentMilestoneTiming(timing: PaymentMilestoneTiming) {
-  return paymentMilestoneTimingLabels[timing]
 }
 
 // The official UAE Dirham symbol (Central Bank of the UAE, March 2025;
@@ -188,6 +172,15 @@ export function formatDateShort(value: string | Date | null | undefined) {
     month: "short",
     day: "numeric",
     year: "numeric",
+  }).format(date)
+}
+
+export function formatMonthYear(value: string | Date | null | undefined) {
+  if (!value) return null
+  const date = typeof value === "string" ? new Date(value) : value
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "2-digit",
   }).format(date)
 }
 

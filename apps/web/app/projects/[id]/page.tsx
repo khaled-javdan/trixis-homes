@@ -35,6 +35,7 @@ export default async function ProjectDetailPage({
         <h2 className="text-lg font-semibold tracking-tight">Payment Plan</h2>
         <PaymentMilestonesPanel
           projectId={project.id}
+          handoverDate={project.handoverDate}
           milestones={project.paymentMilestones}
         />
       </section>
@@ -56,7 +57,7 @@ export default async function ProjectDetailPage({
 
       <section className="flex flex-col gap-4 border-t border-border pt-8">
         <h2 className="text-lg font-semibold tracking-tight">Unit Types</h2>
-        <UnitTypeTable projectId={project.id} unitTypes={project.unitTypes} />
+        <UnitTypeTable project={project} />
       </section>
 
       <section className="flex flex-col gap-4 border-t border-border pt-8">

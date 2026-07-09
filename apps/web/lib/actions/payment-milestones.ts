@@ -11,9 +11,8 @@ export async function createPaymentMilestone(
   projectId: string,
   input: PaymentMilestoneInput
 ) {
-  const count = await prisma.paymentMilestone.count({ where: { projectId } })
   const milestone = await prisma.paymentMilestone.create({
-    data: { ...toPaymentMilestoneData(input), projectId, sortOrder: count },
+    data: { ...toPaymentMilestoneData(input), projectId },
   })
   revalidatePath(`/projects/${projectId}`)
   return { id: milestone.id }
@@ -33,33 +32,5 @@ export async function updatePaymentMilestone(
 
 export async function deletePaymentMilestone(id: string, projectId: string) {
   await prisma.paymentMilestone.delete({ where: { id } })
-  revalidatePath(`/projects/${projectId}`)
-}
-
-export async function movePaymentMilestone(
-  id: string,
-  projectId: string,
-  direction: "up" | "down"
-) {
-  const milestones = await prisma.paymentMilestone.findMany({
-    where: { projectId },
-    orderBy: { sortOrder: "asc" },
-  })
-  const index = milestones.findIndex((milestone) => milestone.id === id)
-  const swapIndex = direction === "up" ? index - 1 : index + 1
-  if (index === -1 || swapIndex < 0 || swapIndex >= milestones.length) return
-
-  const current = milestones[index]!
-  const neighbor = milestones[swapIndex]!
-  await prisma.$transaction([
-    prisma.paymentMilestone.update({
-      where: { id: current.id },
-      data: { sortOrder: neighbor.sortOrder },
-    }),
-    prisma.paymentMilestone.update({
-      where: { id: neighbor.id },
-      data: { sortOrder: current.sortOrder },
-    }),
-  ])
   revalidatePath(`/projects/${projectId}`)
 }

@@ -11,6 +11,7 @@ import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet"
 
 import { Button } from "@workspace/ui/components/button"
 
+import { LocationSearchInput } from "@/components/projects/location-search-input"
 import { setProjectCoordinates } from "@/lib/actions/projects"
 
 const markerIcon = L.icon({
@@ -47,10 +48,17 @@ export default function ProjectLocationPickerInner({
   projectId,
 }: ProjectLocationPickerProps) {
   const router = useRouter()
+  const mapRef = React.useRef<L.Map | null>(null)
   const [position, setPosition] = React.useState<[number, number] | null>(
     null
   )
   const [pending, startTransition] = React.useTransition()
+
+  function handleSearchSelect(result: { latitude: number; longitude: number }) {
+    const next: [number, number] = [result.latitude, result.longitude]
+    setPosition(next)
+    mapRef.current?.flyTo(next, 15)
+  }
 
   function save() {
     if (!position) return
@@ -71,10 +79,12 @@ export default function ProjectLocationPickerInner({
     <div className="flex flex-col gap-3">
       <p className="text-sm text-muted-foreground">
         We couldn&apos;t automatically detect coordinates for this location.
-        Click on the map to place a pin, then save it.
+        Search for it or click on the map to place a pin, then save it.
       </p>
+      <LocationSearchInput onSelect={handleSearchSelect} />
       <div className="relative isolate h-[32rem] w-full overflow-hidden rounded-lg border border-border">
         <MapContainer
+          ref={mapRef}
           center={UAE_CENTER}
           zoom={7}
           scrollWheelZoom={false}

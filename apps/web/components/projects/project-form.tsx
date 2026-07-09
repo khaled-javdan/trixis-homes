@@ -17,6 +17,7 @@ import { Switch } from "@workspace/ui/components/switch"
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import { FormField } from "@/components/form-field"
+import { getMasterCommunityNames } from "@/lib/actions/projects"
 import {
   dateToQuarter,
   formatProjectStatus,
@@ -31,6 +32,7 @@ const ratingOptions = ["1", "2", "3", "4", "5"] as const
 type ProjectFormValues = {
   name: string
   developer: string
+  masterCommunity: string
   community: string
   city: string
   location: string
@@ -60,6 +62,7 @@ type ProjectFormValues = {
 export type ProjectFormDefaults = {
   name?: string
   developer?: string
+  masterCommunity?: string | null
   community?: string | null
   city?: string | null
   location?: string
@@ -90,6 +93,7 @@ function toFormValues(defaultValues?: ProjectFormDefaults): ProjectFormValues {
   return {
     name: defaultValues?.name ?? "",
     developer: defaultValues?.developer ?? "",
+    masterCommunity: defaultValues?.masterCommunity ?? "",
     community: defaultValues?.community ?? "",
     city: defaultValues?.city ?? "",
     location: defaultValues?.location ?? "",
@@ -158,6 +162,13 @@ export function ProjectForm({
     defaultValues: toFormValues(defaultValues),
   })
   const [pending, startTransition] = React.useTransition()
+  const [masterCommunityOptions, setMasterCommunityOptions] = React.useState<
+    string[]
+  >([])
+
+  React.useEffect(() => {
+    getMasterCommunityNames().then(setMasterCommunityOptions).catch(() => {})
+  }, [])
 
   function submit(values: ProjectFormValues) {
     startTransition(async () => {
@@ -165,6 +176,7 @@ export function ProjectForm({
         const input: ProjectInput = {
           name: values.name,
           developer: values.developer,
+          masterCommunity: values.masterCommunity,
           community: values.community,
           city: values.city,
           location: values.location,
@@ -228,6 +240,22 @@ export function ProjectForm({
             required
             {...form.register("developer", { required: true })}
           />
+        </FormField>
+        <FormField
+          label="Master Community (optional)"
+          htmlFor="masterCommunity"
+        >
+          <Input
+            id="masterCommunity"
+            list="master-community-options"
+            placeholder="e.g. Yas Island"
+            {...form.register("masterCommunity")}
+          />
+          <datalist id="master-community-options">
+            {masterCommunityOptions.map((name) => (
+              <option key={name} value={name} />
+            ))}
+          </datalist>
         </FormField>
         <FormField label="Community (optional)" htmlFor="community">
           <Input id="community" {...form.register("community")} />

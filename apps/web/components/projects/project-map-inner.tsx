@@ -17,6 +17,7 @@ import {
 
 import { Button } from "@workspace/ui/components/button"
 
+import { LocationSearchInput } from "@/components/projects/location-search-input"
 import { setProjectCoordinates } from "@/lib/actions/projects"
 
 const markerIcon = L.icon({
@@ -125,16 +126,30 @@ export default function ProjectMapInner({
     ? pendingPosition
     : [latitude, longitude]
 
+  function handleSearchSelect(result: { latitude: number; longitude: number }) {
+    const next: [number, number] = [result.latitude, result.longitude]
+    setPendingPosition(next)
+    mapRef.current?.flyTo(next, 15)
+  }
+
   return (
     <div
       ref={containerRef}
       className="relative isolate h-[32rem] w-full overflow-hidden rounded-lg border border-border [&:fullscreen]:h-screen [&:fullscreen]:rounded-none [&:fullscreen]:border-0"
     >
+      {isEditing && (
+        <div className="absolute top-2 left-2 z-[1000] w-72 max-w-[calc(100%-1rem)]">
+          <LocationSearchInput
+            onSelect={handleSearchSelect}
+            className="[&_input]:bg-background/95 [&_input]:shadow-md [&_input]:backdrop-blur-sm"
+          />
+        </div>
+      )}
       <div className="absolute top-2 right-2 z-[1000] flex items-center gap-2">
         {isEditing ? (
           <>
-            <span className="rounded-md bg-background/85 px-2 py-1 text-xs text-muted-foreground shadow-md backdrop-blur-sm">
-              Click the map to move the pin
+            <span className="hidden rounded-md bg-background/85 px-2 py-1 text-xs text-muted-foreground shadow-md backdrop-blur-sm sm:inline">
+              Search or click the map to move the pin
             </span>
             <Button
               type="button"

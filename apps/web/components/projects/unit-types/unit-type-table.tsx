@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { ExternalLinkIcon } from "lucide-react"
 
 import {
   Table,
@@ -13,6 +14,7 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
+import { PaymentPlanBreakdownDialog } from "@/components/projects/payment-milestones/payment-plan-breakdown-dialog"
 import { DeleteUnitTypeDialog } from "@/components/projects/unit-types/delete-unit-type-dialog"
 import { UnitTypeFormDialog } from "@/components/projects/unit-types/unit-type-form-dialog"
 import {
@@ -20,16 +22,19 @@ import {
   formatPrice,
   formatServiceCharge,
   formatUnitTypeName,
+  normalizeUrl,
 } from "@/lib/format"
-import type { PlainUnitType } from "@/lib/data/serialize"
+import type { PlainProject } from "@/lib/data/serialize"
 
 export function UnitTypeTable({
-  projectId,
-  unitTypes,
+  project,
 }: {
-  projectId: string
-  unitTypes: PlainUnitType[]
+  project: Pick<
+    PlainProject,
+    "id" | "name" | "handoverDate" | "unitTypes" | "paymentMilestones"
+  >
 }) {
+  const { id: projectId, unitTypes } = project
   const [areaUnit, setAreaUnit] = React.useState<"ft" | "m">("ft")
 
   return (
@@ -115,6 +120,26 @@ export function UnitTypeTable({
                         : "Project default"}
                     </TableCell>
                     <TableCell className="flex justify-end gap-1">
+                      <PaymentPlanBreakdownDialog
+                        project={project}
+                        unitTypeId={unit.id}
+                      />
+                      {normalizeUrl(unit.listingUrl) && (
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label="View listing"
+                          render={
+                            <a
+                              href={normalizeUrl(unit.listingUrl)!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
+                          }
+                        >
+                          <ExternalLinkIcon />
+                        </Button>
+                      )}
                       <UnitTypeFormDialog projectId={projectId} unit={unit} />
                       <DeleteUnitTypeDialog
                         unitId={unit.id}

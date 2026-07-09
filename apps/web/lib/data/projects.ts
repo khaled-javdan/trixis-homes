@@ -42,6 +42,47 @@ export type ProjectCard = PlainProject & {
   coverImageUrl: string | null
 }
 
+export type ProjectGroup = {
+  masterCommunity: string | null
+  projects: ProjectCard[]
+}
+
+// Buckets already-fetched dashboard cards by masterCommunity, without a
+// separate query — groups sorted alphabetically, ungrouped projects (no
+// masterCommunity set) collected in a trailing null-keyed bucket.
+export function groupProjectsByMasterCommunity(
+  projects: ProjectCard[]
+): ProjectGroup[] {
+  const grouped = new Map<string, ProjectCard[]>()
+  const ungrouped: ProjectCard[] = []
+
+  for (const project of projects) {
+    if (!project.masterCommunity) {
+      ungrouped.push(project)
+      continue
+    }
+    const existing = grouped.get(project.masterCommunity)
+    if (existing) {
+      existing.push(project)
+    } else {
+      grouped.set(project.masterCommunity, [project])
+    }
+  }
+
+  const groups: ProjectGroup[] = [...grouped.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([masterCommunity, groupProjects]) => ({
+      masterCommunity,
+      projects: groupProjects,
+    }))
+
+  if (ungrouped.length) {
+    groups.push({ masterCommunity: null, projects: ungrouped })
+  }
+
+  return groups
+}
+
 function sizeRange(values: (number | null)[]): SizeRange | null {
   const present = values.filter((value): value is number => value != null)
   return present.length ? { min: Math.min(...present), max: Math.max(...present) } : null
@@ -176,7 +217,7 @@ export async function getProjectDetail(
       unitTypes: { orderBy: { startingPrice: "asc" } },
       notes: { orderBy: { createdAt: "desc" } },
       attachments: { orderBy: { uploadedAt: "desc" } },
-      paymentMilestones: { orderBy: { sortOrder: "asc" } },
+      paymentMilestones: { orderBy: { date: "asc" } },
     },
   })
 
@@ -195,6 +236,69 @@ export async function getFavoriteProjects(): Promise<ProjectCard[]> {
       },
     },
     orderBy: { updatedAt: "desc" },
+  })
+
+  return projects.map((project) => withCardFields(toPlainProject(project)))
+}
+
+export type MasterCommunityCard = {
+  name: string
+  projectCount: number
+  city: string | null
+  coverImageUrl: string | null
+}
+
+export async function getMasterCommunities(): Promise<MasterCommunityCard[]> {
+  const projects = await prisma.project.findMany({
+    where: { masterCommunity: { not: null } },
+    select: {
+      masterCommunity: true,
+      city: true,
+      attachments: {
+        where: { category: "IMAGE" },
+        orderBy: [{ isCover: "desc" }, { uploadedAt: "asc" }],
+        take: 1,
+        select: { url: true },
+      },
+    },
+  })
+
+  const grouped = new Map<string, MasterCommunityCard>()
+  for (const project of projects) {
+    const name = project.masterCommunity!
+    const existing = grouped.get(name)
+    if (existing) {
+      existing.projectCount += 1
+      if (!existing.coverImageUrl && project.attachments[0]) {
+        existing.coverImageUrl = project.attachments[0].url
+      }
+    } else {
+      grouped.set(name, {
+        name,
+        projectCount: 1,
+        city: project.city,
+        coverImageUrl: project.attachments[0]?.url ?? null,
+      })
+    }
+  }
+
+  return [...grouped.values()].sort((a, b) => a.name.localeCompare(b.name))
+}
+
+export async function getProjectsByMasterCommunity(
+  masterCommunity: string
+): Promise<ProjectCard[]> {
+  const projects = await prisma.project.findMany({
+    where: { masterCommunity },
+    include: {
+      unitTypes: true,
+      attachments: {
+        where: { category: "IMAGE" },
+        orderBy: [{ isCover: "desc" }, { uploadedAt: "asc" }],
+        take: 1,
+      },
+    },
+    orderBy: [{ isFavorite: "desc" }, { updatedAt: "desc" }],
   })
 
   return projects.map((project) => withCardFields(toPlainProject(project)))

@@ -20,6 +20,7 @@ export async function toProjectData(input: ProjectInput) {
   return {
     name: parsed.name,
     developer: parsed.developer,
+    masterCommunity: parsed.masterCommunity || null,
     community: parsed.community || null,
     city: parsed.city || null,
     location: parsed.location,
@@ -64,6 +65,7 @@ export function toUnitTypeData(input: UnitTypeInput) {
     paymentPlan: parsed.paymentPlan || null,
     serviceCharge: parsed.serviceCharge ?? null,
     notes: parsed.notes || null,
+    listingUrl: parsed.listingUrl || null,
   }
 }
 
@@ -72,9 +74,7 @@ export function toPaymentMilestoneData(input: PaymentMilestoneInput) {
   return {
     label: parsed.label,
     percentage: parsed.percentage,
-    timing: parsed.timing,
-    offsetMonths: parsed.timing === "AFTER_HANDOVER" ? parsed.offsetMonths : null,
-    fixedDate: parsed.timing === "FIXED_DATE" ? parsed.fixedDate : null,
+    date: parsed.date,
     note: parsed.note || null,
   }
 }

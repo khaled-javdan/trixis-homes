@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutGridIcon, StarIcon } from "lucide-react"
+import { Building2Icon, LayoutGridIcon, StarIcon } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
 
 const links = [
   { href: "/", label: "Dashboard", icon: LayoutGridIcon },
+  { href: "/communities", label: "Communities", icon: Building2Icon },
   { href: "/favorites", label: "Favorites", icon: StarIcon },
 ]
 

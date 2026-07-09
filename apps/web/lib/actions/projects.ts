@@ -13,6 +13,16 @@ import type { ProjectInput } from "@workspace/db/validation/project"
 import { toProjectData } from "@/lib/actions/prisma-mappers"
 import { geocodeLocation } from "@/lib/geocode"
 
+export async function getMasterCommunityNames(): Promise<string[]> {
+  const rows = await prisma.project.findMany({
+    distinct: ["masterCommunity"],
+    where: { masterCommunity: { not: null } },
+    select: { masterCommunity: true },
+    orderBy: { masterCommunity: "asc" },
+  })
+  return rows.map((row) => row.masterCommunity!)
+}
+
 export async function createProject(input: ProjectInput) {
   const project = await prisma.project.create({
     data: await toProjectData(input),
@@ -83,7 +93,7 @@ export async function setProjectCoordinates(
 export async function duplicateProject(id: string) {
   const project = await prisma.project.findUnique({
     where: { id },
-    include: { unitTypes: true },
+    include: { unitTypes: true, paymentMilestones: true },
   })
   if (!project) throw new Error("Project not found")
 
@@ -91,6 +101,7 @@ export async function duplicateProject(id: string) {
     data: {
       name: `${project.name} (Copy)`,
       developer: project.developer,
+      masterCommunity: project.masterCommunity,
       community: project.community,
       city: project.city,
       location: project.location,
@@ -132,6 +143,15 @@ export async function duplicateProject(id: string) {
           paymentPlan: unit.paymentPlan,
           serviceCharge: unit.serviceCharge,
           notes: unit.notes,
+          listingUrl: unit.listingUrl,
+        })),
+      },
+      paymentMilestones: {
+        create: project.paymentMilestones.map((milestone) => ({
+          label: milestone.label,
+          percentage: milestone.percentage,
+          date: milestone.date,
+          note: milestone.note,
         })),
       },
     },
@@ -144,7 +164,7 @@ export async function duplicateProject(id: string) {
 export async function exportProject(id: string): Promise<ProjectExport> {
   const project = await prisma.project.findUnique({
     where: { id },
-    include: { unitTypes: true, notes: true },
+    include: { unitTypes: true, notes: true, paymentMilestones: true },
   })
   if (!project) throw new Error("Project not found")
 
@@ -154,6 +174,7 @@ export async function exportProject(id: string): Promise<ProjectExport> {
     project: {
       name: project.name,
       developer: project.developer,
+      masterCommunity: project.masterCommunity,
       community: project.community,
       city: project.city,
       location: project.location,
@@ -198,10 +219,17 @@ export async function exportProject(id: string): Promise<ProjectExport> {
         paymentPlan: unit.paymentPlan,
         serviceCharge: unit.serviceCharge ? unit.serviceCharge.toNumber() : null,
         notes: unit.notes,
+        listingUrl: unit.listingUrl,
       })),
       notes: project.notes.map((note) => ({
         body: note.body,
         createdAt: note.createdAt,
+      })),
+      paymentMilestones: project.paymentMilestones.map((milestone) => ({
+        label: milestone.label,
+        percentage: milestone.percentage.toNumber(),
+        date: milestone.date,
+        note: milestone.note,
       })),
     },
   }
@@ -220,6 +248,7 @@ export async function importProject(data: unknown) {
     data: {
       name: project.name,
       developer: project.developer,
+      masterCommunity: project.masterCommunity ?? null,
       community: project.community ?? null,
       city: project.city ?? null,
       location: project.location,
@@ -261,10 +290,19 @@ export async function importProject(data: unknown) {
           paymentPlan: unit.paymentPlan ?? null,
           serviceCharge: unit.serviceCharge ?? null,
           notes: unit.notes ?? null,
+          listingUrl: unit.listingUrl ?? null,
         })),
       },
       notes: {
         create: project.notes.map((note) => ({ body: note.body })),
+      },
+      paymentMilestones: {
+        create: (project.paymentMilestones ?? []).map((milestone) => ({
+          label: milestone.label,
+          percentage: milestone.percentage,
+          date: milestone.date,
+          note: milestone.note ?? null,
+        })),
       },
     },
   })

@@ -1,4 +1,4 @@
-import { formatDate, formatDateShort } from "@/lib/format"
+import { formatMonthYear } from "@/lib/format"
 import type { PlainPaymentMilestone } from "@/lib/data/serialize"
 
 export function sumMilestonePercentage(
@@ -14,40 +14,30 @@ export function computeMilestoneAmount(
   return (percentage / 100) * startingPrice
 }
 
-function addMonths(date: Date, months: number): Date {
-  const result = new Date(date)
-  result.setMonth(result.getMonth() + months)
-  return result
+export function formatMilestoneDate(milestone: PlainPaymentMilestone): string {
+  return formatMonthYear(milestone.date) ?? "—"
 }
 
-// Real payment plans in this app only ever specify relative timing (booking /
-// during construction / handover / months after handover), never an exact
-// calendar date except in the rare FIXED_DATE case — see the free-text
-// paymentPlan examples in prisma/seed.ts. Handover itself is only known to
-// quarter granularity (formatDate renders "Q1 2026"), so that's the most
-// precision a computed date can offer here.
-export function formatMilestoneDueDate(
-  milestone: PlainPaymentMilestone,
-  handoverDate: string | null
-): string {
-  switch (milestone.timing) {
-    case "ON_BOOKING":
-      return "On Booking"
-    case "DURING_CONSTRUCTION":
-      return "During Construction"
-    case "ON_HANDOVER":
-      return handoverDate ? (formatDate(handoverDate) ?? "On Handover") : "On Handover"
-    case "AFTER_HANDOVER": {
-      const months = milestone.offsetMonths ?? 0
-      if (!handoverDate) return `${months} mo. after handover`
-      return (
-        formatDate(addMonths(new Date(handoverDate), months)) ??
-        `${months} mo. after handover`
-      )
-    }
-    case "FIXED_DATE":
-      return milestone.fixedDate
-        ? (formatDateShort(milestone.fixedDate) ?? "—")
-        : "—"
+export type YearlyRollupRow = {
+  year: number
+  percentage: number
+  amount: number
+}
+
+export function groupMilestonesByYear(
+  milestones: PlainPaymentMilestone[],
+  startingPrice: number
+): YearlyRollupRow[] {
+  const byYear = new Map<number, number>()
+  for (const milestone of milestones) {
+    const year = new Date(milestone.date).getFullYear()
+    byYear.set(year, (byYear.get(year) ?? 0) + milestone.percentage)
   }
+  return [...byYear.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([year, percentage]) => ({
+      year,
+      percentage,
+      amount: computeMilestoneAmount(percentage, startingPrice),
+    }))
 }

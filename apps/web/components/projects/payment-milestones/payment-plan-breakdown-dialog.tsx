@@ -32,33 +32,39 @@ import {
 import { formatPrice, formatUnitTypeName } from "@/lib/format"
 import {
   computeMilestoneAmount,
-  formatMilestoneDueDate,
+  formatMilestoneDate,
+  groupMilestonesByYear,
   sumMilestonePercentage,
 } from "@/lib/payment-milestones"
 import type { PlainProject } from "@/lib/data/serialize"
 
 export function PaymentPlanBreakdownDialog({
   project,
+  unitTypeId: initialUnitTypeId,
 }: {
   project: Pick<
     PlainProject,
     "id" | "name" | "handoverDate" | "unitTypes" | "paymentMilestones"
   >
+  unitTypeId?: string
 }) {
   const [open, setOpen] = React.useState(false)
   const [unitTypeId, setUnitTypeId] = React.useState<string | undefined>(
-    project.unitTypes[0]?.id
+    initialUnitTypeId ?? project.unitTypes[0]?.id
   )
 
   const unit = project.unitTypes.find((u) => u.id === unitTypeId)
   const totalPercentage = sumMilestonePercentage(project.paymentMilestones)
+  const yearlyRollup = unit
+    ? groupMilestonesByYear(project.paymentMilestones, unit.startingPrice)
+    : []
 
   return (
     <Dialog
       open={open}
       onOpenChange={(next) => {
         setOpen(next)
-        if (next) setUnitTypeId(project.unitTypes[0]?.id)
+        if (next) setUnitTypeId(initialUnitTypeId ?? project.unitTypes[0]?.id)
       }}
     >
       <DialogTrigger render={<Button variant="outline" size="xs" />}>
@@ -100,72 +106,108 @@ export function PaymentPlanBreakdownDialog({
             </Select>
 
             {unit && (
-              <div className="overflow-x-auto rounded-lg border border-border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Label</TableHead>
-                      <TableHead>%</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Due Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {project.paymentMilestones.map((milestone) => (
-                      <TableRow key={milestone.id}>
+              <>
+                <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2 text-sm">
+                  <span className="text-muted-foreground">
+                    {unit.label?.trim() ||
+                      formatUnitTypeName(unit.propertyType, unit.bedrooms)}
+                  </span>
+                  <span className="flex items-center gap-0.5 font-semibold text-primary">
+                    <DirhamSymbol />
+                    {formatPrice(unit.startingPrice)}
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto rounded-lg border border-border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Label</TableHead>
+                        <TableHead>%</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {project.paymentMilestones.map((milestone) => (
+                        <TableRow key={milestone.id}>
+                          <TableCell className="font-medium">
+                            {milestone.label}
+                          </TableCell>
+                          <TableCell>{milestone.percentage}%</TableCell>
+                          <TableCell className="font-semibold text-primary">
+                            <span className="flex items-center gap-0.5">
+                              <DirhamSymbol />
+                              {formatPrice(
+                                computeMilestoneAmount(
+                                  milestone.percentage,
+                                  unit.startingPrice
+                                )
+                              )}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <div>{formatMilestoneDate(milestone)}</div>
+                            {milestone.note && (
+                              <div className="text-xs text-muted-foreground">
+                                {milestone.note}
+                              </div>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell className="font-medium">Total</TableCell>
                         <TableCell className="font-medium">
-                          {milestone.label}
+                          {totalPercentage}%
                         </TableCell>
-                        <TableCell>{milestone.percentage}%</TableCell>
                         <TableCell className="font-semibold text-primary">
                           <span className="flex items-center gap-0.5">
                             <DirhamSymbol />
                             {formatPrice(
                               computeMilestoneAmount(
-                                milestone.percentage,
+                                totalPercentage,
                                 unit.startingPrice
                               )
                             )}
                           </span>
                         </TableCell>
-                        <TableCell>
-                          <div>
-                            {formatMilestoneDueDate(
-                              milestone,
-                              project.handoverDate
-                            )}
-                          </div>
-                          {milestone.note && (
-                            <div className="text-xs text-muted-foreground">
-                              {milestone.note}
-                            </div>
-                          )}
-                        </TableCell>
+                        <TableCell />
                       </TableRow>
-                    ))}
-                  </TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell className="font-medium">Total</TableCell>
-                      <TableCell className="font-medium">
-                        {totalPercentage}%
-                      </TableCell>
-                      <TableCell className="font-semibold text-primary">
-                        <span className="flex items-center gap-0.5">
-                          <DirhamSymbol />
-                          {formatPrice(
-                            computeMilestoneAmount(
-                              totalPercentage,
-                              unit.startingPrice
-                            )
-                          )}
-                        </span>
-                      </TableCell>
-                      <TableCell />
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </div>
+                    </TableFooter>
+                  </Table>
+                </div>
+
+                <div className="overflow-x-auto rounded-lg border border-border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Year</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>%</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {yearlyRollup.map((row) => (
+                        <TableRow key={row.year}>
+                          <TableCell className="font-medium">
+                            {row.year}
+                          </TableCell>
+                          <TableCell className="font-semibold text-primary">
+                            <span className="flex items-center gap-0.5">
+                              <DirhamSymbol />
+                              {formatPrice(row.amount)}
+                            </span>
+                          </TableCell>
+                          <TableCell>{row.percentage}%</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </div>
         )}
