@@ -100,6 +100,8 @@ export const developers = [
   { name: "Nshama", logo: "/images/developers/nshama.svg" },
   { name: "Beyond", logo: "/images/developers/beyond.webp" },
   { name: "Reportage", logo: "/images/developers/reportage.svg" },
+  { name: "Imtiaz", logo: "/images/developers/imtiaz.svg" },
+  { name: "Omniyat", logo: "/images/developers/omniyat.svg" },
 ]
 
 export const mission = [
