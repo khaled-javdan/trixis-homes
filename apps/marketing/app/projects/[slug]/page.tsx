@@ -90,7 +90,7 @@ function Section({
   return (
     <section
       id={id}
-      className="scroll-mt-28 border-t border-ink/10 py-14 first:border-t-0 first:pt-0"
+      className="scroll-mt-36 border-t border-ink/10 py-14 first:border-t-0 first:pt-0 lg:scroll-mt-28"
     >
       <Eyebrow>{eyebrow}</Eyebrow>
       <h2 className="mt-4 font-heading text-3xl text-ink">{title}</h2>
@@ -302,7 +302,7 @@ export default async function ProjectPage({
 
         {/* Railed content: sticky section nav + sections */}
         <div className="bg-white py-16 lg:py-20">
-          <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[13rem_1fr] lg:px-10">
+          <div className="mx-auto grid max-w-7xl gap-6 px-6 lg:grid-cols-[13rem_1fr] lg:gap-12 lg:px-10">
             <SectionNav sections={sections} />
 
             <div className="min-w-0">

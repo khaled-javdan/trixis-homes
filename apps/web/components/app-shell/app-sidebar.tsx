@@ -7,6 +7,7 @@ import {
   Building2Icon,
   ClipboardCheckIcon,
   InboxIcon,
+  LandmarkIcon,
   LayoutGridIcon,
   LogOutIcon,
   PlusIcon,
@@ -44,6 +45,7 @@ const mainNav: NavItem[] = [
 // Admin-only actions. As the admin app grows, add new destinations here.
 const adminNav: NavItem[] = [
   { href: "/leads", label: "Leads", icon: InboxIcon },
+  { href: "/developers", label: "Developers", icon: LandmarkIcon },
   { href: "/projects/new", label: "New Project", icon: PlusIcon },
   { href: "/projects/ai-import", label: "Paste to Create", icon: SparklesIcon },
   {

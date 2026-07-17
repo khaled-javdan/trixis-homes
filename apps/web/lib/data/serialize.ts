@@ -103,6 +103,7 @@ export type PlainProject = {
   link: string | null
   isFavorite: boolean
   isPublished: boolean
+  isHot: boolean
   slug: string | null
   inventoryUpdatedAt: string | null
   createdAt: string
@@ -227,6 +228,7 @@ export function toPlainProject(
     link: project.link,
     isFavorite: project.isFavorite,
     isPublished: project.isPublished,
+    isHot: project.isHot,
     slug: project.slug,
     inventoryUpdatedAt: project.inventoryUpdatedAt
       ? project.inventoryUpdatedAt.toISOString()

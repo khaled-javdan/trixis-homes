@@ -75,6 +75,8 @@ model Project {
   isFavorite              Boolean       @default(false)
   inventoryUpdatedAt      DateTime?
   isPublished             Boolean       @default(false)
+  // Featured in the home-page "hot projects" slider (only when published).
+  isHot                   Boolean       @default(false)
   slug                    String?       @unique
 
   unitTypes         UnitType[]
@@ -148,6 +150,24 @@ model Note {
   updatedAt DateTime @updatedAt
 
   @@index([projectId])
+}
+
+// Editorial content for a developer brand, configured in the admin app and
+// rendered on the public /developers page. Matched to Project.developer by
+// loose (case-insensitive contains) name comparison, not a foreign key, so
+// projects don't need re-linking when names differ slightly.
+model Developer {
+  id            String  @id @default(cuid())
+  name          String  @unique
+  description   String?
+  coverImageUrl String?
+  logoUrl       String?
+  websiteUrl    String?
+  // Hidden developers keep their content but don't render publicly.
+  isVisible     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Lead {

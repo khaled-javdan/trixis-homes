@@ -43,25 +43,14 @@ export function About() {
           </div>
 
           <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="relative aspect-[4/5] overflow-hidden">
+            <div className="relative aspect-[4/3] overflow-hidden">
               <Image
-                src="/images/madinat-burj.jpg"
-                alt="Burj Al Arab seen from Madinat Jumeirah"
+                src="/images/team/us.jpg"
+                alt="The Trixis Homes team"
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"
                 className="object-cover"
               />
-            </div>
-            <div className="absolute -bottom-10 -left-10 hidden w-64 border-8 border-background shadow-xl sm:block">
-              <div className="relative aspect-[4/3]">
-                <Image
-                  src="/images/palm-island.jpg"
-                  alt="Aerial view of Palm Jumeirah"
-                  fill
-                  sizes="16rem"
-                  className="object-cover"
-                />
-              </div>
             </div>
           </div>
         </div>

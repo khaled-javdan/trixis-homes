@@ -134,6 +134,7 @@ function toCard(project: ProjectWithRelations): PublicProjectCard {
 }
 
 export type PublicProjectFilters = {
+  developer?: string
   community?: string
   propertyType?: PropertyType
   bedrooms?: number[] // values >= 5 mean "5+"
@@ -146,6 +147,10 @@ export async function getPublishedProjects(
 ): Promise<PublicProjectCard[]> {
   const where: Prisma.ProjectWhereInput = { isPublished: true }
 
+  if (filters.developer) {
+    // Loose match so "Aldar" (brand list) finds "Aldar Properties" (DB value).
+    where.developer = { contains: filters.developer, mode: "insensitive" }
+  }
   if (filters.community) {
     where.OR = [
       { community: { contains: filters.community, mode: "insensitive" } },
@@ -249,6 +254,101 @@ export async function getPublishedProject(
     hasFloorPlans: categories.has("FLOOR_PLAN"),
     hasPriceList: categories.has("PRICE_LIST"),
   }
+}
+
+export type HotProject = {
+  id: string
+  slug: string
+  name: string
+  developer: string
+  area: string
+  city: string | null
+  status: ProjectStatus
+  startingPrice: number | null
+  completionYear: number | null
+  paymentPlan: string | null
+  coverImageUrl: string | null
+}
+
+/** Projects featured in the home-page slider (admin "Mark as Hot"). */
+export async function getHotProjects(limit = 6): Promise<HotProject[]> {
+  const projects = await prisma.project.findMany({
+    where: { isPublished: true, isHot: true },
+    include: cardInclude,
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+  })
+  return projects.map((project) => ({
+    ...toCard(project),
+    paymentPlan: project.paymentPlan,
+  }))
+}
+
+export type PublicDeveloper = {
+  id: string
+  name: string
+  description: string | null
+  coverImageUrl: string | null
+  logoUrl: string | null
+  websiteUrl: string | null
+  isVisible: boolean
+}
+
+/** Editorial developer content configured in the admin app. Hidden rows are
+ * included so callers can suppress their project-derived fallback cards too —
+ * only `isVisible` rows may be rendered. */
+export async function getPublicDevelopers(): Promise<PublicDeveloper[]> {
+  const rows = await prisma.developer.findMany({ orderBy: { name: "asc" } })
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    coverImageUrl: row.coverImageUrl,
+    logoUrl: row.logoUrl,
+    websiteUrl: row.websiteUrl,
+    isVisible: row.isVisible,
+  }))
+}
+
+export type PublishedDeveloperStat = {
+  developer: string
+  projectCount: number
+  coverImageUrl: string | null
+}
+
+/** Per-developer stats over published projects, for the /developers page. */
+export async function getPublishedDeveloperStats(): Promise<
+  PublishedDeveloperStat[]
+> {
+  const projects = await prisma.project.findMany({
+    where: { isPublished: true },
+    select: {
+      developer: true,
+      attachments: {
+        where: { category: "IMAGE" },
+        orderBy: [{ isCover: "desc" }, { uploadedAt: "asc" }],
+        take: 1,
+        select: { url: true },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+  })
+
+  const stats = new Map<string, PublishedDeveloperStat>()
+  for (const project of projects) {
+    const existing = stats.get(project.developer)
+    if (existing) {
+      existing.projectCount += 1
+      existing.coverImageUrl ??= project.attachments[0]?.url ?? null
+    } else {
+      stats.set(project.developer, {
+        developer: project.developer,
+        projectCount: 1,
+        coverImageUrl: project.attachments[0]?.url ?? null,
+      })
+    }
+  }
+  return [...stats.values()]
 }
 
 export async function getOtherPublishedProjects(

@@ -2,11 +2,18 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Menu, Phone, X } from "lucide-react"
 
 import { cn } from "@workspace/ui/lib/utils"
 import { nav, site } from "@/lib/content"
+
+// Section ids behind the home-page anchor links ("/#services" → "services"),
+// observed for scrollspy highlighting while on the home page.
+const anchorSectionIds = nav
+  .filter((item) => item.href.startsWith("/#"))
+  .map((item) => item.href.slice(2))
 
 export function SiteHeader({
   variant = "overlay",
@@ -15,8 +22,10 @@ export function SiteHeader({
   // scrolled treatment from the start, for pages without a dark hero.
   variant?: "overlay" | "solid"
 }) {
+  const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState<string | null>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -24,6 +33,39 @@ export function SiteHeader({
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
+
+  // Scrollspy for the home page's in-page sections. A section counts as
+  // active while its slice crosses a band a third down the viewport; between
+  // sections (e.g. over the hero) nothing is highlighted.
+  useEffect(() => {
+    if (pathname !== "/") return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id)
+          } else {
+            setActiveSection((current) =>
+              current === entry.target.id ? null : current
+            )
+          }
+        }
+      },
+      { rootMargin: "-30% 0px -60% 0px" }
+    )
+    for (const id of anchorSectionIds) {
+      const element = document.getElementById(id)
+      if (element) observer.observe(element)
+    }
+    return () => observer.disconnect()
+  }, [pathname])
+
+  function isActive(href: string): boolean {
+    if (href.startsWith("/#")) {
+      return pathname === "/" && activeSection === href.slice(2)
+    }
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
 
   // Light (inverted) treatment while floating over the dark hero.
   const overHero = variant === "overlay" && !scrolled && !open
@@ -50,20 +92,26 @@ export function SiteHeader({
         </Link>
 
         <nav className="hidden items-center gap-9 lg:flex">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors",
-                overHero
-                  ? "text-white/75 hover:text-white"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {nav.map((item) => {
+            const active = isActive(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "true" : undefined}
+                className={cn(
+                  "text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors",
+                  active
+                    ? "text-copper"
+                    : overHero
+                      ? "text-white/75 hover:text-white"
+                      : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
 
         <div className="flex items-center gap-6">
@@ -110,7 +158,10 @@ export function SiteHeader({
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="border-b border-border py-5 font-heading text-2xl text-foreground"
+              className={cn(
+                "border-b border-border py-5 font-heading text-2xl",
+                isActive(item.href) ? "text-copper" : "text-foreground"
+              )}
             >
               {item.label}
             </Link>

@@ -6,7 +6,7 @@ import { DuplicateProjectButton } from "@/components/projects/duplicate-project-
 import { EditProjectDialog } from "@/components/projects/edit-project-dialog"
 import { ExportProjectButton } from "@/components/projects/export-project-button"
 import { InventoryFreshnessBadge } from "@/components/projects/inventory-freshness-badge"
-import { PublishToggle } from "@/components/projects/publish-toggle"
+import { HotToggle, PublishToggle } from "@/components/projects/publish-toggle"
 import { StatusBadge } from "@/components/status-badge"
 import { getCoverImageUrl, type PlainProject } from "@/lib/data/serialize"
 
@@ -67,6 +67,9 @@ export function ProjectHeader({ project }: { project: PlainProject }) {
           slug={project.slug}
           marketingUrl={marketingUrl}
         />
+        {project.isPublished ? (
+          <HotToggle projectId={project.id} isHot={project.isHot} />
+        ) : null}
       </div>
     </div>
   )

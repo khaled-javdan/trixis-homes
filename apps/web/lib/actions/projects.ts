@@ -107,9 +107,31 @@ export async function setProjectPublished(id: string, isPublished: boolean) {
     }
   }
 
-  await prisma.project.update({ where: { id }, data: { isPublished, slug } })
+  await prisma.project.update({
+    where: { id },
+    // Unpublishing also pulls the project from the home-page slider.
+    data: { isPublished, slug, ...(isPublished ? {} : { isHot: false }) },
+  })
   revalidatePath(`/projects/${id}`)
   return { slug }
+}
+
+/** Features/unfeatures a published project in the marketing home-page
+ * "hot projects" slider. */
+export async function setProjectHot(id: string, isHot: boolean) {
+  await requireAdmin()
+  if (isHot) {
+    const project = await prisma.project.findUnique({
+      where: { id },
+      select: { isPublished: true },
+    })
+    if (!project) throw new Error("Project not found")
+    if (!project.isPublished) {
+      throw new Error("Publish the project before featuring it")
+    }
+  }
+  await prisma.project.update({ where: { id }, data: { isHot } })
+  revalidatePath(`/projects/${id}`)
 }
 
 export async function setProjectCoordinates(

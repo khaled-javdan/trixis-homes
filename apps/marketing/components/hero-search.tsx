@@ -1,7 +1,14 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-import { Search } from "lucide-react"
+import {
+  BedDouble,
+  Home,
+  MapPin,
+  Search,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react"
 
 import { useRouter } from "next/navigation"
 
@@ -48,11 +55,15 @@ const budgetOptions = [
 ]
 
 function Field({
+  icon: Icon,
+  label,
   value,
   onValueChange,
   neutralLabel,
   options,
 }: {
+  icon: LucideIcon
+  label: string
   value: string
   onValueChange: (value: string) => void
   neutralLabel: string
@@ -67,28 +78,37 @@ function Field({
   }
 
   return (
-    <Select
-      items={items}
-      value={value}
-      onValueChange={(next) => onValueChange(next ?? ANY)}
-    >
-      <SelectTrigger
-        className={cn(
-          "h-auto w-full min-w-0 border-0 bg-transparent px-4 py-3 text-sm shadow-none focus-visible:ring-0 dark:bg-transparent dark:hover:bg-transparent",
-          value === ANY ? "text-ink/55" : "text-ink"
-        )}
-      >
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={ANY}>{neutralLabel}</SelectItem>
-        {options.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex flex-1 items-center gap-3 px-4 py-2.5">
+      <Icon className="size-5 shrink-0 text-copper" aria-hidden />
+      <div className="min-w-0 flex-1 text-left">
+        <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-ink/45">
+          {label}
+        </span>
+        <Select
+          items={items}
+          value={value}
+          onValueChange={(next) => onValueChange(next ?? ANY)}
+        >
+          <SelectTrigger
+            aria-label={label}
+            className={cn(
+              "h-auto w-full min-w-0 gap-1 border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0 dark:bg-transparent dark:hover:bg-transparent",
+              value === ANY ? "font-normal text-ink/60" : "font-medium text-ink"
+            )}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ANY}>{neutralLabel}</SelectItem>
+            {options.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
   )
 }
 
@@ -113,41 +133,51 @@ export function HeroSearch() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-10 w-full max-w-4xl rounded-2xl bg-white p-2 shadow-2xl shadow-ink-deep/30"
+      className="mt-10 w-full max-w-4xl rounded-2xl bg-white p-2 pr-4 shadow-2xl shadow-ink-deep/30 lg:-mr-56 lg:w-[calc(100%+14rem)] lg:pr-5 xl:-mr-80 xl:w-[calc(100%+20rem)] xl:max-w-7xl xl:pr-7"
     >
-      <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 xl:grid-cols-[repeat(4,1fr)_auto] xl:items-center xl:divide-x xl:divide-ink/10">
+      <div className="flex flex-col divide-y divide-ink/10 xl:flex-row xl:items-center xl:divide-x xl:divide-y-0">
         <Field
+          icon={MapPin}
+          label="Location"
           value={community}
           onValueChange={setCommunity}
           neutralLabel="Any location"
           options={communities.map((name) => ({ value: name, label: name }))}
         />
         <Field
+          icon={Home}
+          label="Property type"
           value={propertyType}
           onValueChange={setPropertyType}
-          neutralLabel="Property type"
+          neutralLabel="Any type"
           options={propertyTypes}
         />
         <Field
+          icon={BedDouble}
+          label="Bedrooms"
           value={bedrooms}
           onValueChange={setBedrooms}
-          neutralLabel="Bedrooms"
+          neutralLabel="Any"
           options={bedroomOptions}
         />
         <Field
+          icon={Wallet}
+          label="Max budget"
           value={maxPrice}
           onValueChange={setMaxPrice}
-          neutralLabel="Max budget"
+          neutralLabel="No max"
           options={budgetOptions}
         />
 
-        <button
-          type="submit"
-          className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-copper px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-copper-deep sm:col-span-2 xl:col-span-1 xl:mt-0 xl:rounded-lg"
-        >
-          <Search className="size-4" aria-hidden />
-          Search
-        </button>
+        <div className="pt-2 xl:shrink-0 xl:pl-2 xl:pt-0">
+          <button
+            type="submit"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-copper px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-copper-deep"
+          >
+            <Search className="size-4" aria-hidden />
+            Search
+          </button>
+        </div>
       </div>
     </form>
   )

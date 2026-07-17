@@ -21,7 +21,7 @@ export function Hero() {
         <div className="absolute inset-0 bg-ink-deep/85" />
       </div>
 
-      <div className="relative z-10 flex flex-col justify-center px-6 pb-16 pt-36 sm:px-10 lg:px-14 lg:pt-32 xl:px-20">
+      <div className="relative z-10 flex flex-col justify-center pb-16 pt-36 pl-6 pr-6 sm:pr-10 lg:pl-[calc(max(2.5rem,(100vw-80rem)/2+2.5rem))] lg:pr-10 lg:pt-32 xl:pr-12">
         <Eyebrow>Dubai · Worldwide</Eyebrow>
         <h1 className="mt-6 max-w-xl font-heading text-[2.6rem] leading-[1.08] text-balance sm:text-5xl xl:text-6xl">
           Buy, sell, invest, or rent with confidence.

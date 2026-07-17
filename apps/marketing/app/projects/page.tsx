@@ -33,16 +33,18 @@ const propertyTypeValues: PropertyType[] = [
 ]
 
 type SearchParams = {
+  developer?: string
   community?: string
   propertyType?: string
   bedrooms?: string
   maxPrice?: string
 }
 
-// Parses the hero-search URL contract (community | propertyType | bedrooms |
-// maxPrice) into typed filters, ignoring anything malformed.
+// Parses the URL filter contract (developer | community | propertyType |
+// bedrooms | maxPrice) into typed filters, ignoring anything malformed.
 function parseFilters(params: SearchParams): PublicProjectFilters {
   const filters: PublicProjectFilters = {}
+  if (params.developer?.trim()) filters.developer = params.developer.trim()
   if (params.community?.trim()) filters.community = params.community.trim()
   if (
     params.propertyType &&
@@ -66,6 +68,7 @@ function parseFilters(params: SearchParams): PublicProjectFilters {
 
 function filterSummary(filters: PublicProjectFilters): string[] {
   const parts: string[] = []
+  if (filters.developer) parts.push(`by ${filters.developer}`)
   if (filters.community) parts.push(filters.community)
   if (filters.propertyType)
     parts.push(`${formatPropertyType(filters.propertyType)}s`)

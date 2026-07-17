@@ -2,6 +2,7 @@ import { About } from "@/components/about"
 import { Cta } from "@/components/cta"
 import { Hero } from "@/components/hero"
 import { FeaturedProjects } from "@/components/projects/featured-projects"
+import { HotProjectsSlider } from "@/components/projects/hot-projects-slider"
 import { Properties } from "@/components/properties"
 import { Reviews } from "@/components/reviews"
 import { Services } from "@/components/services"
@@ -10,6 +11,7 @@ import { SiteHeader } from "@/components/site-header"
 import { Team } from "@/components/team"
 import { Ticker } from "@/components/ticker"
 import { googleRating, reviews, site } from "@/lib/content"
+import { getHotProjects } from "@/lib/projects"
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -42,7 +44,9 @@ const jsonLd = {
 // from the admin app), so the home page renders per-request.
 export const dynamic = "force-dynamic"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const hotProjects = await getHotProjects()
+
   return (
     <>
       <script
@@ -52,6 +56,7 @@ export default function HomePage() {
       <SiteHeader />
       <main>
         <Hero />
+        <HotProjectsSlider projects={hotProjects} />
         <FeaturedProjects />
         <Ticker />
         <Services />

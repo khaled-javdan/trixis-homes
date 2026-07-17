@@ -18,8 +18,8 @@ export const site = {
 // (e.g. /projects) as well as the home page.
 export const nav = [
   { label: "Projects", href: "/projects" },
+  { label: "Developers", href: "/developers" },
   { label: "Services", href: "/#services" },
-  { label: "Properties", href: "/#properties" },
   { label: "About", href: "/#about" },
   { label: "Team", href: "/#team" },
   { label: "Contact", href: "/#contact" },
@@ -78,6 +78,7 @@ export const communities = [
 
 // Official brand logos sourced from each developer's site (or Wikipedia
 // for DAMAC/Sobha/Aldar). All are normalized to a single tone in CSS.
+// Write-ups live in the Developer table (seeded by packages/db/prisma/seed-developers.ts).
 export const developers = [
   { name: "Emaar", logo: "/images/developers/emaar.svg" },
   { name: "Aldar", logo: "/images/developers/aldar.png" },

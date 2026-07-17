@@ -2,42 +2,51 @@
 
 import * as React from "react"
 import { upload } from "@vercel/blob/client"
-import { AlertCircleIcon, CheckIcon, UploadCloudIcon, XIcon } from "lucide-react"
+import {
+  AlertCircleIcon,
+  ImagePlusIcon,
+  UploadCloudIcon,
+  XIcon,
+} from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import { Progress } from "@workspace/ui/components/progress"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useIsAdmin } from "@/components/admin-provider"
 import { createAttachmentRecord } from "@/lib/actions/attachments"
-import { attachmentCategoryMeta } from "@/lib/attachment-categories"
-import {
-  attachmentCategoryValues,
-  type AttachmentInput,
-} from "@workspace/db/validation/attachment"
+import type { AttachmentInput } from "@workspace/db/validation/attachment"
+
+const imageAccept = "image/png,image/jpeg,image/webp,image/gif"
+const documentAccept = `application/pdf,${imageAccept}`
 
 type UploadTask = {
   id: string
   name: string
   progress: number
-  status: "uploading" | "done" | "error"
+  status: "uploading" | "error"
   error?: string
 }
 
-export function UploadDropzone({ projectId }: { projectId: string }) {
+/** Upload control pinned to a single attachment category. Rendered as a
+ * square tile inside image grids, or as a dashed row under document lists. */
+export function CategoryUpload({
+  projectId,
+  category,
+  variant,
+  label,
+}: {
+  projectId: string
+  category: AttachmentInput["category"]
+  variant: "tile" | "row"
+  label: string
+}) {
   const isAdmin = useIsAdmin()
-  const [category, setCategory] =
-    React.useState<AttachmentInput["category"]>("OTHER")
   const [isDragging, setIsDragging] = React.useState(false)
   const [tasks, setTasks] = React.useState<UploadTask[]>([])
   const inputRef = React.useRef<HTMLInputElement>(null)
+
+  const accept = category === "IMAGE" ? imageAccept : documentAccept
 
   function updateTask(id: string, patch: Partial<UploadTask>) {
     setTasks((prev) =>
@@ -82,7 +91,7 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
             size: file.size,
             category,
           })
-          updateTask(id, { status: "done", progress: 100 })
+          setTasks((prev) => prev.filter((task) => task.id !== id))
         } catch (error) {
           updateTask(id, {
             status: "error",
@@ -93,38 +102,56 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
     )
 
     if (inputRef.current) inputRef.current.value = ""
-    setTimeout(() => {
-      setTasks((prev) => prev.filter((task) => task.status !== "done"))
-    }, 2000)
   }
 
   if (!isAdmin) return null
 
+  const dropHandlers = {
+    onDragOver: (event: React.DragEvent) => {
+      event.preventDefault()
+      setIsDragging(true)
+    },
+    onDragLeave: () => setIsDragging(false),
+    onDrop: (event: React.DragEvent) => {
+      event.preventDefault()
+      setIsDragging(false)
+      void handleFiles(event.dataTransfer.files)
+    },
+  }
+
+  const uploadingTasks = tasks.filter((task) => task.status === "uploading")
+
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-        <div
-          onDragOver={(event) => {
-            event.preventDefault()
-            setIsDragging(true)
-          }}
-          onDragLeave={() => setIsDragging(false)}
-          onDrop={(event) => {
-            event.preventDefault()
-            setIsDragging(false)
-            void handleFiles(event.dataTransfer.files)
-          }}
+    <>
+      {variant === "tile" ? (
+        <button
+          type="button"
           onClick={() => inputRef.current?.click()}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault()
-              inputRef.current?.click()
-            }
-          }}
-          role="button"
-          tabIndex={0}
+          {...dropHandlers}
           className={cn(
-            "flex flex-1 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed px-4 py-8 text-center transition-colors",
+            "flex aspect-square flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed text-center text-xs text-muted-foreground transition-colors",
+            isDragging
+              ? "border-primary bg-primary/5"
+              : "border-border hover:border-muted-foreground/40 hover:bg-muted/40"
+          )}
+        >
+          <ImagePlusIcon
+            className={cn(
+              "size-5",
+              isDragging ? "text-primary" : "text-muted-foreground"
+            )}
+          />
+          {uploadingTasks.length
+            ? `Uploading ${uploadingTasks.length}…`
+            : label}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          {...dropHandlers}
+          className={cn(
+            "flex items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-3 text-sm text-muted-foreground transition-colors",
             isDragging
               ? "border-primary bg-primary/5"
               : "border-border hover:border-muted-foreground/40 hover:bg-muted/40"
@@ -132,57 +159,27 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
         >
           <UploadCloudIcon
             className={cn(
-              "size-6 transition-colors",
+              "size-4",
               isDragging ? "text-primary" : "text-muted-foreground"
             )}
           />
-          <p className="text-sm font-medium">
-            {isDragging ? "Drop to upload" : "Drag & drop files, or click to browse"}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            PDF, PNG, JPG, WEBP, or GIF — multiple files supported
-          </p>
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            className="hidden"
-            accept="application/pdf,image/png,image/jpeg,image/webp,image/gif"
-            onChange={(event) => void handleFiles(event.target.files)}
-          />
-        </div>
+          {uploadingTasks.length
+            ? `Uploading ${uploadingTasks.length}…`
+            : label}
+        </button>
+      )}
 
-        <div className="flex flex-col gap-1.5 sm:w-48 sm:shrink-0">
-          <span className="text-xs font-medium text-muted-foreground">
-            Upload as
-          </span>
-          <Select
-            value={category}
-            onValueChange={(value) =>
-              setCategory(value as AttachmentInput["category"])
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {attachmentCategoryValues.map((value) => {
-                const meta = attachmentCategoryMeta[value]
-                const Icon = meta.icon
-                return (
-                  <SelectItem key={value} value={value}>
-                    <Icon className="size-4 text-muted-foreground" />
-                    {meta.label}
-                  </SelectItem>
-                )
-              })}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        multiple
+        className="hidden"
+        accept={accept}
+        onChange={(event) => void handleFiles(event.target.files)}
+      />
 
       {tasks.length > 0 && (
-        <div className="flex flex-col gap-2">
+        <div className={cn("flex flex-col gap-2", variant === "tile" && "col-span-full")}>
           {tasks.map((task) => (
             <div
               key={task.id}
@@ -204,9 +201,6 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
                   {Math.round(task.progress)}%
                 </span>
               )}
-              {task.status === "done" && (
-                <CheckIcon className="size-4 shrink-0 text-emerald-600" />
-              )}
               {task.status === "error" && (
                 <>
                   <AlertCircleIcon className="size-4 shrink-0 text-destructive" />
@@ -226,6 +220,6 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
           ))}
         </div>
       )}
-    </div>
+    </>
   )
 }
