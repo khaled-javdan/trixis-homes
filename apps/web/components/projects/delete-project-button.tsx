@@ -18,6 +18,7 @@ import {
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { deleteProject } from "@/lib/actions/projects"
 
 export function DeleteProjectButton({
@@ -27,8 +28,11 @@ export function DeleteProjectButton({
   projectId: string
   projectName: string
 }) {
+  const isAdmin = useIsAdmin()
   const router = useRouter()
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) return null
 
   return (
     <AlertDialog>

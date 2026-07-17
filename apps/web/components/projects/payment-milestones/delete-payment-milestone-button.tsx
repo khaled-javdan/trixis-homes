@@ -6,6 +6,7 @@ import { toast } from "sonner"
 
 import { Button } from "@workspace/ui/components/button"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { deletePaymentMilestone } from "@/lib/actions/payment-milestones"
 
 export function DeletePaymentMilestoneButton({
@@ -15,7 +16,10 @@ export function DeletePaymentMilestoneButton({
   milestoneId: string
   projectId: string
 }) {
+  const isAdmin = useIsAdmin()
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) return null
 
   return (
     <Button

@@ -6,8 +6,10 @@ import { prisma } from "@workspace/db"
 import type { UnitTypeInput } from "@workspace/db/validation/unit-type"
 
 import { toUnitTypeData } from "@/lib/actions/prisma-mappers"
+import { requireAdmin } from "@/lib/auth"
 
 export async function createUnitType(projectId: string, input: UnitTypeInput) {
+  await requireAdmin()
   const unit = await prisma.unitType.create({
     data: { ...toUnitTypeData(input), projectId },
   })
@@ -21,12 +23,14 @@ export async function updateUnitType(
   projectId: string,
   input: UnitTypeInput
 ) {
+  await requireAdmin()
   await prisma.unitType.update({ where: { id }, data: toUnitTypeData(input) })
   revalidatePath(`/projects/${projectId}`)
   revalidatePath("/")
 }
 
 export async function deleteUnitType(id: string, projectId: string) {
+  await requireAdmin()
   await prisma.unitType.delete({ where: { id } })
   revalidatePath(`/projects/${projectId}`)
   revalidatePath("/")

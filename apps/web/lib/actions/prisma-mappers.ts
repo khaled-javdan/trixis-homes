@@ -27,6 +27,7 @@ export async function toProjectData(input: ProjectInput) {
     latitude: coordinates?.latitude ?? null,
     longitude: coordinates?.longitude ?? null,
     status: parsed.status,
+    launchDate: parsed.launchDate ?? null,
     handoverDate: parsed.handoverDate ?? null,
     description: parsed.description || null,
     paymentPlan: parsed.paymentPlan || null,

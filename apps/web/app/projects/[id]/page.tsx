@@ -10,6 +10,10 @@ import { ProjectMap } from "@/components/projects/project-map"
 import { UnitTypeTable } from "@/components/projects/unit-types/unit-type-table"
 import { getProjectDetail } from "@/lib/data/projects"
 
+const panelClass =
+  "flex flex-col gap-4 rounded-lg border border-border bg-card p-5 sm:p-6"
+const headingClass = "text-lg font-semibold tracking-tight"
+
 export default async function ProjectDetailPage({
   params,
 }: {
@@ -23,50 +27,57 @@ export default async function ProjectDetailPage({
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <ProjectHeader project={project} />
 
-      <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold tracking-tight">General Info</h2>
-        <GeneralInfoPanel project={project} />
-      </section>
+      {/* Top row: key facts alongside the map for an at-a-glance overview */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <section className={`${panelClass} lg:col-span-2`}>
+          <h2 className={headingClass}>General Info</h2>
+          <GeneralInfoPanel project={project} />
+        </section>
 
-      <section className="flex flex-col gap-4 border-t border-border pt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Payment Plan</h2>
-        <PaymentMilestonesPanel
-          projectId={project.id}
-          handoverDate={project.handoverDate}
-          milestones={project.paymentMilestones}
-        />
-      </section>
+        <section className="flex flex-col gap-4">
+          <h2 className={headingClass}>Location</h2>
+          {project.latitude != null && project.longitude != null ? (
+            <ProjectMap
+              projectId={project.id}
+              name={project.name}
+              location={project.location}
+              latitude={project.latitude}
+              longitude={project.longitude}
+            />
+          ) : (
+            <ProjectLocationPicker projectId={project.id} />
+          )}
+        </section>
+      </div>
 
-      <section className="flex flex-col gap-4 border-t border-border pt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Location</h2>
-        {project.latitude != null && project.longitude != null ? (
-          <ProjectMap
-            projectId={project.id}
-            name={project.name}
-            location={project.location}
-            latitude={project.latitude}
-            longitude={project.longitude}
-          />
-        ) : (
-          <ProjectLocationPicker projectId={project.id} />
-        )}
-      </section>
-
-      <section className="flex flex-col gap-4 border-t border-border pt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Unit Types</h2>
+      {/* Unit types: a wide table, kept full width */}
+      <section className={panelClass}>
+        <h2 className={headingClass}>Unit Types</h2>
         <UnitTypeTable project={project} />
       </section>
 
-      <section className="flex flex-col gap-4 border-t border-border pt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Notes</h2>
-        <NotesPanel projectId={project.id} notes={project.notes} />
-      </section>
+      {/* Payment plan alongside notes */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <section className={`${panelClass} lg:col-span-2`}>
+          <h2 className={headingClass}>Payment Plan</h2>
+          <PaymentMilestonesPanel
+            projectId={project.id}
+            handoverDate={project.handoverDate}
+            milestones={project.paymentMilestones}
+          />
+        </section>
 
-      <section className="flex flex-col gap-4 border-t border-border pt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Attachments</h2>
+        <section className={panelClass}>
+          <h2 className={headingClass}>Notes</h2>
+          <NotesPanel projectId={project.id} notes={project.notes} />
+        </section>
+      </div>
+
+      <section className={panelClass}>
+        <h2 className={headingClass}>Attachments</h2>
         <AttachmentsPanel
           projectId={project.id}
           attachments={project.attachments}

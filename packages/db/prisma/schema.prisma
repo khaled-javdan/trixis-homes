@@ -34,6 +34,13 @@ enum AttachmentCategory {
   OTHER
 }
 
+enum LeadType {
+  BROCHURE
+  FLOOR_PLAN
+  PRICE_LIST
+  ENQUIRY
+}
+
 model Project {
   id                      String        @id @default(cuid())
   name                    String
@@ -45,6 +52,7 @@ model Project {
   latitude                Float?
   longitude               Float?
   status                  ProjectStatus @default(OFF_PLAN)
+  launchDate              DateTime?
   handoverDate            DateTime?
   description             String?
   paymentPlan             String?
@@ -65,16 +73,21 @@ model Project {
   availableUnitsCount     Int?
   link                    String?
   isFavorite              Boolean       @default(false)
+  inventoryUpdatedAt      DateTime?
+  isPublished             Boolean       @default(false)
+  slug                    String?       @unique
 
   unitTypes         UnitType[]
   notes             Note[]
   attachments       Attachment[]
   paymentMilestones PaymentMilestone[]
+  leads             Lead[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([isFavorite])
+  @@index([isPublished])
   @@index([developer])
   @@index([masterCommunity])
   @@index([location])
@@ -135,6 +148,25 @@ model Note {
   updatedAt DateTime @updatedAt
 
   @@index([projectId])
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String?
+  type      LeadType @default(ENQUIRY)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  // Kept denormalized so the lead's context survives project deletion.
+  projectName String?
+
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+  @@index([email])
+  @@index([createdAt])
 }
 
 model Attachment {

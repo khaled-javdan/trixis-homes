@@ -17,6 +17,7 @@ import {
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { deleteAttachment } from "@/lib/actions/attachments"
 
 export function AttachmentDeleteButton({
@@ -30,8 +31,11 @@ export function AttachmentDeleteButton({
   filename: string
   className?: string
 }) {
+  const isAdmin = useIsAdmin()
   const [open, setOpen] = React.useState(false)
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) return null
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

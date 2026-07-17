@@ -16,6 +16,7 @@ export const projectSchema = z.object({
   city: z.string().trim().max(200).optional().or(z.literal("")),
   location: z.string().trim().min(1).max(200),
   status: z.enum(projectStatusValues),
+  launchDate: z.coerce.date().optional().nullable(),
   handoverDate: z.coerce.date().optional().nullable(),
   description: z.string().trim().max(4000).optional().or(z.literal("")),
   paymentPlan: z.string().trim().max(500).optional().or(z.literal("")),

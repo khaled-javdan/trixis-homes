@@ -4,7 +4,6 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
-  BookOpenIcon,
   LayoutGridIcon,
   MoonIcon,
   PlusIcon,
@@ -24,6 +23,8 @@ import {
   CommandList,
   CommandSeparator,
 } from "@workspace/ui/components/command"
+
+import { useIsAdmin } from "@/components/admin-provider"
 
 type CommandPaletteProject = {
   id: string
@@ -45,6 +46,7 @@ export function CommandPalette({
 }: {
   projects: CommandPaletteProject[]
 }) {
+  const isAdmin = useIsAdmin()
   const [open, setOpen] = React.useState(false)
   const router = useRouter()
   const { resolvedTheme, setTheme } = useTheme()
@@ -106,30 +108,22 @@ export function CommandPalette({
               <CommandItem value="Dashboard" onSelect={() => go("/")}>
                 <LayoutGridIcon /> Go to Dashboard
               </CommandItem>
-              <CommandItem
-                value="New Project"
-                onSelect={() => go("/projects/new")}
-              >
-                <PlusIcon /> New Project
-              </CommandItem>
-              <CommandItem
-                value="Paste to Create"
-                onSelect={() => go("/projects/ai-import")}
-              >
-                <SparklesIcon /> Paste to Create
-              </CommandItem>
-              <CommandItem
-                value="Memory Mode Study"
-                onSelect={() => go("/study")}
-              >
-                <BookOpenIcon /> Memory Mode
-              </CommandItem>
-              <CommandItem
-                value="Flashcards"
-                onSelect={() => go("/flashcards")}
-              >
-                <SquareStackIcon /> Flashcards
-              </CommandItem>
+              {isAdmin && (
+                <>
+                  <CommandItem
+                    value="New Project"
+                    onSelect={() => go("/projects/new")}
+                  >
+                    <PlusIcon /> New Project
+                  </CommandItem>
+                  <CommandItem
+                    value="Paste to Create"
+                    onSelect={() => go("/projects/ai-import")}
+                  >
+                    <SparklesIcon /> Paste to Create
+                  </CommandItem>
+                </>
+              )}
               <CommandItem
                 value="Toggle theme"
                 onSelect={() => {

@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": ["NODE_ENV", "DATABASE_URL", "DATABASE_URL_UNPOOLED", "BLOB_READ_WRITE_TOKEN"],
+  "globalEnv": ["NODE_ENV", "DATABASE_URL", "DATABASE_URL_UNPOOLED", "BLOB_READ_WRITE_TOKEN", "ADMIN_PASSWORD", "AUTH_SECRET"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

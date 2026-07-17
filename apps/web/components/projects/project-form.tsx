@@ -37,6 +37,8 @@ type ProjectFormValues = {
   city: string
   location: string
   status: (typeof statusOptions)[number]
+  launchQuarter: string
+  launchYear: string
   handoverQuarter: string
   handoverYear: string
   description: string
@@ -67,6 +69,7 @@ export type ProjectFormDefaults = {
   city?: string | null
   location?: string
   status?: ProjectInput["status"]
+  launchDate?: string | Date | null
   handoverDate?: string | Date | null
   description?: string | null
   paymentPlan?: string | null
@@ -90,6 +93,7 @@ export type ProjectFormDefaults = {
 
 function toFormValues(defaultValues?: ProjectFormDefaults): ProjectFormValues {
   const { quarter, year } = dateToQuarter(defaultValues?.handoverDate)
+  const launch = dateToQuarter(defaultValues?.launchDate)
   return {
     name: defaultValues?.name ?? "",
     developer: defaultValues?.developer ?? "",
@@ -98,6 +102,8 @@ function toFormValues(defaultValues?: ProjectFormDefaults): ProjectFormValues {
     city: defaultValues?.city ?? "",
     location: defaultValues?.location ?? "",
     status: defaultValues?.status ?? "OFF_PLAN",
+    launchQuarter: launch.quarter,
+    launchYear: launch.year,
     handoverQuarter: quarter,
     handoverYear: year,
     description: defaultValues?.description ?? "",
@@ -181,6 +187,7 @@ export function ProjectForm({
           city: values.city,
           location: values.location,
           status: values.status,
+          launchDate: quarterToDate(values.launchQuarter, values.launchYear),
           handoverDate: quarterToDate(
             values.handoverQuarter,
             values.handoverYear
@@ -293,6 +300,34 @@ export function ProjectForm({
               </Select>
             )}
           />
+        </FormField>
+        <FormField label="Launch Date (optional)">
+          <div className="flex gap-2">
+            <Controller
+              control={form.control}
+              name="launchQuarter"
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Quarter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {quarterValues.map((quarter) => (
+                      <SelectItem key={quarter} value={quarter}>
+                        {`Q${quarter}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            <Input
+              type="number"
+              inputMode="numeric"
+              placeholder="Year"
+              {...form.register("launchYear")}
+            />
+          </div>
         </FormField>
         <FormField label="Handover Date (optional)">
           <div className="flex gap-2">

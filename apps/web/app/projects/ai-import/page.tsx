@@ -1,6 +1,13 @@
-import { AiImportFlow } from "@/components/projects/ai-import/ai-import-flow"
+import { redirect } from "next/navigation"
 
-export default function AiImportPage() {
+import { AiImportFlow } from "@/components/projects/ai-import/ai-import-flow"
+import { isAdmin } from "@/lib/auth"
+
+export default async function AiImportPage() {
+  if (!(await isAdmin())) {
+    redirect("/login?next=/projects/ai-import")
+  }
+
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div>

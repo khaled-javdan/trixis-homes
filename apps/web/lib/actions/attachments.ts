@@ -9,7 +9,10 @@ import {
   type AttachmentInput,
 } from "@workspace/db/validation/attachment"
 
+import { requireAdmin } from "@/lib/auth"
+
 export async function createAttachmentRecord(input: AttachmentInput) {
+  await requireAdmin()
   const parsed = attachmentSchema.parse(input)
   const attachment = await prisma.attachment.create({ data: parsed })
   revalidatePath(`/projects/${parsed.projectId}`)
@@ -17,6 +20,7 @@ export async function createAttachmentRecord(input: AttachmentInput) {
 }
 
 export async function setCoverAttachment(id: string, projectId: string) {
+  await requireAdmin()
   await prisma.$transaction([
     prisma.attachment.updateMany({
       where: { projectId, isCover: true },
@@ -32,6 +36,7 @@ export async function setCoverAttachment(id: string, projectId: string) {
 }
 
 export async function deleteAttachment(id: string, projectId: string) {
+  await requireAdmin()
   const attachment = await prisma.attachment.findUnique({ where: { id } })
   if (!attachment) return
 

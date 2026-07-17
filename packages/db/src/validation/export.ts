@@ -40,6 +40,7 @@ const exportProjectSchema = z.object({
   city: z.string().nullable().optional(),
   location: z.string().min(1),
   status: z.enum(projectStatusValues),
+  launchDate: z.coerce.date().nullable().optional(),
   handoverDate: z.coerce.date().nullable().optional(),
   description: z.string().nullable().optional(),
   paymentPlan: z.string().nullable().optional(),

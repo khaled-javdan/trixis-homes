@@ -11,9 +11,9 @@ import {
 } from "@workspace/ui/components/table"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { DeletePaymentMilestoneButton } from "@/components/projects/payment-milestones/delete-payment-milestone-button"
 import { PaymentMilestoneAiImportDialog } from "@/components/projects/payment-milestones/payment-milestone-ai-import-dialog"
-import { PaymentMilestoneFormDialog } from "@/components/projects/payment-milestones/payment-milestone-form-dialog"
 import { formatDateShort } from "@/lib/format"
 import {
   computeMilestoneDurations,
@@ -31,6 +31,7 @@ export function PaymentMilestonesPanel({
   handoverDate: string | null
   milestones: PlainPaymentMilestone[]
 }) {
+  const isAdmin = useIsAdmin()
   const totalPercentage = sumMilestonePercentage(milestones)
   const durations = computeMilestoneDurations(milestones)
 
@@ -55,13 +56,14 @@ export function PaymentMilestonesPanel({
             projectId={projectId}
             handoverDate={handoverDate}
           />
-          <PaymentMilestoneFormDialog projectId={projectId} />
         </div>
       </div>
 
       {milestones.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
-          No payment milestones yet. Import one with AI above.
+          {isAdmin
+            ? "No payment milestones yet. Import one with AI above."
+            : "No payment milestones yet."}
         </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">
@@ -73,7 +75,9 @@ export function PaymentMilestonesPanel({
                 <TableHead>Date</TableHead>
                 <TableHead>Duration</TableHead>
                 <TableHead>Note</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-0 text-right">
+                  <span className="sr-only">Delete</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,11 +94,7 @@ export function PaymentMilestonesPanel({
                   <TableCell className="text-muted-foreground">
                     {milestone.note ?? "—"}
                   </TableCell>
-                  <TableCell className="flex justify-end gap-1">
-                    <PaymentMilestoneFormDialog
-                      projectId={projectId}
-                      milestone={milestone}
-                    />
+                  <TableCell className="text-right">
                     <DeletePaymentMilestoneButton
                       milestoneId={milestone.id}
                       projectId={projectId}

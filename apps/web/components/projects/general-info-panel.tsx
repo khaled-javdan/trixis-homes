@@ -24,6 +24,7 @@ export function GeneralInfoPanel({ project }: { project: PlainProject }) {
     ],
     ["Community", project.community],
     ["Location", project.location],
+    ["Launch Date", formatDate(project.launchDate)],
     ["Handover Date", formatDate(project.handoverDate)],
     [
       "Payment Plan",

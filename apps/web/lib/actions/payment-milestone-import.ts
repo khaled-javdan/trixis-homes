@@ -11,6 +11,7 @@ import {
 } from "@workspace/db/validation/payment-milestone"
 
 import { toPaymentMilestoneData } from "@/lib/actions/prisma-mappers"
+import { requireAdmin } from "@/lib/auth"
 
 const BASE_SYSTEM_PROMPT = `You extract a structured payment milestone breakdown from a UAE real
 estate payment plan — a developer's payment schedule table, price list, or broker's
@@ -67,6 +68,7 @@ export async function extractPaymentMilestones(input: {
   imageDataUrl?: string
   handoverDate?: string | null
 }): Promise<ExtractedPaymentMilestone[]> {
+  await requireAdmin()
   const text = input.text?.trim()
   if (!text && !input.imageDataUrl) return []
 
@@ -111,6 +113,7 @@ export async function createPaymentMilestonesFromExtraction(
   projectId: string,
   milestones: (Omit<PaymentMilestoneInput, "date"> & { date: Date | null })[]
 ) {
+  await requireAdmin()
   if (milestones.length === 0) return
 
   // The extraction schema allows a null date when the source text gives no

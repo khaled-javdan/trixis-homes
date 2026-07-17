@@ -81,6 +81,7 @@ export type PlainProject = {
   latitude: number | null
   longitude: number | null
   status: Project["status"]
+  launchDate: string | null
   handoverDate: string | null
   description: string | null
   paymentPlan: string | null
@@ -101,6 +102,9 @@ export type PlainProject = {
   availableUnitsCount: number | null
   link: string | null
   isFavorite: boolean
+  isPublished: boolean
+  slug: string | null
+  inventoryUpdatedAt: string | null
   createdAt: string
   updatedAt: string
   unitTypes: PlainUnitType[]
@@ -193,6 +197,7 @@ export function toPlainProject(
     latitude: project.latitude,
     longitude: project.longitude,
     status: project.status,
+    launchDate: project.launchDate ? project.launchDate.toISOString() : null,
     handoverDate: project.handoverDate
       ? project.handoverDate.toISOString()
       : null,
@@ -221,6 +226,11 @@ export function toPlainProject(
     availableUnitsCount: project.availableUnitsCount,
     link: project.link,
     isFavorite: project.isFavorite,
+    isPublished: project.isPublished,
+    slug: project.slug,
+    inventoryUpdatedAt: project.inventoryUpdatedAt
+      ? project.inventoryUpdatedAt.toISOString()
+      : null,
     createdAt: project.createdAt.toISOString(),
     updatedAt: project.updatedAt.toISOString(),
     unitTypes: (project.unitTypes ?? []).map(toPlainUnitType),

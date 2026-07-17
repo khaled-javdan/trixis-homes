@@ -6,11 +6,13 @@ import { prisma } from "@workspace/db"
 import type { PaymentMilestoneInput } from "@workspace/db/validation/payment-milestone"
 
 import { toPaymentMilestoneData } from "@/lib/actions/prisma-mappers"
+import { requireAdmin } from "@/lib/auth"
 
 export async function createPaymentMilestone(
   projectId: string,
   input: PaymentMilestoneInput
 ) {
+  await requireAdmin()
   const milestone = await prisma.paymentMilestone.create({
     data: { ...toPaymentMilestoneData(input), projectId },
   })
@@ -23,6 +25,7 @@ export async function updatePaymentMilestone(
   projectId: string,
   input: PaymentMilestoneInput
 ) {
+  await requireAdmin()
   await prisma.paymentMilestone.update({
     where: { id },
     data: toPaymentMilestoneData(input),
@@ -31,6 +34,7 @@ export async function updatePaymentMilestone(
 }
 
 export async function deletePaymentMilestone(id: string, projectId: string) {
+  await requireAdmin()
   await prisma.paymentMilestone.delete({ where: { id } })
   revalidatePath(`/projects/${projectId}`)
 }

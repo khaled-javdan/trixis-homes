@@ -73,7 +73,7 @@ export function PaymentPlanBreakdownDialog({
       <DialogTrigger render={<Button variant="outline" size="xs" />}>
         <CalculatorIcon /> Breakdown
       </DialogTrigger>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl lg:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Payment Plan Breakdown</DialogTitle>
         </DialogHeader>

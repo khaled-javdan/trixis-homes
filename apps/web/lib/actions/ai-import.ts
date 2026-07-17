@@ -10,6 +10,7 @@ import type { ProjectInput } from "@workspace/db/validation/project"
 import type { UnitTypeInput } from "@workspace/db/validation/unit-type"
 
 import { toProjectData, toUnitTypeData } from "@/lib/actions/prisma-mappers"
+import { requireAdmin } from "@/lib/auth"
 
 const SYSTEM_PROMPT = `You extract real estate project listings from raw, informally
 formatted text (broker notes, WhatsApp messages, price lists) for a UAE property
@@ -97,6 +98,7 @@ function repairDoubleEncodedProjects(text: string): ExtractedProject[] | null {
 export async function extractProjectsFromText(
   text: string
 ): Promise<ExtractedProject[]> {
+  await requireAdmin()
   const trimmed = text.trim()
   if (!trimmed) return []
 
@@ -121,6 +123,7 @@ export async function extractProjectsFromText(
 export async function createProjectsFromExtraction(
   drafts: { project: ProjectInput; unitTypes: UnitTypeInput[] }[]
 ): Promise<{ id: string }[]> {
+  await requireAdmin()
   const created: { id: string }[] = []
 
   for (const draft of drafts) {

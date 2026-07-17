@@ -3,7 +3,13 @@ import { NextResponse } from "next/server"
 
 import { allowedAttachmentContentTypes } from "@workspace/db/validation/attachment"
 
+import { isAdmin } from "@/lib/auth"
+
 export async function POST(request: Request) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Admin access required" }, { status: 401 })
+  }
+
   const body = (await request.json()) as HandleUploadBody
 
   try {

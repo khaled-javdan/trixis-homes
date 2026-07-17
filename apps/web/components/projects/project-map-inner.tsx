@@ -17,6 +17,7 @@ import {
 
 import { Button } from "@workspace/ui/components/button"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { LocationSearchInput } from "@/components/projects/location-search-input"
 import { setProjectCoordinates } from "@/lib/actions/projects"
 
@@ -61,6 +62,7 @@ export default function ProjectMapInner({
   latitude,
   longitude,
 }: ProjectMapProps) {
+  const isAdmin = useIsAdmin()
   const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
@@ -174,16 +176,18 @@ export default function ProjectMapInner({
           </>
         ) : (
           <>
-            <Button
-              type="button"
-              variant="secondary"
-              size="icon"
-              onClick={startEditing}
-              className="shadow-md"
-              aria-label="Edit location"
-            >
-              <MapPinIcon className="size-4" />
-            </Button>
+            {isAdmin && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                onClick={startEditing}
+                className="shadow-md"
+                aria-label="Edit location"
+              >
+                <MapPinIcon className="size-4" />
+              </Button>
+            )}
             <Button
               type="button"
               variant="secondary"

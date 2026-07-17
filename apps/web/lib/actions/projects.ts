@@ -11,6 +11,7 @@ import {
 import type { ProjectInput } from "@workspace/db/validation/project"
 
 import { toProjectData } from "@/lib/actions/prisma-mappers"
+import { requireAdmin } from "@/lib/auth"
 import { geocodeLocation } from "@/lib/geocode"
 
 export async function getMasterCommunityNames(): Promise<string[]> {
@@ -24,6 +25,7 @@ export async function getMasterCommunityNames(): Promise<string[]> {
 }
 
 export async function createProject(input: ProjectInput) {
+  await requireAdmin()
   const project = await prisma.project.create({
     data: await toProjectData(input),
   })
@@ -32,6 +34,7 @@ export async function createProject(input: ProjectInput) {
 }
 
 export async function updateProject(id: string, input: ProjectInput) {
+  await requireAdmin()
   await prisma.project.update({
     where: { id },
     data: await toProjectData(input),
@@ -41,6 +44,7 @@ export async function updateProject(id: string, input: ProjectInput) {
 }
 
 export async function deleteProject(id: string) {
+  await requireAdmin()
   const project = await prisma.project.findUnique({
     where: { id },
     include: { attachments: true },
@@ -63,9 +67,49 @@ export async function deleteProject(id: string) {
 }
 
 export async function toggleFavorite(id: string, isFavorite: boolean) {
+  await requireAdmin()
   await prisma.project.update({ where: { id }, data: { isFavorite } })
   revalidatePath("/")
   revalidatePath(`/projects/${id}`)
+}
+
+function slugify(name: string): string {
+  return name
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
+/** Publishes/unpublishes a project on the public marketing site. The slug is
+ * generated on first publish and then kept stable so public URLs don't break
+ * across unpublish/republish cycles. */
+export async function setProjectPublished(id: string, isPublished: boolean) {
+  await requireAdmin()
+  const project = await prisma.project.findUnique({
+    where: { id },
+    select: { name: true, slug: true },
+  })
+  if (!project) throw new Error("Project not found")
+
+  let slug = project.slug
+  if (isPublished && !slug) {
+    const base = slugify(project.name) || id
+    slug = base
+    for (let suffix = 2; ; suffix += 1) {
+      const taken = await prisma.project.findUnique({
+        where: { slug },
+        select: { id: true },
+      })
+      if (!taken || taken.id === id) break
+      slug = `${base}-${suffix}`
+    }
+  }
+
+  await prisma.project.update({ where: { id }, data: { isPublished, slug } })
+  revalidatePath(`/projects/${id}`)
+  return { slug }
 }
 
 export async function setProjectCoordinates(
@@ -73,6 +117,7 @@ export async function setProjectCoordinates(
   latitude: number,
   longitude: number
 ) {
+  await requireAdmin()
   if (
     !Number.isFinite(latitude) ||
     !Number.isFinite(longitude) ||
@@ -91,6 +136,7 @@ export async function setProjectCoordinates(
 }
 
 export async function duplicateProject(id: string) {
+  await requireAdmin()
   const project = await prisma.project.findUnique({
     where: { id },
     include: { unitTypes: true, paymentMilestones: true },
@@ -108,6 +154,7 @@ export async function duplicateProject(id: string) {
       latitude: project.latitude,
       longitude: project.longitude,
       status: project.status,
+      launchDate: project.launchDate,
       handoverDate: project.handoverDate,
       description: project.description,
       paymentPlan: project.paymentPlan,
@@ -179,6 +226,7 @@ export async function exportProject(id: string): Promise<ProjectExport> {
       city: project.city,
       location: project.location,
       status: project.status,
+      launchDate: project.launchDate,
       handoverDate: project.handoverDate,
       description: project.description,
       paymentPlan: project.paymentPlan,
@@ -236,6 +284,7 @@ export async function exportProject(id: string): Promise<ProjectExport> {
 }
 
 export async function importProject(data: unknown) {
+  await requireAdmin()
   const parsed = projectExportSchema.parse(data)
   const { project } = parsed
   const coordinates = await geocodeLocation(
@@ -255,6 +304,7 @@ export async function importProject(data: unknown) {
       latitude: coordinates?.latitude ?? null,
       longitude: coordinates?.longitude ?? null,
       status: project.status,
+      launchDate: project.launchDate ?? null,
       handoverDate: project.handoverDate ?? null,
       description: project.description ?? null,
       paymentPlan: project.paymentPlan ?? null,

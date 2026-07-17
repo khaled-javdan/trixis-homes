@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/componen
 import { Textarea } from "@workspace/ui/components/textarea"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import {
   createPaymentMilestonesFromExtraction,
   extractPaymentMilestones,
@@ -50,6 +51,7 @@ export function PaymentMilestoneAiImportDialog({
   projectId: string
   handoverDate: string | null
 }) {
+  const isAdmin = useIsAdmin()
   const [open, setOpen] = React.useState(false)
   const [mode, setMode] = React.useState<"paste" | "upload">("paste")
   const [text, setText] = React.useState("")
@@ -61,6 +63,8 @@ export function PaymentMilestoneAiImportDialog({
   const [extracting, startExtracting] = React.useTransition()
   const [saving, startSaving] = React.useTransition()
   const inputRef = React.useRef<HTMLInputElement>(null)
+
+  if (!isAdmin) return null
 
   function reset() {
     setMode("paste")

@@ -25,6 +25,7 @@ import {
 import { Textarea } from "@workspace/ui/components/textarea"
 
 import { FormField } from "@/components/form-field"
+import { useIsAdmin } from "@/components/admin-provider"
 import { createUnitType, updateUnitType } from "@/lib/actions/unit-types"
 import {
   DIRHAM_SIGN,
@@ -119,12 +120,15 @@ export function UnitTypeFormDialog({
   projectId: string
   unit?: PlainUnitType
 }) {
+  const isAdmin = useIsAdmin()
   const isEdit = Boolean(unit)
   const [open, setOpen] = React.useState(false)
   const [pending, startTransition] = React.useTransition()
   const [areaUnit, setAreaUnit] = React.useState<AreaUnit>("ft")
   const firstFieldRef = React.useRef<HTMLButtonElement>(null)
   const form = useForm<FormValues>({ defaultValues: toFormValues(unit) })
+
+  if (!isAdmin) return null
 
   function switchAreaUnit(next: AreaUnit) {
     if (next === areaUnit) return

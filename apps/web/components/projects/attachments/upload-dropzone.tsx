@@ -15,6 +15,7 @@ import {
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { createAttachmentRecord } from "@/lib/actions/attachments"
 import { attachmentCategoryMeta } from "@/lib/attachment-categories"
 import {
@@ -31,6 +32,7 @@ type UploadTask = {
 }
 
 export function UploadDropzone({ projectId }: { projectId: string }) {
+  const isAdmin = useIsAdmin()
   const [category, setCategory] =
     React.useState<AttachmentInput["category"]>("OTHER")
   const [isDragging, setIsDragging] = React.useState(false)
@@ -95,6 +97,8 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
       setTasks((prev) => prev.filter((task) => task.status !== "done"))
     }, 2000)
   }
+
+  if (!isAdmin) return null
 
   return (
     <div className="flex flex-col gap-3">

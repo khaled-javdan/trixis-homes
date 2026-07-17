@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { setCoverAttachment } from "@/lib/actions/attachments"
 
 export function AttachmentCoverButton({
@@ -20,7 +21,10 @@ export function AttachmentCoverButton({
   isCover: boolean
   className?: string
 }) {
+  const isAdmin = useIsAdmin()
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) return null
 
   return (
     <Button

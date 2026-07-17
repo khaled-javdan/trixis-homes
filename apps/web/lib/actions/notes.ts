@@ -5,7 +5,10 @@ import { revalidatePath } from "next/cache"
 import { prisma } from "@workspace/db"
 import { noteSchema, type NoteInput } from "@workspace/db/validation/note"
 
+import { requireAdmin } from "@/lib/auth"
+
 export async function createNote(projectId: string, input: NoteInput) {
+  await requireAdmin()
   const parsed = noteSchema.parse(input)
   const note = await prisma.note.create({
     data: { projectId, body: parsed.body },
@@ -19,12 +22,14 @@ export async function updateNote(
   projectId: string,
   input: NoteInput
 ) {
+  await requireAdmin()
   const parsed = noteSchema.parse(input)
   await prisma.note.update({ where: { id }, data: { body: parsed.body } })
   revalidatePath(`/projects/${projectId}`)
 }
 
 export async function deleteNote(id: string, projectId: string) {
+  await requireAdmin()
   await prisma.note.delete({ where: { id } })
   revalidatePath(`/projects/${projectId}`)
 }

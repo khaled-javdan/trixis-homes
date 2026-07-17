@@ -1,36 +1,12 @@
-"use client"
+import { redirect } from "next/navigation"
 
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+import { isAdmin } from "@/lib/auth"
+import { NewProjectCard } from "./new-project-card"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card"
+export default async function NewProjectPage() {
+  if (!(await isAdmin())) {
+    redirect("/login?next=/projects/new")
+  }
 
-import { ProjectForm } from "@/components/projects/project-form"
-import { createProject } from "@/lib/actions/projects"
-
-export default function NewProjectPage() {
-  const router = useRouter()
-
-  return (
-    <Card className="mx-auto max-w-3xl">
-      <CardHeader>
-        <CardTitle>New Project</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ProjectForm
-          submitLabel="Create Project"
-          onSubmit={async (input) => {
-            const { id } = await createProject(input)
-            toast.success("Project created")
-            router.push(`/projects/${id}`)
-          }}
-        />
-      </CardContent>
-    </Card>
-  )
+  return <NewProjectCard />
 }

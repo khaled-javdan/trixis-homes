@@ -16,6 +16,7 @@ import {
 import { Input } from "@workspace/ui/components/input"
 
 import { FormField } from "@/components/form-field"
+import { useIsAdmin } from "@/components/admin-provider"
 import {
   createPaymentMilestone,
   updatePaymentMilestone,
@@ -55,10 +56,13 @@ export function PaymentMilestoneFormDialog({
   projectId: string
   milestone?: PlainPaymentMilestone
 }) {
+  const isAdmin = useIsAdmin()
   const isEdit = Boolean(milestone)
   const [open, setOpen] = React.useState(false)
   const [pending, startTransition] = React.useTransition()
   const form = useForm<FormValues>({ defaultValues: toFormValues(milestone) })
+
+  if (!isAdmin) return null
 
   function save(values: FormValues) {
     startTransition(async () => {

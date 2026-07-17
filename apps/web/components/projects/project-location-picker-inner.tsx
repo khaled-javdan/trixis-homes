@@ -11,6 +11,7 @@ import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet"
 
 import { Button } from "@workspace/ui/components/button"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { LocationSearchInput } from "@/components/projects/location-search-input"
 import { setProjectCoordinates } from "@/lib/actions/projects"
 
@@ -47,12 +48,21 @@ export type ProjectLocationPickerProps = {
 export default function ProjectLocationPickerInner({
   projectId,
 }: ProjectLocationPickerProps) {
+  const isAdmin = useIsAdmin()
   const router = useRouter()
   const mapRef = React.useRef<L.Map | null>(null)
   const [position, setPosition] = React.useState<[number, number] | null>(
     null
   )
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) {
+    return (
+      <p className="py-8 text-center text-sm text-muted-foreground">
+        No location has been set for this project yet.
+      </p>
+    )
+  }
 
   function handleSearchSelect(result: { latitude: number; longitude: number }) {
     const next: [number, number] = [result.latitude, result.longitude]

@@ -7,11 +7,15 @@ import { toast } from "sonner"
 
 import { Button } from "@workspace/ui/components/button"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { duplicateProject } from "@/lib/actions/projects"
 
 export function DuplicateProjectButton({ projectId }: { projectId: string }) {
+  const isAdmin = useIsAdmin()
   const router = useRouter()
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) return null
 
   return (
     <Button

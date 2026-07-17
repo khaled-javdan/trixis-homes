@@ -17,6 +17,7 @@ import {
   ProjectForm,
   type ProjectFormDefaults,
 } from "@/components/projects/project-form"
+import { useIsAdmin } from "@/components/admin-provider"
 import { updateProject } from "@/lib/actions/projects"
 
 export function EditProjectDialog({
@@ -26,7 +27,10 @@ export function EditProjectDialog({
   projectId: string
   defaultValues: ProjectFormDefaults
 }) {
+  const isAdmin = useIsAdmin()
   const [open, setOpen] = React.useState(false)
+
+  if (!isAdmin) return null
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

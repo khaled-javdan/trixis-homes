@@ -32,6 +32,10 @@ export const extractedProjectSchema = z.object({
   city: z.string().trim().max(200).nullable(),
   location: z.string().trim().max(200).nullable(),
   status: z.enum(projectStatusValues).nullable(),
+  launchDate: z
+    .string()
+    .describe("ISO 8601 date, e.g. 2024-09-15")
+    .nullable(),
   handoverDate: z
     .string()
     .describe("ISO 8601 date, e.g. 2030-12-31")

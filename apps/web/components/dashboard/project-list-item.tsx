@@ -6,6 +6,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Card } from "@workspace/ui/components/card"
 import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
+import { InventoryFreshnessBadge } from "@/components/projects/inventory-freshness-badge"
 import { StatusBadge } from "@/components/status-badge"
 import type { ProjectCard as ProjectCardData } from "@/lib/data/projects"
 import type { PlainUnitType } from "@/lib/data/serialize"
@@ -130,6 +131,10 @@ export function ProjectListItem({ project }: { project: ProjectCardData }) {
               ))}
             </div>
           )}
+          <InventoryFreshnessBadge
+            inventoryUpdatedAt={project.inventoryUpdatedAt}
+            className="h-4.5 px-1.5 text-[10px]"
+          />
         </div>
       </Card>
     </Link>

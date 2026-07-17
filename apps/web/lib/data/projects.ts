@@ -241,6 +241,13 @@ export async function getFavoriteProjects(): Promise<ProjectCard[]> {
   return projects.map((project) => withCardFields(toPlainProject(project)))
 }
 
+export async function getProjectPickerOptions() {
+  return prisma.project.findMany({
+    select: { id: true, name: true },
+    orderBy: [{ isFavorite: "desc" }, { name: "asc" }],
+  })
+}
+
 export type MasterCommunityCard = {
   name: string
   projectCount: number
@@ -302,6 +309,19 @@ export async function getProjectsByMasterCommunity(
   })
 
   return projects.map((project) => withCardFields(toPlainProject(project)))
+}
+
+export type ProjectMatchOption = {
+  id: string
+  name: string
+  developer: string
+}
+
+export async function getProjectMatchOptions(): Promise<ProjectMatchOption[]> {
+  return prisma.project.findMany({
+    select: { id: true, name: true, developer: true },
+    orderBy: { name: "asc" },
+  })
 }
 
 export async function getFilterOptions() {

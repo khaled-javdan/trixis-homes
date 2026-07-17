@@ -17,6 +17,7 @@ import {
 } from "@workspace/ui/components/alert-dialog"
 import { Button } from "@workspace/ui/components/button"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { deleteUnitType } from "@/lib/actions/unit-types"
 
 export function DeleteUnitTypeDialog({
@@ -28,8 +29,11 @@ export function DeleteUnitTypeDialog({
   projectId: string
   unitLabel: string
 }) {
+  const isAdmin = useIsAdmin()
   const [open, setOpen] = React.useState(false)
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) return null
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

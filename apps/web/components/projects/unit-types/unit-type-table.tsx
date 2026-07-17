@@ -14,6 +14,7 @@ import {
 import { Button } from "@workspace/ui/components/button"
 import { DirhamSymbol } from "@workspace/ui/components/dirham-symbol"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { PaymentPlanBreakdownDialog } from "@/components/projects/payment-milestones/payment-plan-breakdown-dialog"
 import { DeleteUnitTypeDialog } from "@/components/projects/unit-types/delete-unit-type-dialog"
 import { UnitTypeFormDialog } from "@/components/projects/unit-types/unit-type-form-dialog"
@@ -34,6 +35,7 @@ export function UnitTypeTable({
     "id" | "name" | "handoverDate" | "unitTypes" | "paymentMilestones"
   >
 }) {
+  const isAdmin = useIsAdmin()
   const { id: projectId, unitTypes } = project
   const [areaUnit, setAreaUnit] = React.useState<"ft" | "m">("ft")
 
@@ -63,7 +65,9 @@ export function UnitTypeTable({
 
       {unitTypes.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
-          No unit types yet. Add the first one above.
+          {isAdmin
+            ? "No unit types yet. Add the first one above."
+            : "No unit types yet."}
         </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">

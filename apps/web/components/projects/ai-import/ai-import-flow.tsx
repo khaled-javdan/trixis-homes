@@ -69,6 +69,7 @@ type ProjectDraft = {
   city: string
   location: string
   status: (typeof projectStatusValues)[number]
+  launchDate: string
   handoverDate: string
   description: string
   paymentPlan: string
@@ -141,6 +142,7 @@ function toProjectDraft(project: ExtractedProject): ProjectDraft {
     city: project.city ?? "",
     location: project.location ?? "",
     status: project.status ?? "OFF_PLAN",
+    launchDate: project.launchDate ?? "",
     handoverDate: project.handoverDate ?? "",
     description: project.description ?? "",
     paymentPlan: project.paymentPlan ?? "",
@@ -184,6 +186,7 @@ function emptyProjectDraft(): ProjectDraft {
     city: "",
     location: "",
     status: "OFF_PLAN",
+    launchDate: "",
     handoverDate: "",
     description: "",
     paymentPlan: "",
@@ -214,6 +217,7 @@ function toProjectInput(draft: ProjectDraft): ProjectInput {
     city: draft.city,
     location: draft.location,
     status: draft.status,
+    launchDate: draft.launchDate ? new Date(draft.launchDate) : null,
     handoverDate: draft.handoverDate ? new Date(draft.handoverDate) : null,
     description: draft.description,
     paymentPlan: draft.paymentPlan,
@@ -501,6 +505,48 @@ export function AiImportFlow() {
                     ))}
                   </SelectContent>
                 </Select>
+              </FormField>
+              <FormField label="Launch Date (optional)">
+                <div className="flex gap-2">
+                  <Select
+                    value={dateToQuarter(draft.launchDate).quarter}
+                    onValueChange={(quarter: string | null) => {
+                      const year = dateToQuarter(draft.launchDate).year
+                      const date = quarterToDate(quarter ?? "", year)
+                      updateProject(projectIndex, {
+                        launchDate: date
+                          ? date.toISOString().slice(0, 10)
+                          : "",
+                      })
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Quarter" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {quarterValues.map((quarter) => (
+                        <SelectItem key={quarter} value={quarter}>
+                          {`Q${quarter}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="Year"
+                    value={dateToQuarter(draft.launchDate).year}
+                    onChange={(event) => {
+                      const quarter = dateToQuarter(draft.launchDate).quarter
+                      const date = quarterToDate(quarter, event.target.value)
+                      updateProject(projectIndex, {
+                        launchDate: date
+                          ? date.toISOString().slice(0, 10)
+                          : "",
+                      })
+                    }}
+                  />
+                </div>
               </FormField>
               <FormField label="Handover Date (optional)">
                 <div className="flex gap-2">

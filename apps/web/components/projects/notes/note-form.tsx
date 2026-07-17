@@ -6,11 +6,15 @@ import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Textarea } from "@workspace/ui/components/textarea"
 
+import { useIsAdmin } from "@/components/admin-provider"
 import { createNote } from "@/lib/actions/notes"
 
 export function NoteForm({ projectId }: { projectId: string }) {
+  const isAdmin = useIsAdmin()
   const [body, setBody] = React.useState("")
   const [pending, startTransition] = React.useTransition()
+
+  if (!isAdmin) return null
 
   function submit() {
     if (!body.trim()) return
