@@ -73,14 +73,19 @@ export default async function LeadsPage() {
                   </TableCell>
                   <TableCell className="font-medium">{lead.name}</TableCell>
                   <TableCell>
-                    <a
-                      href={`mailto:${lead.email}`}
-                      className="text-primary hover:underline"
-                    >
-                      {lead.email}
-                    </a>
+                    {lead.email ? (
+                      <a
+                        href={`mailto:${lead.email}`}
+                        className="text-primary hover:underline"
+                      >
+                        {lead.email}
+                      </a>
+                    ) : null}
                     {lead.phone ? (
                       <p className="text-muted-foreground">{lead.phone}</p>
+                    ) : null}
+                    {!lead.email && !lead.phone ? (
+                      <span className="text-muted-foreground">—</span>
                     ) : null}
                   </TableCell>
                   <TableCell>

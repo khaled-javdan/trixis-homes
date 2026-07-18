@@ -13,11 +13,7 @@ import { PrismaClient } from "../src/generated/prisma/client"
 const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 
-const developers: {
-  name: string
-  description: string
-  coverImageUrl?: string
-}[] = [
+const developers: { name: string; description: string }[] = [
   {
     name: "Emaar",
     description:
@@ -122,13 +118,11 @@ const developers: {
     name: "Imtiaz",
     description:
       "Imtiaz Developments is a design-led private developer that has become one of Dubai's fastest-rising luxury names, known for boutique buildings with hotel-grade finishes, fully fitted kitchens, and smart-home technology as standard. Its Pinewood, Westwood, and Cove lines cluster in fast-growing districts like Jumeirah Village Circle and Meydan.\n\nFor buyers, Imtiaz sits in the sweet spot between mass-market and ultra-prime: elevated specification and amenities at price points well below Downtown, aimed at end-users and yield-focused investors alike.",
-    coverImageUrl: "/images/developers/imtiaz-cover.jpg",
   },
   {
     name: "Omniyat",
     description:
       "Omniyat is Dubai's most design-obsessed ultra-luxury developer, treating each building as a collectible work of architecture — collaborating with names like Zaha Hadid Architects on The Opus and the Dorchester Collection on The Lana to create some of the most sought-after residences in the UAE.\n\nIts portfolio — One at Palm, AVA, Vela, and Anwa — sits firmly at the top of the market, aimed at collectors and ultra-high-net-worth buyers for whom architectural pedigree and scarcity matter more than price.",
-    coverImageUrl: "/images/developers/omniyat-cover.jpg",
   },
 ]
 

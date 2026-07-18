@@ -5,7 +5,7 @@ import { prisma, type LeadType } from "@workspace/db"
 export type LeadRow = {
   id: string
   name: string
-  email: string
+  email: string | null
   phone: string | null
   message: string | null
   type: LeadType

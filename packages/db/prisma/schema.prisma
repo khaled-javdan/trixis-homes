@@ -173,7 +173,9 @@ model Developer {
 model Lead {
   id        String   @id @default(cuid())
   name      String
-  email     String
+  // Optional: enquiry/callback requests only need a phone number, while gated
+  // downloads (brochure/floor plan/price list) require an email to deliver to.
+  email     String?
   phone     String?
   message   String?
   type      LeadType @default(ENQUIRY)

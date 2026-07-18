@@ -16,7 +16,7 @@ const successCopy: Record<LeadType, string> = {
   BROCHURE: "Your brochure is ready to download.",
   FLOOR_PLAN: "Your floor plans are ready to download.",
   PRICE_LIST: "The price list is ready to download.",
-  ENQUIRY: "Thank you — our team will get back to you shortly.",
+  ENQUIRY: "Thank you — one of our advisors will call you back shortly.",
 }
 
 export function LeadForm({
@@ -94,47 +94,79 @@ export function LeadForm({
     )
   }
 
+  const isEnquiry = leadType === "ENQUIRY"
+
   return (
     <form onSubmit={handleSubmit} className={cn("flex flex-col gap-3", className)}>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <input
-          name="name"
-          required
-          minLength={2}
-          maxLength={120}
-          autoComplete="name"
-          placeholder="Full name"
-          aria-label="Full name"
-          className={inputClassName}
-        />
-        <input
-          name="email"
-          type="email"
-          required
-          maxLength={254}
-          autoComplete="email"
-          placeholder="Email address"
-          aria-label="Email address"
-          className={inputClassName}
-        />
-      </div>
-      <input
-        name="phone"
-        type="tel"
-        autoComplete="tel"
-        maxLength={32}
-        placeholder="Phone (e.g. +971 50 123 4567)"
-        aria-label="Phone number"
-        className={inputClassName}
-      />
-      <textarea
-        name="message"
-        rows={3}
-        maxLength={2000}
-        placeholder="Something specific in mind? Tell us here. (optional)"
-        aria-label="Message"
-        className={cn(inputClassName, "resize-none")}
-      />
+      {isEnquiry ? (
+        // Callback requests: keep it to the essentials — name and phone.
+        <>
+          <input
+            name="name"
+            required
+            minLength={2}
+            maxLength={120}
+            autoComplete="name"
+            placeholder="Full name"
+            aria-label="Full name"
+            className={inputClassName}
+          />
+          <input
+            name="phone"
+            type="tel"
+            required
+            minLength={5}
+            maxLength={32}
+            autoComplete="tel"
+            placeholder="Phone number"
+            aria-label="Phone number"
+            className={inputClassName}
+          />
+        </>
+      ) : (
+        // Gated downloads: email is required to deliver the files.
+        <>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input
+              name="name"
+              required
+              minLength={2}
+              maxLength={120}
+              autoComplete="name"
+              placeholder="Full name"
+              aria-label="Full name"
+              className={inputClassName}
+            />
+            <input
+              name="email"
+              type="email"
+              required
+              maxLength={254}
+              autoComplete="email"
+              placeholder="Email address"
+              aria-label="Email address"
+              className={inputClassName}
+            />
+          </div>
+          <input
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            maxLength={32}
+            placeholder="Phone (e.g. +971 50 123 4567)"
+            aria-label="Phone number"
+            className={inputClassName}
+          />
+          <textarea
+            name="message"
+            rows={3}
+            maxLength={2000}
+            placeholder="Something specific in mind? Tell us here. (optional)"
+            aria-label="Message"
+            className={cn(inputClassName, "resize-none")}
+          />
+        </>
+      )}
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
       <button
         type="submit"

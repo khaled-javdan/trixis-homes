@@ -34,10 +34,10 @@ const dialogCopy: Record<
     submit: "Get Price List",
   },
   ENQUIRY: {
-    title: (name) => `Register your interest in ${name}`,
+    title: (name) => `Get a callback about ${name}`,
     description:
-      "Leave your details and one of our advisors will reach out with floor plans, current availability, and launch pricing.",
-    submit: "Submit Enquiry",
+      "Leave your name and number — one of our advisors will call you back with floor plans, availability, and pricing.",
+    submit: "Request a Callback",
   },
 }
 

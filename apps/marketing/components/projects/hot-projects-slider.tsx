@@ -71,8 +71,14 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
                 className="object-cover"
               />
             ) : null}
+            {/* Soft overall scrim keeps the photo readable… */}
             <div
-              className="absolute inset-0 bg-gradient-to-t from-ink-deep/95 via-ink-deep/40 to-ink-deep/25"
+              className="absolute inset-0 bg-gradient-to-t from-ink-deep/60 via-ink-deep/25 to-ink-deep/20"
+              aria-hidden
+            />
+            {/* …while a taller, darker band anchors the text block itself. */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-[75%] bg-gradient-to-t from-ink-deep via-ink-deep/80 to-transparent"
               aria-hidden
             />
             <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24 lg:px-10">

@@ -8,45 +8,49 @@ import { site, stats } from "@/lib/content"
 export function Hero() {
   return (
     <section className="relative isolate grid min-h-svh bg-ink-deep text-white lg:grid-cols-[1.05fr_1fr]">
-      {/* Mobile: the marina photo sits behind the whole panel under a heavy scrim. */}
-      <div className="absolute inset-0 lg:hidden" aria-hidden>
-        <Image
-          src="/images/hero-marina.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-ink-deep/85" />
+      {/* Mobile is deliberately photo-free: a quiet ink panel with a soft
+          copper glow, so the typography and search card lead — the hot
+          projects slider right below provides the imagery. */}
+      <div className="absolute inset-0 overflow-hidden lg:hidden" aria-hidden>
+        <div className="absolute -top-24 right-[-30%] size-[28rem] rounded-full bg-copper/15 blur-[110px]" />
+        <div className="absolute bottom-[-20%] left-[-25%] size-[24rem] rounded-full bg-copper/10 blur-[120px]" />
       </div>
 
-      <div className="relative z-10 flex flex-col justify-center pb-16 pt-36 pl-6 pr-6 sm:pr-10 lg:pl-[calc(max(2.5rem,(100vw-80rem)/2+2.5rem))] lg:pr-10 lg:pt-32 xl:pr-12">
+      <div className="relative z-10 flex flex-col justify-center pb-14 pt-32 pl-6 pr-6 sm:pt-36 sm:pr-10 lg:pl-[calc(max(2.5rem,(100vw-80rem)/2+2.5rem))] lg:pr-10 lg:pt-32 xl:pr-12">
         <Eyebrow>Dubai · Worldwide</Eyebrow>
-        <h1 className="mt-6 max-w-xl font-heading text-[2.6rem] leading-[1.08] text-balance sm:text-5xl xl:text-6xl">
+        <h1 className="mt-5 max-w-xl font-heading text-[2.4rem] leading-[1.08] text-balance sm:mt-6 sm:text-5xl xl:text-6xl">
           Buy, sell, invest, or rent with confidence.
         </h1>
-        <p className="mt-7 max-w-lg text-base/7 text-white/70">
+        <p className="mt-5 max-w-lg text-[15px]/7 text-white/70 sm:mt-7 sm:text-base/7">
           From luxury homes in Dubai to investments worldwide, Trixis Homes
           delivers seamless, end-to-end property solutions backed by trust and
           expertise.
         </p>
         <HeroSearch />
 
-        <div className="mt-6 flex flex-wrap items-center gap-4">
-          <CtaLink href={site.whatsapp} target="_blank" rel="noopener noreferrer">
+        <div className="mt-6 grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+          <CtaLink
+            href={site.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto"
+          >
             Book a Call
           </CtaLink>
-          <CtaLink href={site.appUrl} variant="outline-light">
+          <CtaLink
+            href="/projects"
+            variant="outline-light"
+            className="w-full sm:w-auto"
+          >
             Browse all properties
           </CtaLink>
         </div>
 
-        <dl className="mt-16 grid grid-cols-2 gap-x-8 gap-y-10 border-t border-white/15 pt-10 lg:mt-20 xl:grid-cols-4">
+        <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-white/15 pt-8 sm:mt-16 sm:gap-x-8 sm:gap-y-10 sm:pt-10 lg:mt-20 xl:grid-cols-4">
           {stats.map((stat) => (
             <div key={stat.label}>
-              <dd className="font-heading text-4xl">{stat.value}</dd>
-              <dt className="mt-2 text-[11px] uppercase tracking-[0.15em] text-white/55">
+              <dd className="font-heading text-3xl sm:text-4xl">{stat.value}</dd>
+              <dt className="mt-2 text-[10px] uppercase tracking-[0.15em] text-white/55 sm:text-[11px]">
                 {stat.label}
               </dt>
             </div>

@@ -134,6 +134,8 @@ function toCard(project: ProjectWithRelations): PublicProjectCard {
 }
 
 export type PublicProjectFilters = {
+  // Free-text search across project name, developer, area, and unit types.
+  search?: string
   developer?: string
   community?: string
   propertyType?: PropertyType
@@ -141,11 +143,55 @@ export type PublicProjectFilters = {
   maxPrice?: number
 }
 
+// Lets a free-text search like "villa" or "penthouse" match unit types even
+// when a unit has no free-text label — the property type is an enum, so it
+// can't be matched with a `contains`.
+const PROPERTY_TYPE_KEYWORDS: Record<string, PropertyType> = {
+  apartment: "APARTMENT",
+  flat: "APARTMENT",
+  townhouse: "TOWNHOUSE",
+  villa: "VILLA",
+  penthouse: "PENTHOUSE",
+  duplex: "DUPLEX",
+  office: "OFFICE",
+  retail: "RETAIL",
+  shop: "RETAIL",
+}
+
+function matchedPropertyTypes(query: string): PropertyType[] {
+  const q = query.toLowerCase()
+  if (q.length < 3) return []
+  const matched = new Set<PropertyType>()
+  for (const [word, type] of Object.entries(PROPERTY_TYPE_KEYWORDS)) {
+    if (word.includes(q) || q.includes(word)) matched.add(type)
+  }
+  return [...matched]
+}
+
 export async function getPublishedProjects(
   filters: PublicProjectFilters = {},
   limit?: number
 ): Promise<PublicProjectCard[]> {
   const where: Prisma.ProjectWhereInput = { isPublished: true }
+
+  if (filters.search) {
+    const q = filters.search
+    const searchOr: Prisma.ProjectWhereInput[] = [
+      { name: { contains: q, mode: "insensitive" } },
+      { developer: { contains: q, mode: "insensitive" } },
+      { community: { contains: q, mode: "insensitive" } },
+      { masterCommunity: { contains: q, mode: "insensitive" } },
+      { location: { contains: q, mode: "insensitive" } },
+      { city: { contains: q, mode: "insensitive" } },
+      { unitTypes: { some: { label: { contains: q, mode: "insensitive" } } } },
+    ]
+    const types = matchedPropertyTypes(q)
+    if (types.length) {
+      searchOr.push({ unitTypes: { some: { propertyType: { in: types } } } })
+    }
+    // Kept in `AND` so it composes with the `OR` the community filter may set.
+    where.AND = [{ OR: searchOr }]
+  }
 
   if (filters.developer) {
     // Loose match so "Aldar" (brand list) finds "Aldar Properties" (DB value).

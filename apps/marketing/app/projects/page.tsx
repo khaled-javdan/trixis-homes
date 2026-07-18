@@ -4,6 +4,7 @@ import Link from "next/link"
 import type { PropertyType } from "@workspace/db"
 
 import { ProjectCard } from "@/components/projects/project-card"
+import { ProjectSearch } from "@/components/projects/project-search"
 import { Eyebrow } from "@/components/section-heading"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
@@ -33,6 +34,7 @@ const propertyTypeValues: PropertyType[] = [
 ]
 
 type SearchParams = {
+  search?: string
   developer?: string
   community?: string
   propertyType?: string
@@ -40,10 +42,12 @@ type SearchParams = {
   maxPrice?: string
 }
 
-// Parses the URL filter contract (developer | community | propertyType |
-// bedrooms | maxPrice) into typed filters, ignoring anything malformed.
+// Parses the URL filter contract (search | developer | community |
+// propertyType | bedrooms | maxPrice) into typed filters, ignoring anything
+// malformed.
 function parseFilters(params: SearchParams): PublicProjectFilters {
   const filters: PublicProjectFilters = {}
+  if (params.search?.trim()) filters.search = params.search.trim()
   if (params.developer?.trim()) filters.developer = params.developer.trim()
   if (params.community?.trim()) filters.community = params.community.trim()
   if (
@@ -68,6 +72,7 @@ function parseFilters(params: SearchParams): PublicProjectFilters {
 
 function filterSummary(filters: PublicProjectFilters): string[] {
   const parts: string[] = []
+  if (filters.search) parts.push(`“${filters.search}”`)
   if (filters.developer) parts.push(`by ${filters.developer}`)
   if (filters.community) parts.push(filters.community)
   if (filters.propertyType)
@@ -97,7 +102,8 @@ export default async function ProjectsPage({
 }: {
   searchParams: Promise<SearchParams>
 }) {
-  const filters = parseFilters(await searchParams)
+  const resolvedParams = await searchParams
+  const filters = parseFilters(resolvedParams)
   const filtering = Object.keys(filters).length > 0
   const projects = await getPublishedProjects(filters)
   const summary = filterSummary(filters)
@@ -121,6 +127,7 @@ export default async function ProjectsPage({
                 ? `Showing results for ${summary.join(" · ")}.`
                 : "A hand-picked selection of Dubai launches our advisors know inside out. Register your interest on any project to receive brochures, floor plans, and the latest availability."}
             </p>
+            <ProjectSearch params={resolvedParams} />
             {filtering ? (
               <Link
                 href="/projects"

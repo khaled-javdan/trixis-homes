@@ -293,7 +293,7 @@ export default async function ProjectPage({
                 leadType="ENQUIRY"
                 triggerClassName={project.hasBrochure ? heroSecondaryCta : primaryCta}
               >
-                Register Interest
+                Request a Callback
                 <ArrowRight className="size-4" aria-hidden />
               </LeadGateDialog>
             </div>
@@ -605,21 +605,21 @@ export default async function ProjectPage({
         <section id="enquire" className="scroll-mt-20 bg-ink-deep py-20 lg:py-28">
           <div className="mx-auto grid max-w-7xl gap-14 px-6 lg:grid-cols-2 lg:px-10">
             <div>
-              <Eyebrow>Register Interest</Eyebrow>
+              <Eyebrow>Request a Callback</Eyebrow>
               <h2 className="mt-5 font-heading text-3xl leading-[1.15] text-white sm:text-4xl">
                 Get early access to {project.name}.
               </h2>
               <p className="mt-6 max-w-md text-sm/6 text-white/65">
-                Leave your details and one of our advisors will reach out with
-                floor plans, current availability, and launch pricing — before
-                it goes public.
+                Leave your name and number and one of our advisors will call you
+                back with floor plans, current availability, and launch pricing
+                — before it goes public.
               </p>
             </div>
             <div className="bg-white p-8">
               <LeadForm
                 projectId={project.id}
                 leadType="ENQUIRY"
-                submitLabel="Submit Enquiry"
+                submitLabel="Request a Callback"
               />
             </div>
           </div>

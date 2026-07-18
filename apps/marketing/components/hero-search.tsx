@@ -133,7 +133,7 @@ export function HeroSearch() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-10 w-full max-w-4xl rounded-2xl bg-white p-2 pr-4 shadow-2xl shadow-ink-deep/30 lg:-mr-56 lg:w-[calc(100%+14rem)] lg:pr-5 xl:-mr-80 xl:w-[calc(100%+20rem)] xl:max-w-7xl xl:pr-7"
+      className="mt-8 w-full max-w-4xl rounded-2xl bg-white p-2 pr-4 shadow-2xl shadow-ink-deep/30 sm:mt-10 lg:-mr-56 lg:w-[calc(100%+14rem)] lg:pr-5 xl:-mr-80 xl:w-[calc(100%+20rem)] xl:max-w-7xl xl:pr-7"
     >
       <div className="flex flex-col divide-y divide-ink/10 xl:flex-row xl:items-center xl:divide-x xl:divide-y-0">
         <Field
