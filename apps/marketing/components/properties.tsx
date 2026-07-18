@@ -1,5 +1,6 @@
 import Image from "next/image"
 
+import { CtaLink } from "@/components/cta-link"
 import { SectionHeading } from "@/components/section-heading"
 import { developers, site } from "@/lib/content"
 
@@ -65,17 +66,17 @@ export function Properties() {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <p className="mt-12 text-sm text-muted-foreground">
-          Looking for a project from a specific developer?{" "}
-          <a
+        <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <CtaLink href="/developers">View All Developers</CtaLink>
+          <CtaLink
             href={site.whatsapp}
+            variant="outline-dark"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-copper transition-colors hover:text-copper-deep"
           >
-            Talk to an advisor →
-          </a>
-        </p>
+            Talk to an Advisor
+          </CtaLink>
+        </div>
       </div>
     </section>
   )

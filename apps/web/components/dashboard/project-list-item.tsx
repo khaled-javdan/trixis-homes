@@ -16,6 +16,7 @@ import {
   formatUnitTypeName,
 } from "@/lib/format"
 import { FavoriteButton } from "./favorite-button"
+import { ProjectListToggles } from "./project-list-toggles"
 
 function inventoryBreakdown(unitTypes: PlainUnitType[]) {
   const totals = new Map<
@@ -136,6 +137,12 @@ export function ProjectListItem({ project }: { project: ProjectCardData }) {
             className="h-4.5 px-1.5 text-[10px]"
           />
         </div>
+
+        <ProjectListToggles
+          projectId={project.id}
+          isPublished={project.isPublished}
+          isHot={project.isHot}
+        />
       </Card>
     </Link>
   )

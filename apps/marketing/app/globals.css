@@ -1,6 +1,10 @@
 @import "@workspace/ui/globals.css";
 
 @theme {
+  /* Widen the shared page container (all `max-w-7xl` section wrappers) so
+     content stretches a bit more on large screens — default is 80rem. */
+  --container-7xl: 96rem;
+
   --color-copper: oklch(0.614 0.155 45.6);
   --color-copper-deep: oklch(0.53 0.14 45.6);
   --color-ivory: oklch(0.97 0.008 85);
@@ -16,6 +20,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Solid black backdrop for the hero's left panel. */
+.hero-surface {
+  background-color: #000;
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -29,8 +38,73 @@ html {
   animation: marquee 45s linear infinite;
 }
 
+/* Staggered entrance for the hero's text column (delays set inline). */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-rise {
+  animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Slow drift on the hero showcase photos; `alternate` keeps it continuous
+   across slide changes without a restart jump. */
+@keyframes hero-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.animate-kenburns {
+  animation: hero-kenburns 22s ease-in-out infinite alternate;
+}
+
+/* Fill of the active slide-indicator bar; duration is set inline to match
+   the JS rotation interval. Under reduced motion the animation is removed,
+   leaving a static fully-filled bar as a plain position indicator. */
+@keyframes hero-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-hero-progress {
+  transform-origin: left;
+  animation: hero-progress linear both;
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-hero-fade {
+  animation: hero-fade 0.7s ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee {
+  .animate-marquee,
+  .hero-rise,
+  .animate-kenburns,
+  .animate-hero-fade,
+  .animate-hero-progress {
     animation: none;
   }
 }

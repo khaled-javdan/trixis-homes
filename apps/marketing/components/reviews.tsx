@@ -1,7 +1,8 @@
 import { Star } from "lucide-react"
 
+import { CtaLink } from "@/components/cta-link"
 import { SectionHeading } from "@/components/section-heading"
-import { googleRating, reviews } from "@/lib/content"
+import { googleRating, reviews, site } from "@/lib/content"
 
 function Stars({ className }: { className?: string }) {
   return (
@@ -58,6 +59,15 @@ export function Reviews() {
               </figcaption>
             </figure>
           ))}
+        </div>
+
+        <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <CtaLink href={site.whatsapp} target="_blank" rel="noopener noreferrer">
+            Join Our Happy Clients
+          </CtaLink>
+          <CtaLink href="/projects" variant="outline-dark">
+            Explore Projects
+          </CtaLink>
         </div>
       </div>
     </section>

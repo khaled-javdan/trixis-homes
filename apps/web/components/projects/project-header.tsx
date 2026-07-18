@@ -2,7 +2,6 @@ import Image from "next/image"
 
 import { FavoriteButton } from "@/components/dashboard/favorite-button"
 import { DeleteProjectButton } from "@/components/projects/delete-project-button"
-import { DuplicateProjectButton } from "@/components/projects/duplicate-project-button"
 import { EditProjectDialog } from "@/components/projects/edit-project-dialog"
 import { ExportProjectButton } from "@/components/projects/export-project-button"
 import { InventoryFreshnessBadge } from "@/components/projects/inventory-freshness-badge"
@@ -56,7 +55,6 @@ export function ProjectHeader({ project }: { project: PlainProject }) {
 
       <div className="flex flex-wrap gap-2">
         <EditProjectDialog projectId={project.id} defaultValues={project} />
-        <DuplicateProjectButton projectId={project.id} />
         <DeleteProjectButton
           projectId={project.id}
           projectName={project.name}

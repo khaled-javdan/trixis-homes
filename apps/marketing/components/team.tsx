@@ -1,7 +1,8 @@
 import Image from "next/image"
 
+import { CtaLink } from "@/components/cta-link"
 import { Eyebrow, SectionHeading } from "@/components/section-heading"
-import { team, teamLevelTwo } from "@/lib/content"
+import { site, team, teamLevelTwo } from "@/lib/content"
 
 type Member = (typeof team)[number]
 
@@ -132,6 +133,15 @@ export function Team() {
             on the ground and on your side.
           </p>
           <MemberCarousel members={teamLevelTwo} reverse compact />
+        </div>
+
+        <div className="mt-16 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <CtaLink href={site.whatsapp} target="_blank" rel="noopener noreferrer">
+            Talk to Our Team
+          </CtaLink>
+          <CtaLink href={`mailto:${site.email}`} variant="outline-dark">
+            Email Us
+          </CtaLink>
         </div>
       </div>
     </section>

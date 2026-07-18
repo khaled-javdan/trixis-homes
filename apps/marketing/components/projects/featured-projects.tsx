@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
-import { ProjectCard } from "@/components/projects/project-card"
+import { FeaturedProjectsCarousel } from "@/components/projects/featured-projects-carousel"
 import { SectionHeading } from "@/components/section-heading"
 import { getPublishedProjects } from "@/lib/projects"
 
@@ -19,11 +19,7 @@ export async function FeaturedProjects() {
           title="Hand-picked launches, straight from the developers."
           lede="Explore the projects our advisors are working on right now — with brochures, floor plans, and launch pricing available on request."
         />
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        <FeaturedProjectsCarousel projects={projects} />
         <div className="mt-14 flex justify-center">
           <Link
             href="/projects"

@@ -55,7 +55,7 @@ export default async function HomePage() {
       />
       <SiteHeader />
       <main>
-        <Hero />
+        <Hero projects={hotProjects} />
         <HotProjectsSlider projects={hotProjects} />
         <FeaturedProjects />
         <Ticker />

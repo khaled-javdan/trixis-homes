@@ -1,7 +1,8 @@
 import Image from "next/image"
 
+import { CtaLink } from "@/components/cta-link"
 import { Eyebrow } from "@/components/section-heading"
-import { mission, stats } from "@/lib/content"
+import { mission, site, stats } from "@/lib/content"
 
 export function About() {
   return (
@@ -77,6 +78,15 @@ export function About() {
               ))}
             </ul>
           </div>
+        </div>
+
+        <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <CtaLink href={site.whatsapp} target="_blank" rel="noopener noreferrer">
+            Book a Call
+          </CtaLink>
+          <CtaLink href="/#team" variant="outline-dark">
+            Meet the Team
+          </CtaLink>
         </div>
       </div>
     </section>

@@ -7,8 +7,9 @@ import {
   KeyRound,
 } from "lucide-react"
 
+import { CtaLink } from "@/components/cta-link"
 import { SectionHeading } from "@/components/section-heading"
-import { services } from "@/lib/content"
+import { services, site } from "@/lib/content"
 
 const icons = [Handshake, Building2, Globe, Briefcase, Gem, KeyRound]
 
@@ -46,6 +47,15 @@ export function Services() {
               </article>
             )
           })}
+        </div>
+
+        <div className="mt-16 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <CtaLink href={site.whatsapp} target="_blank" rel="noopener noreferrer">
+            Discuss Your Requirements
+          </CtaLink>
+          <CtaLink href="/projects" variant="outline-dark">
+            Browse Projects
+          </CtaLink>
         </div>
       </div>
     </section>

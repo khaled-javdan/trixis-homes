@@ -168,10 +168,31 @@ function matchedPropertyTypes(query: string): PropertyType[] {
   return [...matched]
 }
 
-export async function getPublishedProjects(
-  filters: PublicProjectFilters = {},
-  limit?: number
-): Promise<PublicProjectCard[]> {
+// Unit-level conditions shared by the project `where` (as a `some` clause)
+// and the stats aggregate (directly on UnitType).
+function unitTypeConditions(
+  filters: PublicProjectFilters
+): Prisma.UnitTypeWhereInput[] {
+  const conditions: Prisma.UnitTypeWhereInput[] = []
+  if (filters.propertyType) {
+    conditions.push({ propertyType: filters.propertyType })
+  }
+  if (filters.bedrooms?.length) {
+    conditions.push({
+      OR: filters.bedrooms.map((count) =>
+        count >= 5 ? { bedrooms: { gte: 5 } } : { bedrooms: count }
+      ),
+    })
+  }
+  if (filters.maxPrice != null) {
+    conditions.push({ startingPrice: { lte: filters.maxPrice } })
+  }
+  return conditions
+}
+
+function buildPublishedWhere(
+  filters: PublicProjectFilters
+): Prisma.ProjectWhereInput {
   const where: Prisma.ProjectWhereInput = { isPublished: true }
 
   if (filters.search) {
@@ -206,31 +227,50 @@ export async function getPublishedProjects(
     ]
   }
 
-  const unitConditions: Prisma.UnitTypeWhereInput[] = []
-  if (filters.propertyType) {
-    unitConditions.push({ propertyType: filters.propertyType })
-  }
-  if (filters.bedrooms?.length) {
-    unitConditions.push({
-      OR: filters.bedrooms.map((count) =>
-        count >= 5 ? { bedrooms: { gte: 5 } } : { bedrooms: count }
-      ),
-    })
-  }
-  if (filters.maxPrice != null) {
-    unitConditions.push({ startingPrice: { lte: filters.maxPrice } })
-  }
+  const unitConditions = unitTypeConditions(filters)
   if (unitConditions.length) {
     where.unitTypes = { some: { AND: unitConditions } }
   }
 
+  return where
+}
+
+export async function getPublishedProjects(
+  filters: PublicProjectFilters = {},
+  limit?: number
+): Promise<PublicProjectCard[]> {
   const projects = await prisma.project.findMany({
-    where,
+    where: buildPublishedWhere(filters),
     include: cardInclude,
     orderBy: { updatedAt: "desc" },
     ...(limit ? { take: limit } : {}),
   })
   return projects.map(toCard)
+}
+
+export type PublishedProjectStats = {
+  count: number
+  minPrice: number | null
+}
+
+/** Aggregate for the hero search card's live "N projects from AED X" line.
+ * minPrice honors the unit-level filters, so it reflects the cheapest unit
+ * the visitor could actually land on — not just the cheapest in the project. */
+export async function getPublishedProjectStats(
+  filters: PublicProjectFilters = {}
+): Promise<PublishedProjectStats> {
+  const where = buildPublishedWhere(filters)
+  const [count, priceAggregate] = await Promise.all([
+    prisma.project.count({ where }),
+    prisma.unitType.aggregate({
+      _min: { startingPrice: true },
+      where: { project: { is: where }, AND: unitTypeConditions(filters) },
+    }),
+  ])
+  return {
+    count,
+    minPrice: toNumber(priceAggregate._min.startingPrice),
+  }
 }
 
 function unitTypeName(unit: UnitType): string {

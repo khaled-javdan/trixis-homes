@@ -20,10 +20,12 @@ const AUTOPLAY_MS = 6000
 function SlideStat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">
+      <p className="text-[10px] font-semibold tracking-[0.22em] text-white/55 uppercase">
         {label}
       </p>
-      <p className="mt-1 font-heading text-xl text-white sm:text-2xl">{value}</p>
+      <p className="mt-1 font-heading text-xl text-white sm:text-2xl">
+        {value}
+      </p>
     </div>
   )
 }
@@ -33,6 +35,8 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
   const [paused, setPaused] = useState(false)
   const count = projects.length
 
+  // `index` is a dependency so manual navigation restarts the full interval,
+  // keeping the dots' progress fill honest about when the next switch is.
   useEffect(() => {
     if (count <= 1 || paused) return
     const timer = setInterval(
@@ -40,14 +44,17 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
       AUTOPLAY_MS
     )
     return () => clearInterval(timer)
-  }, [count, paused])
+  }, [count, paused, index])
 
   if (!count) return null
 
   return (
+    // On lg+ the hero's showcase panel already rotates through the same hot
+    // projects, so this full-screen slider only renders below it — where the
+    // hero is deliberately photo-free.
     <section
       aria-label="Hot projects"
-      className="relative h-svh overflow-hidden bg-ink-deep text-white"
+      className="bg-ink-deep relative h-svh overflow-hidden text-white lg:hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -73,12 +80,12 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
             ) : null}
             {/* Soft overall scrim keeps the photo readable… */}
             <div
-              className="absolute inset-0 bg-gradient-to-t from-ink-deep/60 via-ink-deep/25 to-ink-deep/20"
+              className="from-ink-deep/60 via-ink-deep/25 to-ink-deep/20 absolute inset-0 bg-gradient-to-t"
               aria-hidden
             />
             {/* …while a taller, darker band anchors the text block itself. */}
             <div
-              className="absolute inset-x-0 bottom-0 h-[75%] bg-gradient-to-t from-ink-deep via-ink-deep/80 to-transparent"
+              className="from-ink-deep via-ink-deep/80 absolute inset-x-0 bottom-0 h-[75%] bg-gradient-to-t to-transparent"
               aria-hidden
             />
             <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24 lg:px-10">
@@ -115,7 +122,7 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
               <div className="mt-10">
                 <Link
                   href={`/projects/${project.slug}`}
-                  className="inline-flex items-center gap-2 bg-copper px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-copper-deep"
+                  className="bg-copper hover:bg-copper-deep inline-flex items-center gap-2 px-7 py-3.5 text-[11px] font-semibold tracking-[0.18em] text-white uppercase transition-colors"
                 >
                   View Project
                   <ArrowRight className="size-4" aria-hidden />
@@ -132,7 +139,7 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
             type="button"
             aria-label="Previous project"
             onClick={() => setIndex((index - 1 + count) % count)}
-            className="absolute left-4 top-1/2 hidden -translate-y-1/2 border border-white/30 p-3 text-white/80 transition-colors hover:border-white hover:bg-white/10 hover:text-white sm:block lg:left-8"
+            className="absolute top-1/2 left-4 hidden -translate-y-1/2 border border-white/30 p-3 text-white/80 transition-colors hover:border-white hover:bg-white/10 hover:text-white sm:block lg:left-8"
           >
             <ChevronLeft className="size-5" aria-hidden />
           </button>
@@ -140,7 +147,7 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
             type="button"
             aria-label="Next project"
             onClick={() => setIndex((index + 1) % count)}
-            className="absolute right-4 top-1/2 hidden -translate-y-1/2 border border-white/30 p-3 text-white/80 transition-colors hover:border-white hover:bg-white/10 hover:text-white sm:block lg:right-8"
+            className="absolute top-1/2 right-4 hidden -translate-y-1/2 border border-white/30 p-3 text-white/80 transition-colors hover:border-white hover:bg-white/10 hover:text-white sm:block lg:right-8"
           >
             <ChevronRight className="size-5" aria-hidden />
           </button>
@@ -153,10 +160,26 @@ export function HotProjectsSlider({ projects }: { projects: HotProject[] }) {
                 aria-current={dotIndex === index}
                 onClick={() => setIndex(dotIndex)}
                 className={cn(
-                  "h-1 w-8 transition-colors",
-                  dotIndex === index ? "bg-copper" : "bg-white/30 hover:bg-white/60"
+                  "h-1 w-8 overflow-hidden transition-colors",
+                  dotIndex === index
+                    ? "bg-white/30"
+                    : "bg-white/30 hover:bg-white/60"
                 )}
-              />
+              >
+                {dotIndex === index ? (
+                  // Keyed on `paused` too: the autoplay effect restarts its
+                  // full interval on unpause, so the fill restarts with it.
+                  <span
+                    key={`${project.id}-${paused}`}
+                    className="animate-hero-progress bg-copper block h-full w-full"
+                    style={{
+                      animationDuration: `${AUTOPLAY_MS}ms`,
+                      animationPlayState: paused ? "paused" : "running",
+                    }}
+                    aria-hidden
+                  />
+                ) : null}
+              </button>
             ))}
           </div>
         </>
