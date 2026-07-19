@@ -4,7 +4,6 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import {
   ArrowRight,
-  Building2,
   CalendarClock,
   Check,
   Download,
@@ -36,6 +35,8 @@ import {
   getPublishedProject,
   type PublicProjectDetail,
 } from "@/lib/projects"
+import { LocationMap } from "@workspace/ui/components/location-map"
+import { hasMapTilerKey } from "@workspace/ui/lib/maptiler"
 
 // Publishing and content edits happen in the admin app; always read fresh.
 export const dynamic = "force-dynamic"
@@ -430,17 +431,31 @@ export default async function ProjectPage({
                       ? " Request the latest price list for unit-by-unit availability."
                       : ""}
                   </p>
-                  {project.hasPriceList ? (
+                  <div className="mt-8 flex flex-wrap gap-4">
+                    {project.hasPriceList ? (
+                      <LeadGateDialog
+                        projectId={project.id}
+                        projectName={project.name}
+                        leadType="PRICE_LIST"
+                        triggerClassName={primaryCta}
+                      >
+                        Get Price List
+                        <ArrowRight className="size-4" aria-hidden />
+                      </LeadGateDialog>
+                    ) : null}
                     <LeadGateDialog
                       projectId={project.id}
                       projectName={project.name}
-                      leadType="PRICE_LIST"
-                      triggerClassName={`${primaryCta} mt-8`}
+                      leadType="ENQUIRY"
+                      triggerClassName={project.hasPriceList ? outlineCta : primaryCta}
                     >
-                      Get Price List
-                      <ArrowRight className="size-4" aria-hidden />
+                      Ask About the Payment Plan
+                      <ArrowRight
+                        className={project.hasPriceList ? "size-3.5" : "size-4"}
+                        aria-hidden
+                      />
                     </LeadGateDialog>
-                  ) : null}
+                  </div>
                 </Section>
               ) : null}
 
@@ -454,19 +469,14 @@ export default async function ProjectPage({
                       >
                         <div>
                           <h3 className="font-heading text-xl text-ink">{unit.name}</h3>
-                          <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-ink/55">
-                            {unit.sizeRange ? (
+                          {unit.sizeRange ? (
+                            <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-ink/55">
                               <span className="flex items-center gap-1.5">
                                 <Ruler className="size-3.5 text-copper" aria-hidden />
                                 {formatSizeRange(unit.sizeRange)}
                               </span>
-                            ) : null}
-                            <span className="flex items-center gap-1.5">
-                              <Building2 className="size-3.5 text-copper" aria-hidden />
-                              Starting from{" "}
-                              {formatPriceShort(unit.startingPrice) ?? "price on request"}
-                            </span>
-                          </div>
+                            </div>
+                          ) : null}
                         </div>
                         <LeadGateDialog
                           projectId={project.id}
@@ -511,6 +521,17 @@ export default async function ProjectPage({
                       </p>
                     </div>
                   </div>
+                ) : null}
+                {project.latitude != null &&
+                project.longitude != null &&
+                hasMapTilerKey() ? (
+                  <LocationMap
+                    latitude={project.latitude}
+                    longitude={project.longitude}
+                    title={project.name}
+                    subtitle={project.location}
+                    className="mt-8 h-80 rounded-lg border border-ink/10 lg:h-[34rem]"
+                  />
                 ) : null}
               </Section>
 

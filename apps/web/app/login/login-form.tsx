@@ -1,6 +1,7 @@
 "use client"
 
 import { useActionState } from "react"
+import Link from "next/link"
 import { LockIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
@@ -23,27 +24,38 @@ export function LoginForm({ next }: { next?: string }) {
   )
 
   return (
-    <Card className="mx-auto mt-12 max-w-sm">
+    <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <LockIcon className="size-4" />
-          Admin Login
+          Sign in
         </CardTitle>
         <CardDescription>
-          Enter the admin password to manage projects. Browsing stays open to
-          everyone.
+          Sign in with your Trixis Homes email and password. Accounts are
+          created by an owner.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={formAction} className="flex flex-col gap-4">
           {next ? <input type="hidden" name="next" value={next} /> : null}
           <div className="flex flex-col gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              autoFocus
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
               name="password"
               type="password"
-              autoFocus
+              autoComplete="current-password"
               required
             />
           </div>
@@ -53,6 +65,12 @@ export function LoginForm({ next }: { next?: string }) {
           <Button type="submit" disabled={isPending}>
             {isPending ? "Signing in…" : "Sign in"}
           </Button>
+          <Link
+            href="/reset-password"
+            className="text-center text-sm text-muted-foreground hover:text-foreground"
+          >
+            Forgot password?
+          </Link>
         </form>
       </CardContent>
     </Card>

@@ -20,11 +20,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Solid black backdrop for the hero's left panel. */
-.hero-surface {
-  background-color: #000;
-}
-
 @keyframes marquee {
   from {
     transform: translateX(0);

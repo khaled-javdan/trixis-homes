@@ -1,8 +1,9 @@
 import Image from "next/image"
 
+import { BookCallDialog } from "@/components/book-call-dialog"
 import { CtaLink } from "@/components/cta-link"
 import { Eyebrow } from "@/components/section-heading"
-import { mission, site, stats } from "@/lib/content"
+import { mission, stats } from "@/lib/content"
 
 export function About() {
   return (
@@ -81,9 +82,7 @@ export function About() {
         </div>
 
         <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-          <CtaLink href={site.whatsapp} target="_blank" rel="noopener noreferrer">
-            Book a Call
-          </CtaLink>
+          <BookCallDialog />
           <CtaLink href="/#team" variant="outline-dark">
             Meet the Team
           </CtaLink>

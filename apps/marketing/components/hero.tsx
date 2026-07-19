@@ -2,12 +2,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { Star } from "lucide-react"
 
+import { BookCallDialog } from "@/components/book-call-dialog"
 import { CtaLink } from "@/components/cta-link"
 import { HeroSearch } from "@/components/hero-search"
 import { HeroShowcase } from "@/components/hero-showcase"
 import { HeroStats } from "@/components/hero-stats"
 import { Eyebrow } from "@/components/section-heading"
-import { googleRating, site } from "@/lib/content"
+import { googleRating } from "@/lib/content"
 import type { HotProject } from "@/lib/projects"
 
 export function Hero({ projects = [] }: { projects?: HotProject[] }) {
@@ -16,7 +17,7 @@ export function Hero({ projects = [] }: { projects?: HotProject[] }) {
   const showcase = projects.filter((project) => project.coverImageUrl)
 
   return (
-    <section className="hero-surface relative isolate grid min-h-svh text-white lg:grid-cols-[1.05fr_1fr]">
+    <section className="text-ink relative isolate grid min-h-svh bg-white lg:grid-cols-[1.35fr_1fr]">
       {/* Mobile is deliberately photo-free: a quiet ink panel with a soft
           copper glow, so the typography and search card lead — the hot
           projects slider right below provides the imagery. */}
@@ -30,7 +31,7 @@ export function Hero({ projects = [] }: { projects?: HotProject[] }) {
         <h1 className="hero-rise mt-5 max-w-xl font-heading text-[2.4rem] leading-[1.08] text-balance [animation-delay:90ms] sm:mt-6 sm:text-5xl xl:text-6xl">
           Buy, sell, invest, or rent with confidence.
         </h1>
-        <p className="hero-rise mt-5 max-w-lg text-[15px]/7 text-white/70 [animation-delay:180ms] sm:mt-7 sm:text-base/7">
+        <p className="hero-rise mt-5 max-w-lg text-[15px]/7 text-ink/65 [animation-delay:180ms] sm:mt-7 sm:text-base/7">
           From luxury homes in Dubai to investments worldwide, Trixis Homes
           delivers seamless, end-to-end property solutions backed by trust and
           expertise.
@@ -41,17 +42,10 @@ export function Hero({ projects = [] }: { projects?: HotProject[] }) {
 
         <div className="hero-rise [animation-delay:360ms]">
           <div className="mt-5 grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
-            <CtaLink
-              href={site.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto"
-            >
-              Book a Call
-            </CtaLink>
+            <BookCallDialog className="w-full sm:w-auto" />
             <CtaLink
               href="/projects"
-              variant="outline-light"
+              variant="outline-dark"
               className="w-full sm:w-auto"
             >
               Browse all properties
@@ -60,7 +54,7 @@ export function Hero({ projects = [] }: { projects?: HotProject[] }) {
 
           <Link
             href="/#reviews"
-            className="mt-6 inline-flex items-center gap-2.5 text-sm text-white/70 transition-colors hover:text-white"
+            className="mt-6 inline-flex items-center gap-2.5 text-sm text-ink/60 transition-colors hover:text-ink"
           >
             <span className="flex gap-0.5" aria-hidden>
               {Array.from({ length: 5 }, (_, i) => (
@@ -68,7 +62,7 @@ export function Hero({ projects = [] }: { projects?: HotProject[] }) {
               ))}
             </span>
             <span>
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-ink">
                 {googleRating.score}
               </span>{" "}
               · {googleRating.count} Google reviews
@@ -95,16 +89,16 @@ export function Hero({ projects = [] }: { projects?: HotProject[] }) {
           />
         )}
         <div
-          className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-black to-transparent"
+          className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-white to-transparent"
           aria-hidden
         />
-        {/* Keeps the fixed header legible while it floats over the photo. */}
+        {/* Soft white fades blend the photo into the light hero panel. */}
         <div
-          className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-black/80 to-transparent"
+          className="absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-white via-white/70 to-transparent"
           aria-hidden
         />
         <div
-          className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/60 to-transparent"
+          className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white to-transparent"
           aria-hidden
         />
       </div>

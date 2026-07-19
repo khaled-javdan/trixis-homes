@@ -1,3 +1,5 @@
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
 import { Geist_Mono, Inter } from "next/font/google"
 
 import "@workspace/ui/globals.css"
@@ -15,7 +17,7 @@ import { AppSidebar } from "@/components/app-shell/app-sidebar"
 import { CommandPalette } from "@/components/app-shell/command-palette"
 import { ThemeToggle } from "@/components/app-shell/theme-toggle"
 import { ThemeProvider } from "@/components/theme-provider"
-import { isAdmin } from "@/lib/auth"
+import { getSession } from "@/lib/auth"
 import { getProjectPickerOptions } from "@/lib/data/projects"
 
 // The public marketing site. Override locally with NEXT_PUBLIC_MARKETING_URL
@@ -34,33 +36,70 @@ const fontMono = Geist_Mono({
 // command palette), so every route in this app is inherently dynamic.
 export const dynamic = "force-dynamic"
 
+// Pages reachable while logged out — they render without the dashboard shell.
+const PUBLIC_PATHS = ["/login", "/reset-password", "/forgot-password"]
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const [admin, projects] = await Promise.all([
-    isAdmin(),
-    getProjectPickerOptions(),
-  ])
+  const pathname = (await headers()).get("x-pathname") ?? ""
+  const isPublic = PUBLIC_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`)
+  )
+
+  const session = await getSession()
+
+  // Middleware blocks anonymous users from non-public paths; this also catches
+  // a disabled user whose cookie is still validly signed.
+  if (!session && !isPublic) {
+    redirect(`/login?next=${encodeURIComponent(pathname || "/")}`)
+  }
+
+  const shellClass = cn(
+    "antialiased",
+    fontMono.variable,
+    "font-sans",
+    inter.variable
+  )
+
+  // Logged-out pages (login, reset) render on a bare, centered canvas — no
+  // sidebar, no command-palette DB query.
+  if (!session) {
+    return (
+      <html lang="en" suppressHydrationWarning className={shellClass}>
+        <body>
+          <ThemeProvider>
+            <TooltipProvider>
+              <main className="flex min-h-svh flex-col items-center justify-center px-4">
+                {children}
+              </main>
+              <Toaster />
+            </TooltipProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    )
+  }
+
+  const projects = await getProjectPickerOptions()
 
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn(
-        "antialiased",
-        fontMono.variable,
-        "font-sans",
-        inter.variable
-      )}
-    >
+    <html lang="en" suppressHydrationWarning className={shellClass}>
       <body>
         <ThemeProvider>
-          <AdminProvider isAdmin={admin}>
+          <AdminProvider isAdmin>
             <TooltipProvider>
               <SidebarProvider>
-                <AppSidebar admin={admin} marketingUrl={marketingUrl} />
+                <AppSidebar
+                  admin
+                  role={session.role}
+                  userName={session.name}
+                  userEmail={session.email}
+                  avatarUrl={session.avatarUrl}
+                  marketingUrl={marketingUrl}
+                />
                 {/* Fixed header: placed right after the sidebar (the CSS peer)
                     so it can offset its left edge to match the sidebar's
                     expanded / icon-collapsed width. */}

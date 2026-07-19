@@ -41,6 +41,42 @@ enum LeadType {
   ENQUIRY
 }
 
+// Team members with individual logins to the admin app. OWNER can manage
+// members; MEMBER can use everything else. Replaces the single shared password.
+enum UserRole {
+  OWNER
+  MEMBER
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  DISABLED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String?
+  passwordHash String
+  role         UserRole   @default(MEMBER)
+  status       UserStatus @default(ACTIVE)
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+
+  // Profile shown in the members list and sidebar.
+  avatarUrl String?
+  phone     String?
+  title     String? // job title / designation, e.g. "Property Consultant"
+
+  // Forgot-password OTP: a single active code per user, hashed like a password.
+  resetOtpHash      String?
+  resetOtpExpiresAt DateTime?
+  resetOtpAttempts  Int       @default(0)
+
+  @@index([email])
+}
+
 model Project {
   id                      String        @id @default(cuid())
   name                    String

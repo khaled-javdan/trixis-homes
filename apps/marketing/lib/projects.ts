@@ -41,6 +41,8 @@ export type PublicUnitTypeTeaser = {
 export type PublicProjectDetail = PublicProjectCard & {
   description: string | null
   location: string
+  latitude: number | null
+  longitude: number | null
   masterCommunity: string | null
   community: string | null
   handoverDate: string | null
@@ -304,6 +306,8 @@ export async function getPublishedProject(
     ...toCard(project),
     description: project.description,
     location: project.location,
+    latitude: project.latitude,
+    longitude: project.longitude,
     masterCommunity: project.masterCommunity,
     community: project.community,
     handoverDate: project.handoverDate

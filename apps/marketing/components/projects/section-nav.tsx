@@ -42,7 +42,7 @@ export function SectionNav({ sections }: { sections: SectionLink[] }) {
   return (
     <nav
       aria-label="Page sections"
-      className="sticky top-20 z-30 -mx-6 self-start border-b border-ink/10 bg-white/95 backdrop-blur-md lg:top-28 lg:mx-0 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:border-b-0 lg:bg-transparent lg:backdrop-blur-none"
+      className="sticky top-20 z-30 -mx-6 min-w-0 self-start border-b border-ink/10 bg-white/95 backdrop-blur-md lg:top-28 lg:mx-0 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:border-b-0 lg:bg-transparent lg:backdrop-blur-none"
     >
       {/* Mobile: horizontal scrollable tabs */}
       <ul

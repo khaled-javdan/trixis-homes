@@ -1,8 +1,11 @@
 import type { Metadata } from "next"
 import { Inter, Marcellus } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
 
 import "./globals.css"
 import { cn } from "@workspace/ui/lib/utils"
+
+import { WhatsAppFloat } from "@/components/whatsapp-float"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -40,7 +43,11 @@ export default function RootLayout({
       lang="en"
       className={cn("antialiased font-sans", inter.variable, marcellus.variable)}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <WhatsAppFloat />
+        <Analytics />
+      </body>
     </html>
   )
 }

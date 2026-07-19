@@ -201,7 +201,7 @@ export function HeroSearch() {
     <>
       <form
         onSubmit={handleSubmit}
-        className="shadow-ink-deep/30 mt-8 w-full max-w-4xl rounded-2xl bg-white p-2 pr-4 shadow-2xl sm:mt-10 lg:pr-5 xl:max-w-5xl xl:pr-6"
+        className="shadow-ink-deep/15 border-ink/10 mt-8 w-full max-w-4xl rounded-2xl border bg-white p-2 pr-4 shadow-2xl sm:mt-10 lg:pr-5 xl:max-w-5xl xl:pr-6"
       >
         <div className="divide-ink/10 flex flex-col divide-y xl:flex-row xl:items-center xl:divide-x xl:divide-y-0">
           <Field
@@ -214,7 +214,7 @@ export function HeroSearch() {
           />
           <Field
             icon={Home}
-            label="Property type"
+            label="Type"
             value={propertyType}
             onValueChange={setPropertyType}
             neutralLabel="Any type"
@@ -230,7 +230,7 @@ export function HeroSearch() {
           />
           <Field
             icon={Wallet}
-            label="Max budget"
+            label="Budget"
             value={maxPrice}
             onValueChange={setMaxPrice}
             neutralLabel="No max"
@@ -250,7 +250,7 @@ export function HeroSearch() {
       </form>
 
       {/* min-h reserves the row so appearing feedback never shifts the CTAs. */}
-      <p aria-live="polite" className="mt-3 min-h-5 text-sm text-white/75">
+      <p aria-live="polite" className="mt-3 min-h-5 text-sm text-ink/70">
         {feedback ? (
           <>
             <span

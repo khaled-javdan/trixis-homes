@@ -2,7 +2,6 @@ import { About } from "@/components/about"
 import { Cta } from "@/components/cta"
 import { Hero } from "@/components/hero"
 import { FeaturedProjects } from "@/components/projects/featured-projects"
-import { HotProjectsSlider } from "@/components/projects/hot-projects-slider"
 import { Properties } from "@/components/properties"
 import { Reviews } from "@/components/reviews"
 import { Services } from "@/components/services"
@@ -53,10 +52,9 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <SiteHeader />
+      <SiteHeader variant="solid" />
       <main>
         <Hero projects={hotProjects} />
-        <HotProjectsSlider projects={hotProjects} />
         <FeaturedProjects />
         <Ticker />
         <Services />

@@ -46,13 +46,13 @@ function StatValue({ value, delayMs }: { value: string; delayMs: number }) {
 
 export function HeroStats() {
   return (
-    <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-white/15 pt-8 sm:mt-16 sm:gap-x-8 sm:gap-y-10 sm:pt-10 lg:mt-20 xl:grid-cols-4">
+    <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-ink/15 pt-8 sm:mt-16 sm:gap-x-8 sm:gap-y-10 sm:pt-10 lg:mt-20 xl:grid-cols-4">
       {stats.map((stat, index) => (
         <div key={stat.label}>
           <dd className="font-heading text-3xl tabular-nums sm:text-4xl">
             <StatValue value={stat.value} delayMs={400 + index * 120} />
           </dd>
-          <dt className="mt-2 text-[10px] tracking-[0.15em] text-white/55 uppercase sm:text-[11px]">
+          <dt className="mt-2 text-[10px] tracking-[0.15em] text-ink/55 uppercase sm:text-[11px]">
             {stat.label}
           </dt>
         </div>

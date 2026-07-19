@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { Mail, Phone } from "lucide-react"
 
+import { BookCallDialog } from "@/components/book-call-dialog"
 import { CtaLink } from "@/components/cta-link"
 import { WhatsAppIcon } from "@/components/whatsapp-icon"
 import { site } from "@/lib/content"
@@ -27,9 +28,7 @@ export function Cta() {
           goals into reality.
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <CtaLink href={site.whatsapp} target="_blank" rel="noopener noreferrer">
-            Book a Call
-          </CtaLink>
+          <BookCallDialog />
           <CtaLink
             href={site.whatsapp}
             variant="outline-light"
