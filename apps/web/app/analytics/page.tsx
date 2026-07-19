@@ -9,8 +9,8 @@ import { TopList } from "@/components/analytics/top-list"
 import { TrendChart, type TrendPoint } from "@/components/analytics/trend-chart"
 import {
   getDailyTraffic,
+  getTopPages,
   getTopReferrers,
-  getTopRoutes,
   getTrafficTotals,
   getUtmSources,
   isAnalyticsConfigured,
@@ -41,16 +41,22 @@ export default async function AnalyticsPage({
   const { range } = await searchParams
   const days = ALLOWED_RANGES.has(Number(range)) ? Number(range) : 30
 
-  const until = new Date()
-  const since = new Date(until.getTime() - days * 24 * 60 * 60 * 1000)
+  const now = new Date()
+  // Vercel's web-analytics `aggregate` endpoint treats `until` as an *exclusive*
+  // day boundary, so we pass tomorrow to include today's data (the `count`
+  // endpoint is inclusive — the mismatch is why totals showed while the
+  // per-page/referrer breakdowns came back empty). `since` spans `days`
+  // calendar days ending today so the daily axis below lines up.
+  const until = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+  const since = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000)
   const sinceKey = toDateKey(since)
   const untilKey = toDateKey(until)
 
-  const [totals, daily, topRoutes, topReferrers, utmSources, leadTotal, leadsByDay] =
+  const [totals, daily, topPages, topReferrers, utmSources, leadTotal, leadsByDay] =
     await Promise.all([
       getTrafficTotals(sinceKey, untilKey),
       getDailyTraffic(sinceKey, untilKey),
-      getTopRoutes(sinceKey, untilKey),
+      getTopPages(sinceKey, untilKey),
       getTopReferrers(sinceKey, untilKey),
       getUtmSources(sinceKey, untilKey),
       getLeadTotal(since, until),
@@ -133,7 +139,7 @@ export default async function AnalyticsPage({
       <TrendChart data={trend} />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <TopList title="Top pages" rows={topRoutes} metric="pageviews" />
+        <TopList title="Top pages" rows={topPages} metric="pageviews" />
         <TopList title="Top referrers" rows={topReferrers} />
         <TopList
           title="Campaign sources (UTM)"

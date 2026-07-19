@@ -135,8 +135,11 @@ async function getTopByDimension(
   })
 }
 
-export function getTopRoutes(since: string, until: string, limit?: number) {
-  return getTopByDimension("route", since, until, limit)
+// `requestPath` is the actual visited URL (e.g. /projects/the-wilds-residences),
+// matching the Vercel dashboard's Pages panel. (`route` would instead collapse
+// dynamic pages to their pattern, e.g. /projects/[slug].)
+export function getTopPages(since: string, until: string, limit?: number) {
+  return getTopByDimension("requestPath", since, until, limit)
 }
 
 export function getTopReferrers(since: string, until: string, limit?: number) {
