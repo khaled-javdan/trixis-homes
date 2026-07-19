@@ -14,7 +14,6 @@ import {
   PlusIcon,
   SparklesIcon,
   StarIcon,
-  UserCogIcon,
   UsersIcon,
   type LucideIcon,
 } from "lucide-react"
@@ -87,8 +86,10 @@ export function AppSidebar({
   marketingUrl: string
 }) {
   const pathname = usePathname()
-  const adminItems =
-    role === "OWNER" ? [...adminNav, ...ownerNav] : adminNav
+  // Members are viewers: they only see the main nav. The admin section (and
+  // member management) is owner-only.
+  const isOwner = role === "OWNER"
+  const adminItems = [...adminNav, ...ownerNav]
 
   return (
     <Sidebar collapsible="icon">
@@ -134,7 +135,7 @@ export function AppSidebar({
           </SidebarMenu>
         </SidebarGroup>
 
-        {admin && (
+        {isOwner && (
           <SidebarGroup>
             <SidebarGroupLabel>Admin</SidebarGroupLabel>
             <SidebarMenu>
@@ -162,37 +163,34 @@ export function AppSidebar({
 
       {admin && (
         <SidebarFooter>
-          {userEmail ? (
-            <div className="flex items-center gap-2 px-1 pb-1">
-              <UserAvatar
-                name={userName}
-                email={userEmail}
-                avatarUrl={avatarUrl}
-                size="sm"
-              />
-              <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-                <div className="truncate text-sm font-medium">
-                  {userName ?? userEmail}
-                </div>
-                <div className="truncate text-xs text-muted-foreground">
-                  {role === "OWNER" ? "Owner" : "Member"}
-                </div>
-              </div>
-            </div>
-          ) : null}
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                isActive={isItemActive(pathname, "/account")}
-                tooltip="Account"
-                render={
-                  <Link href="/account">
-                    <UserCogIcon />
-                    <span>Account</span>
-                  </Link>
-                }
-              />
-            </SidebarMenuItem>
+            {userEmail ? (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={isItemActive(pathname, "/account")}
+                  tooltip="Account"
+                  className="h-auto py-1.5"
+                  render={
+                    <Link href="/account">
+                      <UserAvatar
+                        name={userName}
+                        email={userEmail}
+                        avatarUrl={avatarUrl}
+                        size="sm"
+                      />
+                      <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
+                        <span className="truncate text-sm font-medium">
+                          {userName ?? userEmail}
+                        </span>
+                        <span className="truncate text-xs text-muted-foreground">
+                          {role === "OWNER" ? "Owner" : "Member"}
+                        </span>
+                      </div>
+                    </Link>
+                  }
+                />
+              </SidebarMenuItem>
+            ) : null}
             <SidebarMenuItem>
               <form action={logout}>
                 <SidebarMenuButton

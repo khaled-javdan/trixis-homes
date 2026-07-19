@@ -89,7 +89,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning className={shellClass}>
       <body>
         <ThemeProvider>
-          <AdminProvider isAdmin>
+          <AdminProvider isAdmin={session.role === "OWNER"}>
             <TooltipProvider>
               <SidebarProvider>
                 <AppSidebar

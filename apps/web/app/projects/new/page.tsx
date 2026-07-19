@@ -5,7 +5,7 @@ import { NewProjectCard } from "./new-project-card"
 
 export default async function NewProjectPage() {
   if (!(await isAdmin())) {
-    redirect("/login?next=/projects/new")
+    redirect("/")
   }
 
   return <NewProjectCard />

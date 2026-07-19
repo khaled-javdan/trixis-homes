@@ -15,7 +15,7 @@ import { getDevelopersForAdmin } from "@/lib/data/developers"
 
 export default async function DevelopersAdminPage() {
   if (!(await isAdmin())) {
-    redirect("/login?next=/developers")
+    redirect("/")
   }
 
   // Pick up any project developers that don't have a config row yet.

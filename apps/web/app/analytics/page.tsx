@@ -35,7 +35,7 @@ export default async function AnalyticsPage({
   searchParams: Promise<{ range?: string }>
 }) {
   if (!(await isAdmin())) {
-    redirect("/login?next=/analytics")
+    redirect("/")
   }
 
   const { range } = await searchParams

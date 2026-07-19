@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 
-import { isAdmin } from "@/lib/auth"
+import { getSession } from "@/lib/auth"
 import { LoginForm } from "./login-form"
 
 export default async function LoginPage({
@@ -9,7 +9,7 @@ export default async function LoginPage({
   searchParams: Promise<{ next?: string }>
 }) {
   const { next } = await searchParams
-  if (await isAdmin()) {
+  if (await getSession()) {
     redirect(next && next.startsWith("/") ? next : "/")
   }
 

@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache"
 
 import { prisma, type UserRole } from "@workspace/db"
 
-import { hashPassword, requireAdmin, requireOwner } from "@/lib/auth"
+import { hashPassword, requireOwner, requireUser } from "@/lib/auth"
 
 // Readable one-time password the owner shares with the new member. Avoids
 // ambiguous characters (0/O, 1/l) so it can be typed by hand if needed.
@@ -74,7 +74,7 @@ export async function updateOwnProfile(input: {
   phone: string
   avatarUrl: string
 }): Promise<void> {
-  const session = await requireAdmin()
+  const session = await requireUser()
   await prisma.user.update({
     where: { id: session.userId },
     data: {

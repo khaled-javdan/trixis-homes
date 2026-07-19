@@ -26,7 +26,7 @@ const leadTypeLabels: Record<LeadType, string> = {
 
 export default async function LeadsPage() {
   if (!(await isAdmin())) {
-    redirect("/login?next=/leads")
+    redirect("/")
   }
 
   const leads = await getLeads()

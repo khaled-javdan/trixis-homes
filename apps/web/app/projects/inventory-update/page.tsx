@@ -6,7 +6,7 @@ import { getProjectMatchOptions } from "@/lib/data/projects"
 
 export default async function InventoryUpdatePage() {
   if (!(await isAdmin())) {
-    redirect("/login?next=/projects/inventory-update")
+    redirect("/")
   }
 
   const projectOptions = await getProjectMatchOptions()

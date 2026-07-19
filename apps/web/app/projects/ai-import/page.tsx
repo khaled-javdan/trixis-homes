@@ -5,7 +5,7 @@ import { isAdmin } from "@/lib/auth"
 
 export default async function AiImportPage() {
   if (!(await isAdmin())) {
-    redirect("/login?next=/projects/ai-import")
+    redirect("/")
   }
 
   return (

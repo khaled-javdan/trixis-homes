@@ -97,19 +97,30 @@ export async function getSession(): Promise<Session | null> {
   }
 }
 
-/** True when the request has an authenticated, active user. */
-export async function isAdmin(): Promise<boolean> {
-  return (await getSession()) !== null
-}
-
-/** Guard for mutating server actions and API routes. */
-export async function requireAdmin(): Promise<Session> {
+/** Guard for self-service actions any signed-in member may perform (their own
+ * profile, password, avatar upload). */
+export async function requireUser(): Promise<Session> {
   const session = await getSession()
-  if (!session) throw new Error("Admin access required")
+  if (!session) throw new Error("Sign-in required")
   return session
 }
 
-/** Guard for owner-only actions (member management). */
+/**
+ * True when the viewer is an OWNER — the "admin" tier. Members are viewers:
+ * they browse the catalog but don't manage it, so admin pages and edit
+ * affordances gate on this.
+ */
+export async function isAdmin(): Promise<boolean> {
+  return (await getSession())?.role === "OWNER"
+}
+
+/** Guard for admin/owner-only server actions, pages, and API routes. */
+export async function requireAdmin(): Promise<Session> {
+  return requireOwner()
+}
+
+/** Guard for owner-only actions (same as requireAdmin; kept for clarity at
+ * member-management call sites). */
 export async function requireOwner(): Promise<Session> {
   const session = await getSession()
   if (!session || session.role !== "OWNER") {

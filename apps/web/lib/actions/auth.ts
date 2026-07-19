@@ -11,7 +11,7 @@ import {
   SESSION_MAX_AGE_SECONDS,
   createSessionToken,
   hashPassword,
-  requireAdmin,
+  requireUser,
   verifyPassword,
 } from "@/lib/auth"
 import { sendEmail } from "@/lib/email"
@@ -154,7 +154,7 @@ export async function changeOwnPassword(input: {
   currentPassword: string
   newPassword: string
 }): Promise<ResetResult> {
-  const session = await requireAdmin()
+  const session = await requireUser()
 
   if (input.newPassword.length < MIN_PASSWORD_LENGTH) {
     return {
