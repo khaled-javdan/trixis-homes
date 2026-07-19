@@ -13,9 +13,10 @@ export function GroupToggle({ grouped }: { grouped: boolean }) {
   function toggle() {
     const params = new URLSearchParams(searchParams.toString())
     if (grouped) {
-      params.delete("group")
+      // Grouping is the default, so opting out needs an explicit marker.
+      params.set("group", "none")
     } else {
-      params.set("group", "community")
+      params.delete("group")
     }
     router.replace(`${pathname}?${params.toString()}`, { scroll: false })
   }

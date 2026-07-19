@@ -8,6 +8,7 @@ import {
   DeleteDeveloperButton,
   DeveloperVisibilitySwitch,
 } from "@/components/developers/developer-card-controls"
+import { DeveloperCreateDialog } from "@/components/developers/developer-create-dialog"
 import { DeveloperEditDialog } from "@/components/developers/developer-edit-dialog"
 import { syncDevelopersFromProjects } from "@/lib/actions/developers"
 import { isAdmin } from "@/lib/auth"
@@ -24,13 +25,16 @@ export default async function DevelopersAdminPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Developers</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Editorial content for the public developers page — cover image and
-          write-up per developer. Rows are created automatically for any
-          developer that appears on a project.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Developers</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Editorial content for the public developers page — cover image and
+            write-up per developer. Rows are created automatically for any
+            developer that appears on a project, or add one manually.
+          </p>
+        </div>
+        <DeveloperCreateDialog />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

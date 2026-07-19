@@ -48,7 +48,7 @@ export default async function CopilotPage({
               projects into scope.
             </p>
           </div>
-          <ButtonLink href="/" className="mt-2" variant="outline">
+          <ButtonLink href="/projects" className="mt-2" variant="outline">
             Back to Dashboard
           </ButtonLink>
         </div>

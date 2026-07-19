@@ -42,7 +42,7 @@ type NavItem = {
 }
 
 const mainNav: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutGridIcon },
+  { href: "/projects", label: "Dashboard", icon: LayoutGridIcon },
   { href: "/communities", label: "Communities", icon: Building2Icon },
   { href: "/favorites", label: "Favorites", icon: StarIcon },
 ]
@@ -67,7 +67,11 @@ const ownerNav: NavItem[] = [
 ]
 
 function isItemActive(pathname: string, href: string) {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href)
+  // "/" and the projects catalog highlight only on an exact match, so they
+  // don't stay lit on nested routes like /projects/new or /projects/[id]
+  // (which have their own admin nav entries).
+  if (href === "/" || href === "/projects") return pathname === href
+  return pathname.startsWith(href)
 }
 
 export function AppSidebar({

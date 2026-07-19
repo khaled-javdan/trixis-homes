@@ -7,7 +7,7 @@ export default function ProjectNotFound() {
       <p className="text-sm text-muted-foreground">
         It may have been deleted or the link is incorrect.
       </p>
-      <ButtonLink href="/" className="mt-2">
+      <ButtonLink href="/projects" className="mt-2">
         Back to Dashboard
       </ButtonLink>
     </div>

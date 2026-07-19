@@ -301,7 +301,7 @@ export function InventoryUpdateFlow({
               ? ` and added ${createdUnitTypes} unit type${createdUnitTypes === 1 ? "" : "s"}`
               : "")
         )
-        router.push("/")
+        router.push("/projects")
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Failed to apply updates"

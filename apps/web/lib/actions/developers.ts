@@ -45,6 +45,33 @@ export async function syncDevelopersFromProjects() {
   }
 }
 
+export async function createDeveloper(input: DeveloperInput) {
+  await requireAdmin()
+  const parsed = developerSchema.parse(input)
+
+  // Names are unique and matched loosely against project developers, so guard
+  // against creating a duplicate of a row that already exists.
+  const existing = await prisma.developer.findFirst({
+    where: { name: { equals: parsed.name, mode: "insensitive" } },
+    select: { id: true },
+  })
+  if (existing) {
+    throw new Error(`A developer named "${parsed.name}" already exists`)
+  }
+
+  await prisma.developer.create({
+    data: {
+      name: parsed.name,
+      description: parsed.description ?? null,
+      coverImageUrl: parsed.coverImageUrl ?? null,
+      logoUrl: parsed.logoUrl ?? null,
+      websiteUrl: parsed.websiteUrl ?? null,
+    },
+  })
+
+  revalidatePath("/developers")
+}
+
 export async function updateDeveloper(id: string, input: DeveloperInput) {
   await requireAdmin()
   const parsed = developerSchema.parse(input)

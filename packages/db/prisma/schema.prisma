@@ -114,6 +114,8 @@ model Project {
   // Featured in the home-page "hot projects" slider (only when published).
   isHot                   Boolean       @default(false)
   slug                    String?       @unique
+  // Manual dashboard order set by owners via drag-and-drop (ascending).
+  sortOrder               Int           @default(0)
 
   unitTypes         UnitType[]
   notes             Note[]
@@ -125,6 +127,7 @@ model Project {
   updatedAt DateTime @updatedAt
 
   @@index([isFavorite])
+  @@index([sortOrder])
   @@index([isPublished])
   @@index([developer])
   @@index([masterCommunity])

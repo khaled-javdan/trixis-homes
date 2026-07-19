@@ -26,8 +26,13 @@ export async function getMasterCommunityNames(): Promise<string[]> {
 
 export async function createProject(input: ProjectInput) {
   await requireAdmin()
+  // Append new projects to the end of the manual dashboard order.
+  const last = await prisma.project.findFirst({
+    orderBy: { sortOrder: "desc" },
+    select: { sortOrder: true },
+  })
   const project = await prisma.project.create({
-    data: await toProjectData(input),
+    data: { ...(await toProjectData(input)), sortOrder: (last?.sortOrder ?? -1) + 1 },
   })
   revalidatePath("/")
   return { id: project.id }
@@ -41,6 +46,31 @@ export async function updateProject(id: string, input: ProjectInput) {
   })
   revalidatePath("/")
   revalidatePath(`/projects/${id}`)
+}
+
+/**
+ * Persists a drag-and-drop reorder (owner). `orderedIds` is a subset of
+ * projects in their new relative order — the full ungrouped list, or one
+ * community group. It's "slot-based": the sortOrder values currently held by
+ * this subset are reassigned in the new order, so items reorder among their
+ * existing positions without disturbing the rest of the list.
+ */
+export async function reorderProjects(orderedIds: string[]) {
+  await requireAdmin()
+  const rows = await prisma.project.findMany({
+    where: { id: { in: orderedIds } },
+    select: { sortOrder: true },
+  })
+  const slots = rows.map((row) => row.sortOrder).sort((a, b) => a - b)
+  await prisma.$transaction(
+    orderedIds.map((id, index) =>
+      prisma.project.update({
+        where: { id },
+        data: { sortOrder: slots[index] ?? index },
+      })
+    )
+  )
+  revalidatePath("/")
 }
 
 export async function deleteProject(id: string) {

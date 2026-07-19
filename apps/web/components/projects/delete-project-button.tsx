@@ -57,7 +57,7 @@ export function DeleteProjectButton({
               startTransition(async () => {
                 await deleteProject(projectId)
                 toast.success("Project deleted")
-                router.push("/")
+                router.push("/projects")
               })
             }}
           >

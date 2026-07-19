@@ -186,7 +186,8 @@ export async function getProjectsForDashboard(
         take: 1,
       },
     },
-    orderBy: [{ isFavorite: "desc" }, { updatedAt: "desc" }],
+    // Manual owner-defined order (drag-and-drop); updatedAt breaks ties.
+    orderBy: [{ sortOrder: "asc" }, { updatedAt: "desc" }],
   })
 
   const cards = projects.map((project) =>
