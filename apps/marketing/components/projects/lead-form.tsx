@@ -40,15 +40,19 @@ export function LeadForm({
     setSubmitting(true)
 
     const form = new FormData(event.currentTarget)
+    // Fields this variant doesn't render come back as null, which the schema
+    // treats as invalid rather than absent — send undefined instead.
+    const field = (name: string) => form.get(name)?.toString() ?? undefined
+
     try {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.get("name"),
-          email: form.get("email"),
-          phone: form.get("phone"),
-          message: form.get("message"),
+          name: field("name"),
+          email: field("email"),
+          phone: field("phone"),
+          message: field("message"),
           type: leadType,
           projectId,
         }),

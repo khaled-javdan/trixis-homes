@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { AdminBar } from "@/components/admin-bar"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -46,6 +47,7 @@ export default function RootLayout({
       <body>
         {children}
         <WhatsAppFloat />
+        <AdminBar />
         <Analytics />
       </body>
     </html>

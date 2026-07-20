@@ -8,6 +8,23 @@ import { prisma, type UserRole } from "@workspace/db"
 export const SESSION_COOKIE = "trixis_admin_session"
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30 // 30 days
 
+/**
+ * Cookie attributes for the session. Set SESSION_COOKIE_DOMAIN (e.g.
+ * ".trixishomes.com") in production so the public marketing site on a sibling
+ * host can read the session and show its "Back to admin" bar. Left unset in
+ * dev, where localhost:3000 and :3001 already share cookies (ports are ignored).
+ */
+export function sessionCookieOptions() {
+  const domain = process.env.SESSION_COOKIE_DOMAIN
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    ...(domain ? { domain } : {}),
+  }
+}
+
 function getSecret(): string | null {
   // A dedicated AUTH_SECRET survives password rotations without logging
   // everyone out; falling back to the password keeps setup to one env var.

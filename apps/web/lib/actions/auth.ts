@@ -12,6 +12,7 @@ import {
   createSessionToken,
   hashPassword,
   requireUser,
+  sessionCookieOptions,
   verifyPassword,
 } from "@/lib/auth"
 import { sendEmail } from "@/lib/email"
@@ -52,11 +53,8 @@ export async function login(
 
   const cookieStore = await cookies()
   cookieStore.set(SESSION_COOKIE, createSessionToken(user.id), {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    ...sessionCookieOptions(),
     maxAge: SESSION_MAX_AGE_SECONDS,
-    path: "/",
   })
 
   const next = formData.get("next")
@@ -65,7 +63,9 @@ export async function login(
 
 export async function logout(): Promise<void> {
   const cookieStore = await cookies()
-  cookieStore.delete(SESSION_COOKIE)
+  // Expire in place so the domain/path attributes match the cookie we set —
+  // a plain delete() would miss a domain-scoped cookie.
+  cookieStore.set(SESSION_COOKIE, "", { ...sessionCookieOptions(), maxAge: 0 })
   redirect("/")
 }
 

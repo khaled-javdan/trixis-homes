@@ -1,8 +1,10 @@
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { Geist_Mono, Inter } from "next/font/google"
+import { ExternalLinkIcon } from "lucide-react"
 
 import "@workspace/ui/globals.css"
+import { buttonVariants } from "@workspace/ui/components/button"
 import { Separator } from "@workspace/ui/components/separator"
 import {
   SidebarInset,
@@ -112,7 +114,19 @@ export default async function RootLayout({
                   <div className="w-full max-w-72">
                     <CommandPalette projects={projects} />
                   </div>
-                  <div className="ml-auto">
+                  <div className="ml-auto flex items-center gap-1">
+                    {/* Same-tab so the public site's "Back to admin" bar
+                        completes the round trip. */}
+                    <a
+                      href={marketingUrl}
+                      className={cn(
+                        buttonVariants({ variant: "ghost", size: "sm" }),
+                        "gap-1.5 text-muted-foreground"
+                      )}
+                    >
+                      <ExternalLinkIcon className="size-4" />
+                      <span className="hidden sm:inline">View public site</span>
+                    </a>
                     <ThemeToggle />
                   </div>
                 </header>
